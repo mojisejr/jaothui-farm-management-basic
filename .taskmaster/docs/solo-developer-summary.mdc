@@ -1,5 +1,332 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# Farm Management System - Solo Developer Guide
+
+## 📋 สรุป Stack & Architecture
+
+### ✅ **Tech Stack (Excellent Choices!)**
+- **Frontend**: Next.js 15.3.4 App Router
+- **UI**: DaisyUI + TailwindCSS 4 with "jaothui" theme
+- **Database**: Supabase PostgreSQL
+- **Auth**: Supabase Auth
+- **ORM**: Prisma
+- **Animation**: Framer Motion
+- **Notifications**: Sonner
+- **Forms**: React Hook Form + Zod
+- **Testing**: Jest + React Testing Library
+- **File Naming**: kebab-case.tsx
+
+---
+
+## 🎯 Why This Stack is Perfect for Solo Developer
+
+### **ข้อดีหลัก**
+1. **All-in-One Solutions**: ไม่ต้องเปลี่ยนระหว่าง frontend/backend
+2. **Zero Server Management**: Supabase จัดการ database + auth
+3. **Type Safety**: TypeScript + Prisma + Zod ป้องกัน runtime errors
+4. **Rapid Development**: DaisyUI components พร้อมใช้
+5. **Easy Testing**: Jest setup ง่าย ไม่ซับซ้อน
+6. **Modern Tooling**: Hot reload, built-in optimization
+
+### **เหมาะกับ Solo Developer เพราะ**
+- ลดเวลาใน setup และ configuration
+- Documentation ดี เรียนรู้ง่าย
+- Community support ใหญ่
+- Scalable แต่ไม่ over-engineering
+
+---
+
+## 📁 Project Structure
+
+```
+farm-management-full-stack/
+├── src/
+│   ├── app/                    # Next.js App Router (หน้าเว็บ)
+│   │   ├── (auth)/
+│   │   │   ├── login/page.tsx
+│   │   │   └── register/page.tsx
+│   │   ├── dashboard/[farm-id]/page.tsx
+│   │   ├── animals/[id]/page.tsx
+│   │   ├── profile/page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx            # หน้าแรก (Welcome)
+│   │
+│   ├── components/             # Components แยกตาม feature
+│   │   ├── ui/                # Base UI components
+│   │   ├── farm/              # Farm-related components
+│   │   ├── animals/           # Animal-related components
+│   │   └── auth/              # Auth components
+│   │
+│   ├── lib/                   # Utilities & configs
+│   │   ├── supabase.ts        # Supabase clients
+│   │   ├── prisma.ts          # Prisma client
+│   │   ├── validations.ts     # Zod schemas
+│   │   └── utils.ts           # Helper functions
+│   │
+│   ├── hooks/                 # Custom React hooks
+│   ├── types/                 # TypeScript type definitions  
+│   └── actions/               # Server Actions
+│
+├── prisma/
+│   ├── schema.prisma          # Database schema
+│   └── seed.ts               # Database seeding
+│
+├── __tests__/                # Testing files
+├── .taskmaster/              # Project documentation
+│   └── docs/
+│       ├── database_schema.mdc
+│       ├── ui_*.json         # UI layouts
+│       ├── style-guide.mdc
+│       └── *.mdc            # Various docs
+│
+└── Configuration files...
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. **Setup Dependencies**
+```bash
+# ติดตั้ง dependencies ใหม่
+npm install @supabase/supabase-js @supabase/auth-helpers-nextjs @prisma/client daisyui framer-motion sonner react-hook-form zod @hookform/resolvers date-fns date-fns-tz lucide-react @tanstack/react-query next-cloudinary @tailwindcss/typography
+
+# ติดตั้ง dev dependencies
+npm install -D prisma @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom prettier prettier-plugin-tailwindcss @types/jest
+```
+
+### 2. **Create Configuration Files**
+Copy configurations จาก [configuration-files.mdc](mdc:.taskmaster/docs/configuration-files.mdc):
+- `jest.config.js` + `jest.setup.js`
+- `tailwind.config.ts` (with jaothui theme)
+- `.prettierrc` + `.prettierignore`
+- `.eslintrc.json`
+- Enhanced `tsconfig.json`
+- `.env.example` + `.env.local`
+- `.vscode/settings.json` + `.vscode/extensions.json`
+
+### 3. **Setup Database**
+```bash
+# สร้าง Supabase project และ copy schema จาก database_schema.mdc
+npx prisma init
+npx prisma db push
+npx prisma generate
+```
+
+### 4. **Environment Variables**
+สร้าง `.env.local` และใส่ค่าจาก Supabase project:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DATABASE_URL=your_database_url
+```
+
+---
+
+## 🎨 UI Implementation Guide
+
+### **Design System**
+- **Theme**: "jaothui" (สีทอง #D4AF37)
+- **Fonts**: Inter + Sarabun (สำหรับภาษาไทย)
+- **Components**: DaisyUI pre-built components
+- **Layout**: Mobile-first responsive design
+
+### **UI References**
+ใช้ UI layout files ใน `.taskmaster/docs/`:
+- [ui_home_layout.json](mdc:.taskmaster/docs/ui_home_layout.json) - หน้าแรก
+- [ui_login_layout.json](mdc:.taskmaster/docs/ui_login_layout.json) - หน้า Login
+- [ui_register_layout.json](mdc:.taskmaster/docs/ui_register_layout.json) - หน้าสมัครสมาชิก
+- [ui_profile_layout.json](mdc:.taskmaster/docs/ui_profile_layout.json) - หน้า Profile
+- [ui_dashboard_layout.json](mdc:.taskmaster/docs/ui_dashboard_layout.json) - หน้า Dashboard
+- [ui_animal_detail_layout.json](mdc:.taskmaster/docs/ui_animal_detail_layout.json) - รายละเอียดสัตว์
+- [ui_animal_create_layout.json](mdc:.taskmaster/docs/ui_animal_create_layout.json) - เพิ่มสัตว์ใหม่
+- [ui_activity_detail_layout.json](mdc:.taskmaster/docs/ui_activity_detail_layout.json) - รายละเอียดกิจกรรม
+- [ui_success_error_layout.json](mdc:.taskmaster/docs/ui_success_error_layout.json) - หน้าผลลัพธ์
+
+---
+
+## 💾 Database Design
+
+### **Core Models**
+- **Profile**: ข้อมูลผู้ใช้ (เชื่อมกับ Supabase Auth)
+- **Farm**: ข้อมูลฟาร์ม
+- **Animal**: ข้อมูลสัตว์ (10 ประเภท)
+- **Activity**: กิจกรรม/การแจ้งเตือน
+- **FarmInvitation**: คำเชิญเข้าร่วมฟาร์ม
+
+### **Business Rules**
+- แต่ละคนเป็นเจ้าของฟาร์มได้ 1 ฟาร์ม
+- แต่ละคนเป็นสมาชิกได้ 1 ฟาร์ม
+- มีการ RLS (Row Level Security) ครบถ้วน
+
+ดูรายละเอียดใน [database_schema.mdc](mdc:.taskmaster/docs/database_schema.mdc)
+
+---
+
+## 🧪 Testing Strategy
+
+### **เริ่มต้นง่ายๆ สำหรับมือใหม่**
+1. **Component Tests**: ทดสอบ components ทีละตัว
+2. **Integration Tests**: ทดสอบ user flows สำคัญ
+3. **E2E Tests**: เพิ่มตอนโปรเจ็คใหญ่ขึ้น
+
+### **ตัวอย่าง Test**
+```typescript
+// __tests__/components/animal-card.test.tsx
+import { render, screen } from '@testing-library/react'
+import { AnimalCard } from '@/components/animal-card'
+
+describe('AnimalCard', () => {
+  it('should display animal information', () => {
+    const mockAnimal = {
+      id: '1',
+      name: 'น้องหมู',
+      animalType: 'หมู',
+    }
+    
+    render(<AnimalCard animal={mockAnimal} />)
+    expect(screen.getByText('น้องหมู')).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+## 📈 Development Workflow
+
+### **Phase 1: Foundation (Week 1-2)**
+1. ✅ Setup project structure
+2. ✅ Configure all tools
+3. 🔄 **Next**: Implement authentication
+4. 🔄 **Next**: Create base components
+
+### **Phase 2: Core Features (Week 3-4)**
+1. Farm management (CRUD)
+2. Animal management (CRUD)  
+3. Basic dashboard
+4. File uploads for animal photos
+
+### **Phase 3: Advanced Features (Week 5-6)**
+1. Activity scheduling system
+2. Real-time notifications
+3. Farm member invitations
+4. Mobile responsiveness
+
+### **Phase 4: Polish (Week 7-8)**
+1. Testing coverage
+2. Performance optimization
+3. Error handling & loading states
+4. Documentation
+
+---
+
+## 🛠️ Solo Developer Best Practices
+
+### **✅ DO**
+- เริ่มจาก MVP features ก่อน
+- ใช้ TypeScript strict mode
+- เขียน tests สำหรับ critical user flows
+- ใช้ Server Actions แทน API routes
+- ใช้ DaisyUI components ที่มีแล้ว
+- Document decisions สำคัญ
+
+### **❌ DON'T**
+- Over-engineer ตั้งแต่แรก
+- เขียน custom components ถ้า DaisyUI มีแล้ว
+- Optimize prematurely  
+- ละเลย error handling
+- ทำ features ที่ไม่จำเป็นก่อน MVP
+
+---
+
+## 🚀 Quick Start Commands
+
+### **Development**
+```bash
+npm run dev          # Start development server
+npm run test         # Run tests
+npm run test:watch   # Run tests in watch mode
+npm run lint         # Check code quality
+npm run format       # Format code
+```
+
+### **Database**
+```bash
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:studio    # Open Prisma Studio
+```
+
+### **Production**
+```bash
+npm run build-check  # Type check + lint + test
+npm run build        # Build for production
+npm start            # Start production server
+```
+
+---
+
+## 📚 Key Resources
+
+### **Documentation**
+- [Tech Stack Recommendations](mdc:.taskmaster/docs/tech-stack-recommendations.mdc)
+- [Configuration Files](mdc:.taskmaster/docs/configuration-files.mdc)
+- [Database Schema](mdc:.taskmaster/docs/database_schema.mdc)
+- [Style Guide](mdc:.taskmaster/docs/style-guide.mdc)
+
+### **UI Layouts**
+- ใช้ JSON files ใน `.taskmaster/docs/ui_*.json`
+- แต่ละไฟล์มี component structure, styling, และ behavior
+
+### **External Resources**
+- [Next.js 15 Docs](mdc:https:/nextjs.org/docs)
+- [DaisyUI Components](mdc:https:/daisyui.com/components)
+- [Supabase Docs](mdc:https:/supabase.com/docs)
+- [Prisma Docs](mdc:https:/www.prisma.io/docs)
+
+---
+
+## 🎯 Success Metrics
+
+### **Week 2**: Foundation Complete
+- [ ] All dependencies installed
+- [ ] Authentication working
+- [ ] Basic pages routing
+- [ ] Database schema deployed
+
+### **Week 4**: MVP Features
+- [ ] User can create/manage farm
+- [ ] User can add/edit animals
+- [ ] Basic dashboard functional
+- [ ] Photo uploads working
+
+### **Week 6**: Advanced Features
+- [ ] Activity scheduling
+- [ ] Real-time notifications
+- [ ] Farm invitations working
+- [ ] Mobile responsive
+
+### **Week 8**: Production Ready
+- [ ] Error handling complete
+- [ ] Testing coverage >70%
+- [ ] Performance optimized
+- [ ] Documentation complete
+
+---
+
+## 💡 คำแนะนำสุดท้าย
+
+Stack ที่คุณเลือกมา**เหมาะมากสำหรับ solo developer**! จะช่วยให้:
+
+1. **พัฒนาเร็ว**: DaisyUI + Next.js App Router
+2. **Maintain ง่าย**: TypeScript + Prisma + Zod
+3. **Scale ได้**: Supabase + modern architecture
+4. **Debug ง่าย**: เครื่องมือครบครัน
+
+เริ่มจาก MVP ก่อน แล้วค่อยๆ เพิ่ม features ตามความต้องการจริง
+
+**สำเร็จแน่นอน! 🚀**

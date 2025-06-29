@@ -1,0 +1,109 @@
+{
+	"meta": {
+		"generatedAt": "2025-06-29T17:02:33.261Z",
+		"tasksAnalyzed": 12,
+		"totalTasks": 12,
+		"analysisCount": 12,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Project Setup and Dependencies Configuration",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break down the Next.js project initialization into: 1) Create Next.js project with App Router, 2) Install and configure UI dependencies (DaisyUI, TailwindCSS, Framer Motion), 3) Setup form and validation libraries (React Hook Form, Zod, React Query), 4) Configure development tools (TypeScript, ESLint, Prettier), 5) Setup project structure and theme configuration",
+			"reasoning": "Medium complexity due to multiple dependency configurations and theme setup, but well-documented processes. Requires careful coordination of multiple tools."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Supabase Project Setup and Database Schema",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Divide database setup into: 1) Create Supabase project and basic configuration, 2) Design and create Profile and Farm tables, 3) Create Animal table with all attributes, 4) Create Activity and ActivitySchedule tables, 5) Implement Row Level Security policies, 6) Setup Supabase Storage and Prisma integration",
+			"reasoning": "High complexity due to complex relational database design, RLS policies, and multiple integrations. Critical foundation task requiring careful planning."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Authentication System Implementation",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Break authentication into: 1) Setup Supabase Auth integration and middleware, 2) Create login and registration forms with Thai phone validation, 3) Implement password reset functionality, 4) Build auth context and protected route guards, 5) Add session management and auto-redirect logic",
+			"reasoning": "High-medium complexity due to custom phone validation, security considerations, and multiple auth flows. Critical for app security."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "User Profile Management System",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide profile management into: 1) Create profile display and editing forms, 2) Implement image upload with validation and optimization, 3) Build profile update API with Server Actions, 4) Add error handling and success notifications",
+			"reasoning": "Medium complexity with standard CRUD operations and file upload. Well-defined requirements with clear validation rules."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Single Farm Creation and Management",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break farm management into: 1) Create farm creation form with Thai province selection, 2) Implement farm ownership logic and constraints, 3) Build farm dashboard and editing functionality",
+			"reasoning": "Lower-medium complexity with straightforward CRUD operations and simple business rules. Clear ownership constraints."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Basic Animal Registration System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Divide animal registration into: 1) Create animal form with type selection and validation, 2) Implement Buddhist calendar date handling, 3) Build automatic microchip generation system, 4) Create animal creation API with error handling",
+			"reasoning": "Medium complexity due to custom microchip generation, Buddhist calendar integration, and multiple animal types. Requires careful validation."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Dashboard and Animal Listing Interface",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Break dashboard into: 1) Create main dashboard layout with tab navigation, 2) Build animal listing with cards and grid layout, 3) Implement search and filter functionality, 4) Add loading states and responsive design with React Query integration",
+			"reasoning": "Medium complexity with standard UI components and data fetching. Requires good UX design and responsive layout."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Farm Member Invitation System",
+			"complexityScore": 7,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Divide invitation system into: 1) Create invitation form and member management UI, 2) Implement invitation workflow and notification system, 3) Build invitation acceptance/decline functionality, 4) Add member role and permission system, 5) Create member removal and management features",
+			"reasoning": "High-medium complexity due to multi-step workflow, role management, and notification system. Requires careful state management."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Complete Animal Management with Images",
+			"complexityScore": 6,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Enhance animal management with: 1) Extend animal forms with complete field set, 2) Implement multiple image upload and gallery, 3) Create detailed animal view and editing, 4) Add image optimization and lazy loading, 5) Build animal history and export functionality",
+			"reasoning": "Medium complexity with file handling, image optimization, and enhanced CRUD operations. Builds on existing animal system."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Activity and Schedule Management System",
+			"complexityScore": 8,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Break activity system into: 1) Create activity and schedule forms with templates, 2) Implement activity status management system, 3) Build recurring schedule functionality, 4) Create activity detail pages and history, 5) Add activity categories and templates, 6) Integrate with animal management system",
+			"reasoning": "High complexity due to dual activity types, recurring schedules, status management, and complex business logic. Central feature requiring careful design."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Real-time Notification System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Implement notifications with: 1) Setup Supabase real-time subscriptions, 2) Create notification components and center, 3) Build notification types and automatic triggers, 4) Add notification preferences and settings, 5) Implement push notification preparation, 6) Integrate with activity system for automated alerts",
+			"reasoning": "High complexity due to real-time features, multiple notification types, and integration with existing systems. Requires advanced technical implementation."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Performance Optimization and Production Polish",
+			"complexityScore": 7,
+			"recommendedSubtasks": 6,
+			"expansionPrompt": "Optimize for production with: 1) Implement performance optimizations (images, queries, caching), 2) Add production features (error boundaries, loading states), 3) Enhance accessibility and SEO, 4) Create documentation and help system, 5) Add comprehensive testing suite, 6) Setup monitoring and analytics",
+			"reasoning": "High-medium complexity requiring broad technical knowledge across performance, accessibility, testing, and monitoring. Critical for production readiness."
+		}
+	]
+}

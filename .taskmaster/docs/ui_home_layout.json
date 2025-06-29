@@ -1,0 +1,68 @@
+{
+  "page": "home",
+  "title": "หน้ายินดีต้อนรับ",
+  "path": "/",
+  "links": ["/login"],
+  "layout": {
+    "type": "hero_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "hero_section",
+        "components": [
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "position": "top_center",
+            "size": "large",
+            "alt": "JAOTHUI Logo"
+          },
+          {
+            "type": "heading",
+            "text": "ยินดีต้อนรับเข้าสู่ระบบ E-ID",
+            "level": "h1",
+            "className": "text-4xl font-bold text-base-content text-center mt-8",
+            "position": "center"
+          },
+          {
+            "type": "subtitle",
+            "text": "ข้อมูลควาย",
+            "className": "text-xl font-normal text-base-content text-center mt-2",
+            "position": "center"
+          },
+          {
+            "type": "powered_by",
+            "text": "powered by JAOTHUI",
+            "className": "text-sm text-neutral text-center mt-16",
+            "position": "center"
+          }
+        ]
+      },
+      {
+        "name": "cta_section",
+        "components": [
+          {
+            "type": "button",
+            "text": "เข้าสู่ระบบ",
+            "className": "btn btn-primary btn-lg mt-8",
+            "action": "navigate",
+            "target": "/login",
+            "position": "center"
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  }
+} 

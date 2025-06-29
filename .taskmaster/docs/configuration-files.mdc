@@ -1,0 +1,477 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Configuration Files - Solo Developer Setup
+
+## 1. Jest Configuration
+
+### `jest.config.js`
+```javascript
+const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+  ],
+  coverageReporters: ['text', 'lcov', 'html'],
+  coverageDirectory: 'coverage',
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  testMatch: [
+    '<rootDir>/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+  ],
+}
+
+module.exports = createJestConfig(customJestConfig)
+```
+
+### `jest.setup.js`
+```javascript
+import '@testing-library/jest-dom'
+
+// Mock Next.js router
+jest.mock('next/navigation', () => ({
+  useRouter() {
+    return {
+      push: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
+    }
+  },
+  useSearchParams() {
+    return new URLSearchParams()
+  },
+  usePathname() {
+    return ''
+  },
+}))
+
+// Mock Supabase
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      signIn: jest.fn(),
+      signOut: jest.fn(),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn(),
+      insert: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    })),
+  },
+}))
+```
+
+---
+
+## 2. TailwindCSS Configuration
+
+### `tailwind.config.ts`
+```typescript
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'Sarabun', 'sans-serif'],
+        thai: ['Sarabun', 'sans-serif'],
+      },
+      colors: {
+        jaothui: {
+          50: '#fefbf2',
+          100: '#fdf5d9',
+          200: '#fae9b3',
+          300: '#f7d983',
+          400: '#f3c351',
+          500: '#D4AF37', // Primary brand color
+          600: '#c19d2e',
+          700: '#a18626',
+          800: '#846e23',
+          900: '#6d5a21',
+        },
+      },
+    },
+  },
+  plugins: [
+    require('daisyui'),
+    require('@tailwindcss/typography'),
+  ],
+  daisyui: {
+    themes: [
+      {
+        jaothui: {
+          primary: '#D4AF37',
+          'primary-focus': '#c19d2e',
+          'primary-content': '#ffffff',
+          
+          secondary: '#414141',
+          'secondary-focus': '#2a2a2a',
+          'secondary-content': '#ffffff',
+          
+          accent: '#f3c351',
+          'accent-focus': '#f7d983',
+          'accent-content': '#000000',
+          
+          neutral: '#3d4451',
+          'neutral-focus': '#2a2e37',
+          'neutral-content': '#ffffff',
+          
+          'base-100': '#ffffff',
+          'base-200': '#f9fafb',
+          'base-300': '#d1d5db',
+          'base-content': '#1f2937',
+          
+          info: '#3abff8',
+          success: '#36d399',
+          warning: '#fbbd23',
+          error: '#f87272',
+        },
+      },
+    ],
+  },
+}
+
+export default config
+```
+
+---
+
+## 3. Prettier Configuration
+
+### `.prettierrc`
+```json
+{
+  "semi": false,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "tabWidth": 2,
+  "useTabs": false,
+  "printWidth": 80,
+  "endOfLine": "lf",
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
+```
+
+### `.prettierignore`
+```
+node_modules
+.next
+out
+build
+dist
+*.log
+.env*
+coverage
+```
+
+---
+
+## 4. ESLint Configuration
+
+### `.eslintrc.json`
+```json
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prefer-const": "error",
+    "no-console": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 5. TypeScript Configuration
+
+### `tsconfig.json` (Enhanced)
+```json
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "es6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/actions/*": ["./src/actions/*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "next-env.d.ts", 
+    "**/*.ts", 
+    "**/*.tsx", 
+    ".next/types/**/*.ts",
+    "jest.setup.js"
+  ],
+  "exclude": ["node_modules"]
+}
+```
+
+---
+
+## 6. Environment Variables
+
+### `.env.example`
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Database
+DATABASE_URL="postgresql://username:password@host:port/database?schema=public"
+DIRECT_URL="postgresql://username:password@host:port/database?schema=public"
+
+# Image uploads (Optional)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### `.env.local` (สำหรับ Development)
+```bash
+# Copy จาก .env.example และใส่ค่าจริง
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+DATABASE_URL=
+DIRECT_URL=
+
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+---
+
+## 7. VS Code Configuration
+
+### `.vscode/settings.json`
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "typescript",
+    "typescriptreact": "typescriptreact"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
+}
+```
+
+### `.vscode/extensions.json`
+```json
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "Prisma.prisma",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-json",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
+```
+
+---
+
+## 8. Git Configuration
+
+### `.gitignore` (Enhanced)
+```gitignore
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment variables
+.env*
+!.env.example
+
+# Database
+*.db
+*.sqlite
+
+# Testing
+coverage/
+*.lcov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Prisma
+prisma/migrations/
+```
+
+---
+
+## 9. Package.json Enhancement
+
+### การอัปเดต `package.json`
+```json
+{
+  "name": "farm-management-full-stack",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "type-check": "tsc --noEmit",
+    "build-check": "npm run type-check && npm run lint && npm run test",
+    "postinstall": "prisma generate"
+  }
+}
+```
+
+---
+
+## 10. Prisma Configuration
+
+### `prisma/schema.prisma` (ใช้จาก database_schema.mdc)
+```prisma
+// สำหรับ development - ใช้ schema จาก database_schema.mdc
+```
+
+---
+
+## Installation Steps
+
+### 1. ติดตั้ง Dependencies
+```bash
+npm install @supabase/supabase-js @supabase/auth-helpers-nextjs @prisma/client daisyui framer-motion sonner react-hook-form zod @hookform/resolvers date-fns date-fns-tz lucide-react @tanstack/react-query next-cloudinary @tailwindcss/typography
+```
+
+### 2. ติดตั้ง Dev Dependencies  
+```bash
+npm install -D prisma @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom prettier prettier-plugin-tailwindcss @types/jest
+```
+
+### 3. Setup Files
+```bash
+# สร้างไฟล์ configuration
+touch jest.config.js jest.setup.js
+touch .prettierrc .prettierignore
+touch .env.example .env.local
+
+# สร้าง directories
+mkdir -p .vscode __tests__ src/{components,lib,hooks,types,actions}
+```
+
+### 4. Initialize Database
+```bash
+npx prisma init
+npx prisma db push
+npx prisma generate
+```
+
+---
+
+## Quick Start Checklist
+
+- [ ] Copy configurations ข้างบนลงไฟล์ที่เกี่ยวข้อง
+- [ ] Run `npm install` ติดตั้ง dependencies
+- [ ] Setup `.env.local` ด้วยค่าจริงจาก Supabase
+- [ ] Run `npx prisma db push` เพื่อ sync database
+- [ ] Run `npm run dev` เพื่อเริ่มต้น development
+- [ ] Run `npm test` เพื่อทดสอบว่า testing setup ใช้งานได้
+
+---
+
+Configuration ทั้งหมดนี้จะช่วยให้คุณมี development environment ที่สมบูรณ์และเหมาะสำหรับ solo developer ครับ! 🚀

@@ -1,0 +1,279 @@
+{
+  "page": "success_error",
+  "title": "หน้าผลลัพธ์",
+  "path": "/success",
+  "alternativePaths": ["/error"],
+  "links": [],
+  "layout": {
+    "type": "result_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "header",
+        "className": "navbar bg-primary text-primary-content",
+        "components": [
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "size": "small",
+            "alt": "JAOTHUI Logo",
+            "className": "h-8 w-auto"
+          },
+          {
+            "type": "page_title",
+            "text": "ระบบ E-ID",
+            "className": "flex-1 text-xl font-semibold text-center"
+          }
+        ]
+      },
+      {
+        "name": "result_content",
+        "className": "flex flex-col items-center justify-center min-h-[70vh] p-6",
+        "components": [
+          {
+            "type": "result_icon",
+            "variants": {
+              "success": {
+                "icon": "check-circle",
+                "className": "w-24 h-24 text-success mb-6"
+              },
+              "error": {
+                "icon": "x-circle",
+                "className": "w-24 h-24 text-error mb-6"
+              },
+              "warning": {
+                "icon": "exclamation-triangle",
+                "className": "w-24 h-24 text-warning mb-6"
+              },
+              "info": {
+                "icon": "info-circle",
+                "className": "w-24 h-24 text-info mb-6"
+              }
+            }
+          },
+          {
+            "type": "result_title",
+            "text": "{resultTitle}",
+            "className": "text-3xl font-bold text-base-content text-center mb-4",
+            "variants": {
+              "success": "สำเร็จ",
+              "error": "เกิดข้อผิดพลาด",
+              "warning": "คำเตือน",
+              "info": "ข้อมูล"
+            }
+          },
+          {
+            "type": "result_message",
+            "text": "{resultMessage}",
+            "className": "text-lg text-neutral text-center mb-8 max-w-md"
+          },
+          {
+            "type": "result_details",
+            "condition": "hasDetails",
+            "className": "bg-base-200 rounded-lg p-4 mb-6 max-w-md w-full",
+            "components": [
+              {
+                "type": "details_title",
+                "text": "รายละเอียด",
+                "className": "text-sm font-medium text-base-content mb-2"
+              },
+              {
+                "type": "details_list",
+                "className": "space-y-1",
+                "itemTemplate": {
+                  "type": "detail_item",
+                  "className": "text-sm text-neutral",
+                  "format": "{label}: {value}"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "action_section",
+        "className": "p-6",
+        "components": [
+          {
+            "type": "primary_action",
+            "text": "{primaryActionText}",
+            "className": "btn btn-primary btn-lg w-full mb-3",
+            "action": "{primaryAction}",
+            "variants": {
+              "success": {
+                "text": "ดำเนินการต่อ",
+                "action": "continue"
+              },
+              "error": {
+                "text": "ลองอีกครั้ง",
+                "action": "retry"
+              }
+            }
+          },
+          {
+            "type": "secondary_action",
+            "text": "{secondaryActionText}",
+            "className": "btn btn-ghost w-full",
+            "action": "{secondaryAction}",
+            "condition": "hasSecondaryAction",
+            "variants": {
+              "success": {
+                "text": "กลับหน้าหลัก",
+                "action": "go_home"
+              },
+              "error": {
+                "text": "กลับหน้าหลัก",
+                "action": "go_home"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50",
+      "success": "#10B981",
+      "error": "#EF4444",
+      "warning": "#F59E0B",
+      "info": "#3B82F6"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "resultType": "url.params.type || query.type || 'success'",
+    "resultTitle": "result.title",
+    "resultMessage": "result.message",
+    "hasDetails": "result.details && result.details.length > 0",
+    "resultDetails": "result.details",
+    "primaryActionText": "result.primaryAction.text",
+    "primaryAction": "result.primaryAction.action",
+    "secondaryActionText": "result.secondaryAction.text",
+    "secondaryAction": "result.secondaryAction.action",
+    "hasSecondaryAction": "result.secondaryAction !== null"
+  },
+  "page_types": {
+    "success": {
+      "title": "สำเร็จ",
+      "icon": "check-circle",
+      "iconClass": "text-success",
+      "examples": {
+        "animal_created": {
+          "title": "เพิ่มข้อมูลสัตว์สำเร็จ",
+          "message": "ข้อมูลสัตว์ {animalName} ถูกเพิ่มเข้าสู่ระบบเรียบร้อยแล้ว",
+          "details": [
+            { "label": "ชื่อสัตว์", "value": "{animalName}" },
+            { "label": "ประเภท", "value": "{animalType}" },
+            { "label": "ฟาร์ม", "value": "{farmName}" }
+          ],
+          "primaryAction": {
+            "text": "ดูข้อมูลสัตว์",
+            "action": "view_animal"
+          },
+          "secondaryAction": {
+            "text": "กลับรายการสัตว์",
+            "action": "go_to_dashboard"
+          }
+        },
+        "animal_updated": {
+          "title": "แก้ไขข้อมูลสำเร็จ",
+          "message": "ข้อมูลสัตว์ถูกปรับปรุงเรียบร้อยแล้ว",
+          "primaryAction": {
+            "text": "ดูข้อมูลสัตว์",
+            "action": "view_animal"
+          }
+        },
+        "activity_created": {
+          "title": "สร้างกิจกรรมสำเร็จ",
+          "message": "กิจกรรม {activityTitle} ถูกบันทึกเรียบร้อยแล้ว",
+          "primaryAction": {
+            "text": "ดูรายละเอียดกิจกรรม",
+            "action": "view_activity"
+          }
+        }
+      }
+    },
+    "error": {
+      "title": "เกิดข้อผิดพลาด",
+      "icon": "x-circle",
+      "iconClass": "text-error",
+      "examples": {
+        "network_error": {
+          "title": "เชื่อมต่อไม่สำเร็จ",
+          "message": "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต",
+          "primaryAction": {
+            "text": "ลองอีกครั้ง",
+            "action": "retry"
+          }
+        },
+        "validation_error": {
+          "title": "ข้อมูลไม่ถูกต้อง",
+          "message": "กรุณาตรวจสอบข้อมูลที่กรอกและลองอีกครั้ง",
+          "primaryAction": {
+            "text": "แก้ไขข้อมูล",
+            "action": "go_back"
+          }
+        },
+        "server_error": {
+          "title": "ระบบขัดข้อง",
+          "message": "เกิดข้อผิดพลาดจากระบบ กรุณาลองอีกครั้งในภายหลัง",
+          "primaryAction": {
+            "text": "กลับหน้าหลัก",
+            "action": "go_home"
+          }
+        }
+      }
+    }
+  },
+  "interactions": {
+    "continue": {
+      "action": "navigate",
+      "target": "{continueUrl}"
+    },
+    "retry": {
+      "action": "navigate_back_and_retry"
+    },
+    "go_home": {
+      "action": "navigate",
+      "target": "/profile"
+    },
+    "go_back": {
+      "action": "navigate_back"
+    },
+    "view_animal": {
+      "action": "navigate",
+      "target": "/animals/{animalId}"
+    },
+    "view_activity": {
+      "action": "navigate",
+      "target": "/animal/{animalId}/activity/{activityId}"
+    },
+    "go_to_dashboard": {
+      "action": "navigate",
+      "target": "/dashboard/{farmId}"
+    }
+  },
+  "usage_notes": {
+    "description": "หน้านี้ใช้เป็นมาตรฐานสำหรับการแสดงผลลัพธ์ของการดำเนินการต่างๆ ในระบบ",
+    "parameters": {
+      "type": "ประเภทของผลลัพธ์ (success, error, warning, info)",
+      "title": "หัวข้อที่จะแสดง",
+      "message": "ข้อความรายละเอียด",
+      "details": "รายละเอียดเพิ่มเติม (array)",
+      "primaryAction": "การกระทำหลัก",
+      "secondaryAction": "การกระทำรอง (optional)",
+      "continueUrl": "URL สำหรับการดำเนินการต่อ"
+    },
+    "redirect_examples": {
+      "after_create": "/success?type=success&title=เพิ่มข้อมูลสำเร็จ&message=...",
+      "after_error": "/error?type=error&title=เกิดข้อผิดพลาด&message=..."
+    }
+  }
+} 

@@ -1,0 +1,154 @@
+{
+  "page": "register",
+  "title": "หน้าสมัครสมาชิก",
+  "path": "/register",
+  "links": ["/login"],
+  "layout": {
+    "type": "form_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "hero_section",
+        "components": [
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "position": "top_center",
+            "size": "large",
+            "alt": "JAOTHUI Logo"
+          },
+          {
+            "type": "heading",
+            "text": "ยินดีต้อนรับเข้าสู่ระบบ E-ID",
+            "level": "h1",
+            "className": "text-4xl font-bold text-base-content text-center mt-8",
+            "position": "center"
+          },
+          {
+            "type": "subtitle",
+            "text": "ข้อมูลควาย",
+            "className": "text-xl font-normal text-base-content text-center mt-2",
+            "position": "center"
+          }
+        ]
+      },
+      {
+        "name": "register_form",
+        "components": [
+          {
+            "type": "form",
+            "className": "max-w-md mx-auto mt-8 space-y-4",
+            "fields": [
+              {
+                "type": "input",
+                "name": "firstName",
+                "label": "ชื่อ",
+                "placeholder": "กรอกชื่อ",
+                "inputType": "text",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "lastName",
+                "label": "นามสกุล",
+                "placeholder": "กรอกนามสกุล",
+                "inputType": "text",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "phoneNumber",
+                "label": "เบอร์โทรศัพท์",
+                "placeholder": "0929931147",
+                "inputType": "tel",
+                "pattern": "^0[0-9]{8,9}$",
+                "required": true,
+                "autoFormat": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "password",
+                "label": "รหัสผ่าน",
+                "placeholder": "กรอกรหัสผ่าน",
+                "inputType": "password",
+                "required": true,
+                "minLength": 6,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "confirmPassword",
+                "label": "ยืนยันรหัสผ่าน",
+                "placeholder": "กรอกรหัสผ่านอีกครั้ง",
+                "inputType": "password",
+                "required": true,
+                "mustMatch": "password",
+                "className": "input input-bordered w-full"
+              }
+            ],
+            "actions": [
+              {
+                "type": "button",
+                "text": "สมัครสมาชิก",
+                "className": "btn btn-primary w-full mt-6",
+                "action": "submit",
+                "submitType": "register"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "login_section",
+        "components": [
+          {
+            "type": "text_with_link",
+            "text": "มีบัญชีอยู่แล้ว ?",
+            "linkText": "เข้าสู่ระบบ",
+            "linkTarget": "/login",
+            "className": "text-center mt-6 text-sm",
+            "linkClassName": "link link-primary ml-1"
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "validation": {
+    "firstName": {
+      "required": true,
+      "minLength": 2
+    },
+    "lastName": {
+      "required": true,
+      "minLength": 2
+    },
+    "phoneNumber": {
+      "pattern": "^0[0-9]{8,9}$",
+      "autoFormat": true,
+      "example": "0929931147"
+    },
+    "password": {
+      "minLength": 6,
+      "required": true
+    },
+    "confirmPassword": {
+      "mustMatch": "password",
+      "required": true
+    }
+  }
+} 

@@ -1,0 +1,370 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Tech Stack Recommendations - Solo Developer
+
+## Stack Analysis & Best Practices
+
+### ✅ **Excellent Choices (คุณเลือกดีมาก!)**
+
+#### Frontend Framework: **Next.js 15.3.4**
+- **ข้อดี**: App Router, Server Actions, Built-in optimization
+- **Solo Developer Benefits**: 
+  - ไม่ต้องตั้งค่า API routes แยก
+  - Server Components ลด complexity
+  - Built-in Image optimization, SEO
+- **Best Practice**: ใช้ App Router + Server Actions แทน API routes
+
+#### UI Framework: **DaisyUI + TailwindCSS 4**
+- **ข้อดี**: Component library พร้อมใช้ + Utility classes
+- **Solo Developer Benefits**:
+  - ไม่ต้องออกแบบ components เอง
+  - Consistent design system
+  - เร็วในการพัฒนา
+- **Best Practice**: ใช้ DaisyUI themes ที่มีอยู่แล้ว
+
+#### Database + Auth: **Supabase**
+- **ข้อดี**: Real-time, RLS, Authentication แบบครบครัน
+- **Solo Developer Benefits**:
+  - ไม่ต้องจัดการ server เอง
+  - Built-in security ด้วย RLS
+  - Real-time subscriptions
+- **Best Practice**: ใช้ RLS เต็มที่, Client-side caching
+
+#### Animation: **Framer Motion**
+- **ข้อดี**: Powerful, declarative animations
+- **Solo Developer Benefits**: API เข้าใจง่าย, documentation ดี
+- **Best Practice**: ใช้แค่ animations พื้นฐาน, lazy load สำหรับ complex animations
+
+#### Notifications: **Sonner**
+- **ข้อดี**: Modern, lightweight, beautiful
+- **Solo Developer Benefits**: Setup ง่าย, customizable
+- **Best Practice**: ใช้ global toast context
+
+---
+
+## Recommended Dependencies
+
+### Core Dependencies
+```json
+{
+  "dependencies": {
+    "next": "15.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    
+    // Database & Auth
+    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/auth-helpers-nextjs": "^0.8.7",
+    "@prisma/client": "^5.8.0",
+    
+    // UI & Styling
+    "daisyui": "^4.6.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.10",
+    
+    // Animations
+    "framer-motion": "^10.18.0",
+    
+    // Notifications
+    "sonner": "^1.4.0",
+    
+    // Forms & Validation (แนะนำเพิ่ม)
+    "react-hook-form": "^7.48.2",
+    "zod": "^3.22.4",
+    "@hookform/resolvers": "^3.3.2",
+    
+    // Date handling (สำหรับวันเกิดสัตว์)
+    "date-fns": "^3.2.0",
+    "date-fns-tz": "^2.0.0",
+    
+    // Icons
+    "lucide-react": "^0.307.0",
+    
+    // Loading & Error States
+    "@tanstack/react-query": "^5.17.0",
+    
+    // Image handling
+    "next-cloudinary": "^5.20.0"
+  },
+  
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    
+    // Database
+    "prisma": "^5.8.0",
+    
+    // Testing (ง่ายสำหรับ solo dev)
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/user-event": "^14.5.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    
+    // Code Quality
+    "eslint": "^8.56.0",
+    "eslint-config-next": "15.3.4",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.10",
+    
+    // Type safety
+    "@types/jest": "^29.5.11"
+  }
+}
+```
+
+---
+
+## Testing Recommendations (เหมาะสำหรับมือใหม่)
+
+### 🎯 **เริ่มต้นง่ายๆ: Jest + React Testing Library**
+
+#### Setup
+```bash
+npm install -D @testing-library/react @testing-library/jest-dom @testing-library/user-event jest jest-environment-jsdom
+```
+
+#### Configuration
+```javascript
+// jest.config.js
+const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+  ],
+}
+
+module.exports = createJestConfig(customJestConfig)
+```
+
+```javascript
+// jest.setup.js
+import '@testing-library/jest-dom'
+```
+
+#### Testing Strategy สำหรับ Solo Dev
+1. **เริ่มจาก Component Tests** - ง่ายที่สุด
+2. **Integration Tests** - ทดสอบ user flows สำคัญ
+3. **E2E Tests** - ใช้ตอนที่โปรเจ็คใหญ่ขึ้น
+
+#### ตัวอย่าง Component Test
+```typescript
+// __tests__/components/animal-card.test.tsx
+import { render, screen } from '@testing-library/react'
+import { AnimalCard } from '@/components/animal-card'
+
+describe('AnimalCard', () => {
+  const mockAnimal = {
+    id: '1',
+    name: 'น้องหมู',
+    animalType: 'หมู',
+    birthDate: new Date('2023-01-01'),
+  }
+
+  it('should display animal name and type', () => {
+    render(<AnimalCard animal={mockAnimal} />)
+    
+    expect(screen.getByText('น้องหมู')).toBeInTheDocument()
+    expect(screen.getByText('หมู')).toBeInTheDocument()
+  })
+})
+```
+
+---
+
+## Project Structure (Solo Developer Optimized)
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Route groups
+│   │   ├── login/
+│   │   └── register/
+│   ├── dashboard/
+│   │   └── [farm-id]/
+│   ├── animals/
+│   ├── profile/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+│
+├── components/                   # Reusable components
+│   ├── ui/                      # Base components
+│   │   ├── button.tsx
+│   │   ├── modal.tsx
+│   │   └── form-field.tsx
+│   ├── farm/
+│   │   ├── farm-card.tsx
+│   │   └── farm-member-list.tsx
+│   └── animals/
+│       ├── animal-card.tsx
+│       └── animal-form.tsx
+│
+├── lib/                         # Utilities & configs
+│   ├── supabase.ts             # Supabase clients
+│   ├── prisma.ts               # Prisma client
+│   ├── validations.ts          # Zod schemas
+│   ├── utils.ts                # Helper functions
+│   └── constants.ts            # App constants
+│
+├── hooks/                       # Custom hooks
+│   ├── use-supabase.ts
+│   ├── use-farms.ts
+│   └── use-animals.ts
+│
+├── types/                       # TypeScript types
+│   ├── database.ts             # Supabase generated types
+│   └── app.ts                  # App-specific types
+│
+└── actions/                     # Server Actions
+    ├── auth-actions.ts
+    ├── farm-actions.ts
+    └── animal-actions.ts
+```
+
+---
+
+## Solo Developer Best Practices
+
+### 🔧 **Development Workflow**
+1. **Start Simple**: เริ่มจาก MVP features
+2. **TypeScript First**: Type safety ช่วยลด bugs
+3. **Component-driven**: สร้าง Storybook สำหรับ components
+4. **Git Workflow**: Feature branches + descriptive commits
+
+### 📝 **Code Organization**
+1. **File Naming**: `kebab-case.tsx` ตามที่คุณต้องการ
+2. **Folder Structure**: Feature-based grouping
+3. **Export Strategy**: Named exports for components, default for pages
+4. **Import Organization**: External → Internal → Relative
+
+### 🚀 **Performance Tips**
+1. **Image Optimization**: ใช้ Next.js Image component
+2. **Bundle Size**: ใช้ dynamic imports สำหรับ heavy components
+3. **Caching**: React Query สำหรับ server state
+4. **Real-time**: ใช้ Supabase subscriptions อย่างระมัดระวัง
+
+### 🔒 **Security Practices**
+1. **RLS First**: ใช้ Row Level Security เป็นหลัก
+2. **Input Validation**: Zod schemas ทุกที่
+3. **Environment Variables**: แยก public/private keys
+4. **Error Handling**: Global error boundaries
+
+---
+
+## Recommended Scripts
+
+```json
+// package.json scripts
+{
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "type-check": "tsc --noEmit",
+    "build-check": "npm run type-check && npm run lint && npm run test"
+  }
+}
+```
+
+---
+
+## Development Tools (Solo Developer Must-Haves)
+
+### VS Code Extensions
+```json
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "Prisma.prisma",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense"
+  ]
+}
+```
+
+### Environment Setup
+```bash
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DATABASE_URL=your_database_url
+DIRECT_URL=your_direct_url
+```
+
+---
+
+## Migration Strategy
+
+### Phase 1: Foundation (Week 1-2)
+1. Setup Next.js + TailwindCSS + DaisyUI
+2. Configure Supabase + Prisma
+3. Basic authentication flow
+4. Create base components
+
+### Phase 2: Core Features (Week 3-4)
+1. Farm management
+2. Animal CRUD operations
+3. Basic dashboard
+4. File uploads
+
+### Phase 3: Advanced Features (Week 5-6)
+1. Activity scheduling
+2. Notifications system
+3. Real-time updates
+4. Mobile optimization
+
+### Phase 4: Polish (Week 7-8)
+1. Testing coverage
+2. Performance optimization
+3. Error handling
+4. Documentation
+
+---
+
+## คำแนะนำสำหรับ Solo Developer
+
+### ✅ **DO**
+- เริ่มจาก features ที่สำคัญที่สุด
+- ใช้ TypeScript อย่างเข้มงวด
+- เขียน tests สำหรับ critical paths
+- ใช้ tools ที่ช่วยเพิ่มผลิตภาพ
+- Document decisions สำคัญ
+
+### ❌ **DON'T**
+- Over-engineer ตั้งแต่แรก
+- เขียน custom components ถ้า DaisyUI มีแล้ว
+- Optimize prematurely
+- ละเลย error handling
+- ทำ features ที่ไม่จำเป็นก่อน
+
+---
+
+Stack ที่คุณเลือกมาเหมาะสำหรับ solo developer มากครับ! จะช่วยให้พัฒนาได้เร็วและ maintain ง่าย 🚀

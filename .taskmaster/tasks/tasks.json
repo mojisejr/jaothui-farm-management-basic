@@ -1,0 +1,165 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Setup and Dependencies Configuration",
+        "description": "Initialize Next.js 15.3.4 project with all required dependencies and development tools",
+        "details": "Create new Next.js project using App Router, install and configure: DaisyUI + TailwindCSS 4, Framer Motion, React Hook Form + Zod, React Query, Sonner, Prisma ORM, TypeScript, ESLint + Prettier. Setup project structure with proper folder organization (/app, /components, /lib, /types). Configure tailwind.config.js with DaisyUI and 'jaothui' theme colors (#D4AF37). Setup TypeScript strict mode and create base type definitions.",
+        "testStrategy": "Verify all dependencies install correctly, Next.js dev server starts without errors, TypeScript compilation passes, and basic styling with DaisyUI components renders properly",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Supabase Project Setup and Database Schema",
+        "description": "Create Supabase project and implement complete database schema with Row Level Security",
+        "details": "Create new Supabase project, configure PostgreSQL database with tables: Profile (id, firstName, lastName, phoneNumber, profileImage, ownedFarmId, memberOfFarmId), Farm (id, name, province, ownerId), Animal (id, name, animalType, microchip, birthDate, weight, height, color, fatherName, motherName, image, farmId), Activity (id, title, description, notes, activityDate, status, animalId), ActivitySchedule (id, title, description, notes, scheduledDate, status, isRecurring, recurrenceType, animalId). Implement RLS policies for data security. Setup Supabase Storage bucket for images. Configure Prisma schema to match database structure.",
+        "testStrategy": "Verify all tables created with correct relationships, RLS policies prevent unauthorized access, Prisma can connect and generate types, and storage bucket accepts image uploads",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Authentication System Implementation",
+        "description": "Build complete authentication flow with Thai phone number format support",
+        "details": "Implement Supabase Auth integration with custom phone number validation (0929931147 format). Create auth components: LoginForm, RegisterForm, ForgotPasswordForm. Build auth pages: /login, /register, /forgot-password. Implement auth middleware for protected routes. Create auth context/hooks for user state management. Add form validation with Zod schemas for Thai phone numbers, password requirements. Implement auto-redirect after login and protected route guards.",
+        "testStrategy": "Test registration with Thai phone format, login/logout flow, password reset functionality, protected route access control, and session persistence across browser refresh",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "User Profile Management System",
+        "description": "Create user profile pages and basic profile management functionality",
+        "details": "Build profile management components: ProfileForm, ProfileImageUpload. Create /profile page with user information display and editing. Implement image upload to Supabase Storage with proper file validation (max 10MB, image types only). Add profile image optimization and display. Create user settings page for basic preferences. Implement profile update API using Next.js Server Actions. Add proper error handling and success notifications using Sonner.",
+        "testStrategy": "Verify profile information updates correctly, image upload works with file size/type validation, profile images display properly, and error states handle gracefully",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Single Farm Creation and Management",
+        "description": "Implement basic farm creation and ownership functionality",
+        "details": "Create farm management components: FarmCreateForm, FarmEditForm, FarmCard. Build /farm/create and /farm/[id] pages. Implement farm creation with validation (name required, province selection from Thai provinces list). Add farm ownership logic - each user can own exactly 1 farm. Create farm dashboard showing basic farm information. Implement farm editing functionality for name and province. Add proper form validation with Zod schemas and error handling.",
+        "testStrategy": "Test farm creation with valid/invalid data, verify ownership constraints (1 farm per user), farm editing functionality, and proper error messages for validation failures",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Basic Animal Registration System",
+        "description": "Create animal registration form with core information and microchip generation",
+        "details": "Build animal management components: AnimalCreateForm, AnimalCard, AnimalTypeSelector. Create /animal/create page with form for basic animal info: name, type (10 types: หมู, ไก่, โค, วัว, ควาย, ไก่ชน, เป็ด, ห่าน, ไก่เนื้อ, ไก่ไข่), birthDate (Buddhist calendar พ.ศ.), weight, height, color. Implement automatic microchip generation: TH{farmId}{timestamp}{random}. Add form validation with Zod schemas. Create animal creation API using Server Actions with proper error handling.",
+        "testStrategy": "Verify animal creation with all required fields, microchip auto-generation follows correct format, Buddhist calendar date handling works properly, and form validation prevents invalid submissions",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Dashboard and Animal Listing Interface",
+        "description": "Create main dashboard with animal listing and basic navigation",
+        "details": "Build dashboard components: Dashboard, AnimalList, AnimalCard, TabNavigation. Create main /dashboard page with two tabs: 'ข้อมูลสัตว์' and 'รายการแจ้งเตือน'. Implement animal listing with cards showing: name, birthDate, color, gender, animal type. Add search and filter functionality for animals. Create responsive grid layout for animal cards. Implement navigation to animal detail pages. Add loading states and empty states for better UX. Use React Query for data fetching and caching.",
+        "testStrategy": "Verify dashboard loads animal data correctly, tab navigation works, animal cards display proper information, search/filter functionality works, and responsive design adapts to mobile screens",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Farm Member Invitation System",
+        "description": "Implement farm member invitation and collaboration features",
+        "details": "Create member management components: InviteMemberForm, MemberList, InvitationCard. Build invitation system where farm owners can invite members by phone number. Create /farm/[id]/members page for member management. Implement invitation workflow: send invitation → recipient accepts/declines → member added to farm. Add member permission system (owner vs member roles). Create invitation notification system. Implement member removal functionality for farm owners. Add proper validation for phone number invitations.",
+        "testStrategy": "Test invitation sending to valid phone numbers, invitation acceptance/decline flow, member role permissions, member list display, and member removal functionality",
+        "priority": "medium",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Complete Animal Management with Images",
+        "description": "Enhance animal management with full details, images, and CRUD operations",
+        "details": "Extend animal management with complete form fields: fatherName, motherName, detailed notes. Implement image upload functionality for animal photos using Supabase Storage. Create AnimalDetailPage with full animal information display. Add animal editing and deletion capabilities. Create image gallery component for multiple animal photos. Implement image optimization and lazy loading. Add animal history tracking. Create animal export functionality. Enhance animal cards with image thumbnails.",
+        "testStrategy": "Verify complete animal CRUD operations, image upload/display functionality, animal detail page shows all information correctly, and image optimization works properly",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Activity and Schedule Management System",
+        "description": "Create activity logging and scheduling system for animal care tasks",
+        "details": "Build activity management components: ActivityForm, ActivityList, ActivityCard, ScheduleForm. Create two activity types: Activity (completed tasks) and ActivitySchedule (future reminders). Implement /activity/create and /schedule/create pages. Add activity categories and templates for common farm tasks (vaccination, health check, feeding). Create activity detail pages with full information display. Implement activity status management (Pending, Completed, Cancelled, Overdue). Add recurring schedule functionality. Create activity history for each animal.",
+        "testStrategy": "Test activity creation for both types, activity status updates, recurring schedule generation, activity templates functionality, and activity history display",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Real-time Notification System",
+        "description": "Implement real-time notifications and alerts for scheduled activities",
+        "details": "Create notification system using Supabase real-time subscriptions. Build notification components: NotificationList, NotificationCard, NotificationBadge. Implement notification types: overdue activities, upcoming schedules, farm invitations. Create notification center accessible from dashboard. Add notification preferences and settings. Implement push notification preparation (service worker setup). Create notification API for managing notification states. Add notification sound and visual indicators. Integrate with activity system for automatic notifications.",
+        "testStrategy": "Verify real-time notifications appear correctly, notification center displays all notifications, notification preferences work, overdue activity detection functions properly, and notification states persist correctly",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Performance Optimization and Production Polish",
+        "description": "Optimize application performance and add production-ready features",
+        "details": "Implement performance optimizations: image lazy loading with Next/Image, database query optimization with proper indexes, React Query caching strategies, bundle size optimization. Add production features: comprehensive error boundaries, loading skeletons, offline support basics, error logging. Implement accessibility improvements: proper ARIA labels, keyboard navigation, screen reader support. Add SEO optimization with proper meta tags. Create user documentation and help system. Implement analytics tracking. Add comprehensive testing with Jest and React Testing Library. Setup monitoring and performance tracking.",
+        "testStrategy": "Verify performance benchmarks are met (< 2s page load), accessibility compliance passes automated tests, error handling works in all scenarios, offline functionality works for basic operations, and all features work correctly across different devices and browsers",
+        "priority": "low",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-29T16:54:35.046Z",
+      "updated": "2025-06-29T16:54:35.046Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

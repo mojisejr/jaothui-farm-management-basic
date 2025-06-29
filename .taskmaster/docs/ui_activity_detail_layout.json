@@ -1,0 +1,371 @@
+{
+  "page": "activity_detail",
+  "title": "หน้ารายละเอียดกิจกรรม",
+  "path": "/animal/:animalId/activity/:activityId",
+  "links": [],
+  "layout": {
+    "type": "detail_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "header",
+        "className": "navbar bg-primary text-primary-content",
+        "components": [
+          {
+            "type": "back_button",
+            "icon": "arrow-left",
+            "className": "btn btn-ghost text-primary-content",
+            "action": "navigate_back"
+          },
+          {
+            "type": "page_title",
+            "text": "รายละเอียดกิจกรรม",
+            "className": "flex-1 text-xl font-semibold text-center"
+          }
+        ]
+      },
+      {
+        "name": "animal_info_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "ข้อมูลสัตว์",
+            "className": "text-lg font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "animal_summary",
+            "className": "flex items-center gap-4",
+            "components": [
+              {
+                "type": "animal_image",
+                "src": "{animalImage}",
+                "fallback": "/images/default-animal.png",
+                "className": "w-16 h-16 object-cover rounded-lg"
+              },
+              {
+                "type": "animal_basic_info",
+                "className": "flex-1",
+                "components": [
+                  {
+                    "type": "animal_name",
+                    "text": "{animalName}",
+                    "className": "text-xl font-semibold text-base-content"
+                  },
+                  {
+                    "type": "animal_details",
+                    "className": "text-sm text-neutral mt-1",
+                    "components": [
+                      {
+                        "type": "birth_info",
+                        "text": "เกิด: {birthDateBuddhistEra}"
+                      },
+                      {
+                        "type": "microchip_info",
+                        "text": "Microchip: {microchip}",
+                        "className": "font-mono"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activity_detail_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "รายละเอียดกิจกรรม",
+            "className": "text-lg font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "activity_details_grid",
+            "className": "space-y-4",
+            "components": [
+              {
+                "type": "detail_item",
+                "label": "ชื่อกิจกรรม",
+                "value": "{activityTitle}",
+                "className": "border-b border-base-300 pb-2"
+              },
+              {
+                "type": "detail_item",
+                "label": "วันที่ทำกิจกรรม",
+                "value": "{activityDateBuddhistEra}",
+                "className": "border-b border-base-300 pb-2"
+              },
+              {
+                "type": "detail_item",
+                "label": "รายละเอียด",
+                "value": "{activityDescription}",
+                "className": "border-b border-base-300 pb-2"
+              },
+              {
+                "type": "detail_item",
+                "label": "หมายเหตุ",
+                "value": "{activityNotes}",
+                "className": "border-b border-base-300 pb-2",
+                "condition": "hasNotes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "notification_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "condition": "hasNotification",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "การแจ้งเตือน",
+            "className": "text-lg font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "notification_details",
+            "className": "space-y-4",
+            "components": [
+              {
+                "type": "notification_status",
+                "className": "flex items-center gap-2 mb-3",
+                "components": [
+                  {
+                    "type": "status_badge",
+                    "text": "{notificationStatus}",
+                    "className": "badge {notificationStatusClass}"
+                  },
+                  {
+                    "type": "due_date",
+                    "text": "ครบกำหนด: {notificationDueDateBuddhistEra}",
+                    "className": "text-sm text-neutral"
+                  }
+                ]
+              },
+              {
+                "type": "time_remaining",
+                "text": "{timeRemaining}",
+                "className": "text-sm {timeRemainingClass}",
+                "condition": "isPending"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "action_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "การจัดการ",
+            "className": "text-lg font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "action_buttons",
+            "className": "space-y-3",
+            "components": [
+              {
+                "type": "button",
+                "text": "ทำเสร็จแล้ว",
+                "className": "btn btn-success w-full",
+                "action": "mark_completed",
+                "condition": "canComplete"
+              },
+              {
+                "type": "button",
+                "text": "แก้ไขกิจกรรม",
+                "className": "btn btn-warning btn-outline w-full",
+                "action": "edit_activity"
+              },
+              {
+                "type": "button",
+                "text": "ยกเลิกกิจกรรม",
+                "className": "btn btn-error btn-outline w-full",
+                "action": "cancel_activity",
+                "confirm": "คุณแน่ใจหรือไม่ที่จะยกเลิกกิจกรรมนี้?"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "modals": [
+      {
+        "name": "edit_activity_modal",
+        "title": "แก้ไขกิจกรรม",
+        "className": "modal",
+        "components": [
+          {
+            "type": "form",
+            "className": "space-y-4",
+            "fields": [
+              {
+                "type": "input",
+                "name": "activityTitle",
+                "label": "ชื่อกิจกรรม",
+                "value": "{activityTitle}",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "textarea",
+                "name": "activityDescription",
+                "label": "รายละเอียด",
+                "value": "{activityDescription}",
+                "className": "textarea textarea-bordered w-full"
+              },
+              {
+                "type": "date",
+                "name": "activityDate",
+                "label": "วันที่ทำกิจกรรม",
+                "value": "{activityDate}",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "date",
+                "name": "notificationDate",
+                "label": "วันที่แจ้งเตือน",
+                "value": "{notificationDate}",
+                "condition": "hasNotification",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "textarea",
+                "name": "notes",
+                "label": "หมายเหตุ",
+                "value": "{activityNotes}",
+                "className": "textarea textarea-bordered w-full"
+              }
+            ],
+            "actions": [
+              {
+                "type": "button",
+                "text": "ยกเลิก",
+                "className": "btn btn-ghost",
+                "action": "close_modal"
+              },
+              {
+                "type": "button",
+                "text": "บันทึกการแก้ไข",
+                "className": "btn btn-warning",
+                "action": "save_activity_changes"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "animalName": "animal.name",
+    "animalId": "animal.id",
+    "animalImage": "animal.image",
+    "birthDateBuddhistEra": "animal.birthDate_BE",
+    "microchip": "animal.microchip",
+    "activityTitle": "activity.title",
+    "activityId": "activity.id",
+    "activityDescription": "activity.description",
+    "activityDateBuddhistEra": "activity.date_BE",
+    "activityDate": "activity.date",
+    "activityNotes": "activity.notes",
+    "hasNotes": "activity.notes !== null",
+    "hasNotification": "activity.notification !== null",
+    "notificationStatus": "activity.notification.status",
+    "notificationStatusClass": "activity.notification.statusClass",
+    "notificationDueDateBuddhistEra": "activity.notification.dueDate_BE",
+    "notificationDate": "activity.notification.dueDate",
+    "timeRemaining": "activity.notification.timeRemaining",
+    "timeRemainingClass": "activity.notification.timeRemainingClass",
+    "isPending": "activity.notification.status === 'pending'",
+    "canComplete": "activity.status !== 'completed'"
+  },
+  "date_formatting": {
+    "birthDate_BE": {
+      "input": "animal.birthDate",
+      "format": "buddhist_era",
+      "pattern": "d MMMM yyyy"
+    },
+    "activityDate_BE": {
+      "input": "activity.date",
+      "format": "buddhist_era",
+      "pattern": "d MMMM yyyy"
+    },
+    "notificationDueDate_BE": {
+      "input": "activity.notification.dueDate",
+      "format": "buddhist_era",
+      "pattern": "d MMMM yyyy"
+    }
+  },
+  "status_mapping": {
+    "notification_status": {
+      "pending": {
+        "text": "รอดำเนินการ",
+        "class": "badge-warning"
+      },
+      "overdue": {
+        "text": "เลยกำหนด",
+        "class": "badge-error"
+      },
+      "completed": {
+        "text": "เสร็จสิ้น",
+        "class": "badge-success"
+      },
+      "cancelled": {
+        "text": "ยกเลิก",
+        "class": "badge-neutral"
+      }
+    },
+    "time_remaining": {
+      "today": {
+        "class": "text-error font-semibold"
+      },
+      "this_week": {
+        "class": "text-warning font-medium"
+      },
+      "future": {
+        "class": "text-neutral"
+      }
+    }
+  },
+  "interactions": {
+    "mark_completed": {
+      "action": "api_call",
+      "endpoint": "/api/activities/{activityId}/complete",
+      "method": "PATCH",
+      "onSuccess": "refresh_activity"
+    },
+    "edit_activity": {
+      "action": "open_modal",
+      "target": "edit_activity_modal"
+    },
+    "save_activity_changes": {
+      "action": "api_call",
+      "endpoint": "/api/activities/{activityId}",
+      "method": "PUT",
+      "onSuccess": "refresh_activity"
+    },
+    "cancel_activity": {
+      "action": "api_call",
+      "endpoint": "/api/activities/{activityId}/cancel",
+      "method": "PATCH",
+      "onSuccess": "refresh_activity"
+    }
+  }
+} 

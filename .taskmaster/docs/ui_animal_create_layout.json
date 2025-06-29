@@ -1,0 +1,259 @@
+{
+  "page": "animal_create",
+  "title": "หน้าสร้างสัตว์ใหม่",
+  "path": "/:farmId/create",
+  "links": [],
+  "layout": {
+    "type": "form_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "header",
+        "className": "navbar bg-primary text-primary-content",
+        "components": [
+          {
+            "type": "back_button",
+            "icon": "arrow-left",
+            "className": "btn btn-ghost text-primary-content",
+            "action": "navigate_back"
+          },
+          {
+            "type": "page_title",
+            "text": "เพิ่มสัตว์ใหม่",
+            "className": "flex-1 text-xl font-semibold text-center"
+          }
+        ]
+      },
+      {
+        "name": "form_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "form",
+            "className": "space-y-6",
+            "fields": [
+              {
+                "type": "input",
+                "name": "name",
+                "label": "ชื่อ",
+                "placeholder": "กรอกชื่อสัตว์",
+                "inputType": "text",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "select",
+                "name": "animalType",
+                "label": "ประเภท",
+                "placeholder": "เลือกประเภทสัตว์",
+                "required": true,
+                "className": "select select-bordered w-full",
+                "options": [
+                  { "value": "หมู", "label": "หมู" },
+                  { "value": "ไก่", "label": "ไก่" },
+                  { "value": "โค", "label": "โค" },
+                  { "value": "วัว", "label": "วัว" },
+                  { "value": "ควาย", "label": "ควาย" },
+                  { "value": "ไก่ชน", "label": "ไก่ชน" },
+                  { "value": "เป็ด", "label": "เป็ด" },
+                  { "value": "ห่าน", "label": "ห่าน" },
+                  { "value": "ไก่เนื้อ", "label": "ไก่เนื้อ" },
+                  { "value": "ไก่ไข่", "label": "ไก่ไข่" }
+                ]
+              },
+              {
+                "type": "date",
+                "name": "birthDate",
+                "label": "วันเดือนปีเกิด",
+                "placeholder": "เลือกวันเกิด",
+                "required": true,
+                "className": "input input-bordered w-full",
+                "displayFormat": "buddhist_era"
+              },
+              {
+                "type": "input",
+                "name": "weight",
+                "label": "น้ำหนัก (กก.)",
+                "placeholder": "กรอกน้ำหนัก",
+                "inputType": "number",
+                "step": "0.1",
+                "min": "0",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "height",
+                "label": "ส่วนสูง (ซม.)",
+                "placeholder": "กรอกส่วนสูง",
+                "inputType": "number",
+                "step": "0.1",
+                "min": "0",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "color",
+                "label": "สี",
+                "placeholder": "กรอกสีของสัตว์",
+                "inputType": "text",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "fatherName",
+                "label": "ชื่อพ่อพันธุ์",
+                "placeholder": "กรอกชื่อพ่อพันธุ์ (ถ้ามี)",
+                "inputType": "text",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "motherName",
+                "label": "ชื่อแม่พันธุ์",
+                "placeholder": "กรอกชื่อแม่พันธุ์ (ถ้ามี)",
+                "inputType": "text",
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "file",
+                "name": "animalImage",
+                "label": "ภาพสัตว์",
+                "accept": "image/*",
+                "className": "file-input file-input-bordered w-full",
+                "optional": true,
+                "description": "เลือกภาพสัตว์ (ไม่บังคับ)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "preview_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "condition": "hasImagePreview",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "ตัวอย่างภาพ",
+            "className": "text-lg font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "image_preview",
+            "src": "{imagePreviewUrl}",
+            "className": "w-48 h-48 object-cover rounded-lg mx-auto border border-base-300"
+          }
+        ]
+      },
+      {
+        "name": "action_section",
+        "className": "p-6 m-4",
+        "components": [
+          {
+            "type": "form_actions",
+            "className": "flex flex-col sm:flex-row gap-3",
+            "components": [
+              {
+                "type": "button",
+                "text": "ยกเลิก",
+                "className": "btn btn-ghost flex-1",
+                "action": "cancel_form"
+              },
+              {
+                "type": "button",
+                "text": "บันทึก",
+                "className": "btn btn-primary flex-1",
+                "action": "save_animal",
+                "type": "submit"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "farmId": "params.farmId",
+    "imagePreviewUrl": "form.animalImage.preview",
+    "hasImagePreview": "form.animalImage.preview !== null"
+  },
+  "validation": {
+    "name": {
+      "required": true,
+      "minLength": 2,
+      "message": "กรุณากรอกชื่อสัตว์"
+    },
+    "animalType": {
+      "required": true,
+      "message": "กรุณาเลือกประเภทสัตว์"
+    },
+    "birthDate": {
+      "required": true,
+      "maxDate": "today",
+      "message": "กรุณาเลือกวันเกิดที่ถูกต้อง"
+    },
+    "weight": {
+      "min": 0,
+      "message": "น้ำหนักต้องเป็นตัวเลขที่มากกว่า 0"
+    },
+    "height": {
+      "min": 0,
+      "message": "ส่วนสูงต้องเป็นตัวเลขที่มากกว่า 0"
+    },
+    "animalImage": {
+      "maxSize": "5MB",
+      "allowedTypes": ["image/jpeg", "image/png", "image/webp"],
+      "message": "ไฟล์ภาพต้องเป็น JPEG, PNG หรือ WebP และมีขนาดไม่เกิน 5MB"
+    }
+  },
+  "interactions": {
+    "save_animal": {
+      "action": "api_call",
+      "endpoint": "/api/farms/{farmId}/animals",
+      "method": "POST",
+      "contentType": "multipart/form-data",
+      "payload": "form_data",
+      "onSuccess": "redirect_to_success",
+      "onError": "show_error_message"
+    },
+    "cancel_form": {
+      "action": "navigate_back",
+      "confirm": "คุณแน่ใจหรือไม่ที่จะยกเลิก? ข้อมูลที่กรอกจะหายไป"
+    },
+    "image_upload": {
+      "action": "preview_image",
+      "maxSize": "5MB",
+      "allowedTypes": ["image/jpeg", "image/png", "image/webp"]
+    }
+  },
+  "auto_features": {
+    "microchip_generation": {
+      "description": "Microchip จะถูกสร้างอัตโนมัติจากระบบหลังบันทึกข้อมูล",
+      "pattern": "TH{farmId}{timestamp}{random}"
+    },
+    "age_calculation": {
+      "description": "อายุจะถูกคำนวณอัตโนมัติจากวันเกิด",
+      "format": "years_months_days"
+    }
+  },
+  "success_redirect": {
+    "target": "/success",
+    "message": "เพิ่มข้อมูลสัตว์เรียบร้อยแล้ว",
+    "data": {
+      "animalName": "{form.name}",
+      "animalType": "{form.animalType}",
+      "farmId": "{farmId}"
+    }
+  }
+} 

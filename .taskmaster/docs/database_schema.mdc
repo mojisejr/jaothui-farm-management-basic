@@ -1,0 +1,900 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Database Schema - ระบบบริหารจัดการสัตว์
+
+## Stack
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Storage**: Supabase Storage (สำหรับรูปโปรไฟล์และรูปสัตว์)
+- **ORM**: Prisma
+- **Framework**: Next.js (Full Stack)
+
+## Schema Overview
+
+```prisma
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ========================================
+// User Profile (extends Supabase Auth)
+// ========================================
+
+model Profile {
+  id          String   @id // matches auth.users.id
+  firstName   String
+  lastName    String
+  phoneNumber String   @unique
+  profileImage String? // Supabase Storage URL
+  
+  // Farm relationships (แต่ละคนได้ 1 ฟาร์มเท่านั้น)
+  ownedFarmId    String? @unique // ฟาร์มที่เป็นเจ้าของ (ได้แค่ 1 ฟาร์ม)
+  memberOfFarmId String? // ฟาร์มที่เป็นสมาชิก (ได้แค่ 1 ฟาร์ม)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  ownedFarm      Farm?  @relation("FarmOwner", fields: [ownedFarmId], references: [id])
+  memberOfFarm   Farm?  @relation("FarmMember", fields: [memberOfFarmId], references: [id])
+  sentInvitations FarmInvitation[] @relation("InvitationSender")
+  receivedInvitations FarmInvitation[] @relation("InvitationReceiver")
+  
+  @@map("profiles")
+}
+
+// ========================================
+// Farm Management
+// ========================================
+
+model Farm {
+  id       String @id @default(cuid())
+  name     String
+  province String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations - แต่ละฟาร์มมีเจ้าของ 1 คน และสมาชิกได้หลายคน (แต่แต่ละคนเป็นสมาชิกได้แค่ 1 ฟาร์ม)
+  owner       Profile? @relation("FarmOwner")
+  members     Profile[] @relation("FarmMember") 
+  animals     Animal[]
+  invitations FarmInvitation[]
+  
+  @@map("farms")
+}
+
+model FarmInvitation {
+  id       String           @id @default(cuid())
+  status   InvitationStatus @default(PENDING)
+  message  String?
+  
+  sentAt     DateTime  @default(now())
+  respondedAt DateTime?
+  expiresAt   DateTime  @default(dbgenerated("NOW() + INTERVAL '7 days'"))
+  
+  // Relations
+  senderId String
+  sender   Profile   @relation("InvitationSender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  receiverId String
+  receiver   Profile   @relation("InvitationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  farmId String
+  farm   Farm   @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  
+  @@unique([receiverId, farmId])
+  @@map("farm_invitations")
+}
+
+// ========================================
+// Animal Management
+// ========================================
+
+model Animal {
+  id         String    @id @default(cuid())
+  name       String
+  animalType String    // หมู, ไก่, โค, วัว, ควาย, ไก่ชน, เป็ด, ห่าน, ไก่เนื้อ, ไก่ไข่
+  microchip  String    @unique // auto-generated: TH{farmId}{timestamp}{random}
+  birthDate  DateTime
+  weight     Float?
+  height     Float?
+  color      String?
+  fatherName String?
+  motherName String?
+  image      String?   // Supabase Storage URL
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  farmId String
+  farm   Farm   @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  
+  activities Activity[]
+  schedules  ActivitySchedule[]
+  
+  @@map("animals")
+}
+
+// ========================================
+// Activity Management
+// ========================================
+
+model Activity {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  notes       String?
+  activityDate DateTime
+  status      ActivityStatus @default(COMPLETED)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  animalId String
+  animal   Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  
+  // Optional: Link to scheduled activity
+  scheduleId String?         @unique
+  schedule   ActivitySchedule? @relation(fields: [scheduleId], references: [id])
+  
+  @@map("activities")
+}
+
+model ActivitySchedule {
+  id          String             @id @default(cuid())
+  title       String
+  description String?
+  notes       String?
+  
+  // Scheduling
+  scheduledDate DateTime
+  status        ScheduleStatus   @default(PENDING)
+  
+  // Recurrence (optional for future enhancement)
+  isRecurring   Boolean @default(false)
+  recurrenceType RecurrenceType?
+  recurrenceInterval Int?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+  
+  // Relations
+  animalId String
+  animal   Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  
+  // When completed, this will link to the activity record
+  completedActivity Activity?
+  
+  @@map("activity_schedules")
+}
+
+// ========================================
+// Enums
+// ========================================
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum ActivityStatus {
+  COMPLETED
+  CANCELLED
+}
+
+enum ScheduleStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  OVERDUE
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+```
+
+## Supabase Auth Setup
+
+```sql
+-- Enable RLS on all tables
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE farms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE farm_invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE animals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_schedules ENABLE ROW LEVEL SECURITY;
+
+-- Create profiles table trigger to auto-create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, first_name, last_name, phone_number)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
+    COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
+    COALESCE(NEW.phone, '')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
+## Row Level Security Policies
+
+```sql
+-- Profiles policies
+CREATE POLICY "Users can view all profiles" ON profiles
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Farms policies  
+CREATE POLICY "Farm owners and members can view farms" ON farms
+  FOR SELECT USING (
+    -- เจ้าของฟาร์มสามารถดูได้
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.owned_farm_id = id AND p.id = auth.uid()
+    ) OR
+    -- สมาชิกฟาร์มสามารถดูได้
+    EXISTS (
+      SELECT 1 FROM profiles p  
+      WHERE p.member_of_farm_id = id AND p.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Farm owners can update farms" ON farms
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.owned_farm_id = id AND p.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can create farms" ON farms
+  FOR INSERT WITH CHECK (
+    -- ตรวจสอบว่าผู้ใช้ยังไม่เป็นเจ้าของฟาร์มอื่น
+    NOT EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.id = auth.uid() AND p.owned_farm_id IS NOT NULL
+    )
+  );
+
+-- Animals policies
+CREATE POLICY "Farm owners and members can view animals" ON animals
+  FOR SELECT USING (
+    -- เจ้าของฟาร์มสามารถดูสัตว์ได้
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.owned_farm_id = animals.farm_id AND p.id = auth.uid()
+    ) OR
+    -- สมาชิกฟาร์มสามารถดูสัตว์ได้
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.member_of_farm_id = animals.farm_id AND p.id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Farm owners and members can manage animals" ON animals
+  FOR ALL USING (
+    -- เจ้าของฟาร์มสามารถจัดการสัตว์ได้
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.owned_farm_id = animals.farm_id AND p.id = auth.uid()
+    ) OR
+    -- สมาชิกฟาร์มสามารถจัดการสัตว์ได้
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.member_of_farm_id = animals.farm_id AND p.id = auth.uid()
+    )
+  );
+```
+
+## Supabase Storage Buckets
+
+```sql
+-- สร้าง Storage Buckets
+INSERT INTO storage.buckets (id, name, public) VALUES 
+  ('user-profiles', 'user-profiles', true),
+  ('animal-images', 'animal-images', true);
+
+-- RLS Policies สำหรับ user-profiles bucket
+CREATE POLICY "Users can upload their own profile images" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'user-profiles' AND 
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "Users can view all profile images" ON storage.objects
+  FOR SELECT USING (bucket_id = 'user-profiles');
+
+CREATE POLICY "Users can update their own profile images" ON storage.objects
+  FOR UPDATE USING (
+    bucket_id = 'user-profiles' AND 
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- RLS Policies สำหรับ animal-images bucket
+CREATE POLICY "Farm owners and members can upload animal images" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'animal-images' AND 
+    EXISTS (
+      SELECT 1 FROM profiles p
+      JOIN animals a ON (a.farm_id = p.owned_farm_id OR a.farm_id = p.member_of_farm_id)
+      WHERE p.id = auth.uid()::text
+      AND a.id = (storage.foldername(name))[1]
+    )
+  );
+
+CREATE POLICY "Farm owners and members can view animal images" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'animal-images' AND 
+    EXISTS (
+      SELECT 1 FROM profiles p
+      JOIN animals a ON (a.farm_id = p.owned_farm_id OR a.farm_id = p.member_of_farm_id)
+      WHERE p.id = auth.uid()::text
+      AND a.id = (storage.foldername(name))[1]
+    )
+  );
+```
+
+## Key Features Implementation
+
+### 1. Authentication (Supabase Auth)
+- **Phone + Password**: ใช้ Supabase Auth กับเบอร์โทรศัพท์
+- **Auto Profile Creation**: สร้าง profile อัตโนมัติเมื่อ signup
+- **RLS Security**: ความปลอดภัยระดับ row ด้วย Supabase RLS
+- **No API Routes**: ใช้ Supabase client directly ใน Next.js
+
+### 2. Farm Ownership & Membership  
+- **One Farm Owner**: User สามารถเป็นเจ้าของฟาร์มได้ 1 ฟาร์มเท่านั้น
+- **One Farm Member**: และสามารถเป็นสมาชิกของฟาร์มอื่นได้ 1 ฟาร์มเท่านั้น
+- **Simple Access Control**: เจ้าของแก้ไขข้อมูลฟาร์มได้, สมาชิกแก้ไขไม่ได้
+- **RLS Protected**: ข้อมูลฟาร์มป้องกันด้วย RLS policies
+
+### 3. Animal Management
+- **Auto Microchip**: `TH{farmId}{timestamp}{random}` สร้างอัตโนมัติ
+- **Supabase Storage**: รูปสัตว์เก็บใน Supabase Storage
+- **Buddhist Calendar**: วันเกิดแปลงเป็นพุทธศักราชใน UI layer
+- **Member Access**: เฉพาะสมาชิกฟาร์มเข้าถึงได้
+
+### 4. Activity System
+**2 ประเภทกิจกรรม:**
+1. **Activity** - กิจกรรมที่ทำแล้ว (บันทึกหลังทำ)
+   - ให้อาหาร, ฉีดยา, ตรวจสุขภาพ
+2. **ActivitySchedule** - กิจกรรมที่กำหนดไว้ล่วงหน้า (มีวันนัด)
+   - นัดฉีดวัคซีน, ตรวจสุขภาพประจำ
+
+### 5. Farm Invitation System
+- **Phone-based Invite**: เชิญด้วยเบอร์โทรศัพท์
+- **User Validation**: ตรวจสอบว่าเบอร์โทรมี Profile แล้วหรือไม่
+- **7-day Expiry**: คำเชิญหมดอายุใน 7 วัน
+- **Response Required**: ต้องตอบรับ/ปฏิเสธคำเชิญ
+
+## Database Functions & Triggers
+
+```sql
+-- Function สำหรับสร้าง Microchip อัตโนมัติ
+CREATE OR REPLACE FUNCTION generate_microchip(farm_id text)
+RETURNS text AS $$
+DECLARE
+  timestamp_part text;
+  random_part text;
+BEGIN
+  timestamp_part := EXTRACT(EPOCH FROM NOW())::bigint::text;
+  random_part := LPAD(FLOOR(RANDOM() * 10000)::text, 4, '0');
+  RETURN 'TH' || farm_id || timestamp_part || random_part;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger สำหรับสร้าง Microchip
+CREATE OR REPLACE FUNCTION set_animal_microchip()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.microchip IS NULL OR NEW.microchip = '' THEN
+    NEW.microchip := generate_microchip(NEW.farm_id);
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_set_animal_microchip
+  BEFORE INSERT ON animals
+  FOR EACH ROW
+  EXECUTE FUNCTION set_animal_microchip();
+
+-- Function สำหรับอัปเดต Schedule Status
+CREATE OR REPLACE FUNCTION update_schedule_status()
+RETURNS void AS $$
+BEGIN
+  UPDATE activity_schedules 
+  SET status = 'OVERDUE'
+  WHERE status = 'PENDING' 
+    AND scheduled_date < CURRENT_DATE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- สร้าง Cron Job สำหรับเช็ค Overdue (ถ้า Supabase รองรับ)
+-- SELECT cron.schedule('update-overdue-schedules', '0 1 * * *', 'SELECT update_schedule_status();');
+```
+
+## Indexes สำหรับ Performance
+
+```sql
+-- Indexes สำหรับ query performance
+CREATE INDEX idx_profiles_phone_number ON profiles(phone_number);
+CREATE INDEX idx_profiles_owned_farm_id ON profiles(owned_farm_id);
+CREATE INDEX idx_profiles_member_of_farm_id ON profiles(member_of_farm_id);
+CREATE INDEX idx_animals_farm_id ON animals(farm_id);
+CREATE INDEX idx_activities_animal_id ON activities(animal_id);
+CREATE INDEX idx_activity_schedules_animal_id ON activity_schedules(animal_id);
+CREATE INDEX idx_activity_schedules_scheduled_date ON activity_schedules(scheduled_date);
+CREATE INDEX idx_activity_schedules_status ON activity_schedules(status);
+CREATE INDEX idx_farm_invitations_receiver_status ON farm_invitations(receiver_id, status);
+CREATE INDEX idx_farm_invitations_sender_id ON farm_invitations(sender_id);
+```
+
+## Next.js + Supabase Setup
+
+### Environment Variables (.env.local)
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Database (for Prisma)
+DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
+DIRECT_URL=postgresql://postgres:[password]@[host]:5432/postgres
+```
+
+### Supabase Client Setup
+```typescript
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
+
+// For client components
+export const createClientComponentClient = () => 
+  createClient(supabaseUrl, supabaseKey)
+
+// For server components  
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+
+export const createServerClient = () => 
+  createServerComponentClient({ cookies })
+```
+
+## Usage Examples (Next.js + Supabase)
+
+### 1. Authentication (Phone + Password)
+```typescript
+// pages/api/auth/signup.ts หรือ app actions
+import { supabase } from '@/lib/supabase'
+
+export async function signUp(phone: string, password: string, metadata: any) {
+  const { data, error } = await supabase.auth.signUp({
+    phone: phone,
+    password: password,
+    options: {
+      data: {
+        first_name: metadata.firstName,
+        last_name: metadata.lastName,
+      }
+    }
+  })
+  
+  return { data, error }
+}
+```
+
+### 2. สร้างฟาร์มพร้อมเจ้าของ (Server Action)
+```typescript
+// app/actions/farm.ts
+'use server'
+import { createServerClient } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
+
+export async function createFarm(name: string, province: string) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) throw new Error('Not authenticated')
+  
+  // ตรวจสอบว่าผู้ใช้ยังไม่เป็นเจ้าของฟาร์มอื่น
+  const existingProfile = await prisma.profile.findUnique({
+    where: { id: user.id }
+  })
+  
+  if (existingProfile?.ownedFarmId) {
+    throw new Error('คุณเป็นเจ้าของฟาร์มอยู่แล้ว')
+  }
+  
+  // สร้างฟาร์มและอัปเดต profile
+  const farm = await prisma.farm.create({
+    data: { name, province }
+  })
+  
+  // อัปเดต profile ให้เป็นเจ้าของฟาร์มนี้
+  await prisma.profile.update({
+    where: { id: user.id },
+    data: { ownedFarmId: farm.id }
+  })
+  
+  return farm
+}
+```
+
+### 3. เชิญสมาชิกเข้าฟาร์ม (Client Component)
+```typescript
+// components/InviteMember.tsx
+'use client'
+import { useSupabase } from '@/hooks/useSupabase'
+
+export function InviteMember({ farmId }: { farmId: string }) {
+  const { supabase, user } = useSupabase()
+  
+  const inviteMember = async (phoneNumber: string) => {
+    // ค้นหา profile จากเบอร์โทร
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, owned_farm_id, member_of_farm_id')
+      .eq('phone_number', phoneNumber)
+      .single()
+    
+    if (!profile) {
+      throw new Error('ไม่พบผู้ใช้นี้ในระบบ')
+    }
+    
+    // ตรวจสอบว่าผู้นั้นยังไม่เป็นสมาชิกของฟาร์มอื่น
+    if (profile.member_of_farm_id) {
+      throw new Error('ผู้ใช้นี้เป็นสมาชิกของฟาร์มอื่นอยู่แล้ว')
+    }
+    
+    // ตรวจสอบว่าผู้นั้นไม่ใช่เจ้าของฟาร์มอื่น
+    if (profile.owned_farm_id) {
+      throw new Error('ผู้ใช้นี้เป็นเจ้าของฟาร์มอยู่แล้ว')
+    }
+    
+    // สร้างคำเชิญ
+    const { error } = await supabase
+      .from('farm_invitations')
+      .insert({
+        sender_id: user?.id,
+        receiver_id: profile.id,
+        farm_id: farmId,
+        message: 'เชิญเข้าร่วมฟาร์ม'
+      })
+    
+    if (error) throw error
+  }
+  
+  return (
+    // UI component here
+  )
+}
+```
+
+### 4. ยอมรับคำเชิญเข้าฟาร์ม (Server Action)
+```typescript
+// app/actions/invitation.ts
+'use server'
+import { createServerClient } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
+
+export async function acceptInvitation(invitationId: string) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) throw new Error('Not authenticated')
+  
+  // ดึงข้อมูลคำเชิญ
+  const invitation = await prisma.farmInvitation.findUnique({
+    where: { id: invitationId },
+    include: { farm: true }
+  })
+  
+  if (!invitation || invitation.receiverId !== user.id) {
+    throw new Error('ไม่พบคำเชิญหรือไม่มีสิทธิ์')
+  }
+  
+  if (invitation.status !== 'PENDING') {
+    throw new Error('คำเชิญนี้ถูกตอบรับหรือปฏิเสธแล้ว')
+  }
+  
+  // ตรวจสอบว่าผู้ใช้ยังไม่เป็นสมาชิกของฟาร์มอื่น
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id }
+  })
+  
+  if (profile?.memberOfFarmId || profile?.ownedFarmId) {
+    throw new Error('คุณเป็นสมาชิกหรือเจ้าของฟาร์มอยู่แล้ว')
+  }
+  
+  // ยอมรับคำเชิญ
+  await prisma.$transaction([
+    // อัปเดตสถานะคำเชิญ
+    prisma.farmInvitation.update({
+      where: { id: invitationId },
+      data: { 
+        status: 'ACCEPTED',
+        respondedAt: new Date()
+      }
+    }),
+    // อัปเดต profile ให้เป็นสมาชิกฟาร์ม
+    prisma.profile.update({
+      where: { id: user.id },
+      data: { memberOfFarmId: invitation.farmId }
+    })
+  ])
+  
+  return invitation.farm
+}
+```
+
+### 5. ดึงฟาร์มที่เกี่ยวข้อง (Server Component)
+```typescript
+// app/profile/page.tsx
+import { createServerClient } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
+
+export default async function ProfilePage() {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) return <div>Please login</div>
+  
+  // ดึงข้อมูล profile พร้อมฟาร์มที่เกี่ยวข้อง
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id },
+    include: {
+      ownedFarm: true,
+      memberOfFarm: true,
+      receivedInvitations: {
+        where: { status: 'PENDING' },
+        include: { 
+          farm: true,
+          sender: true 
+        }
+      }
+    }
+  })
+  
+  return (
+    <div>
+      {/* ฟาร์มที่เป็นเจ้าของ */}
+      {profile?.ownedFarm && (
+        <div>
+          <h2>ฟาร์มที่คุณเป็นเจ้าของ</h2>
+          <p>{profile.ownedFarm.name}</p>
+        </div>
+      )}
+      
+      {/* ฟาร์มที่เป็นสมาชิก */}
+      {profile?.memberOfFarm && (
+        <div>
+          <h2>ฟาร์มที่คุณเป็นสมาชิก</h2>
+          <p>{profile.memberOfFarm.name}</p>
+        </div>
+      )}
+      
+      {/* คำเชิญที่รอการตอบรับ */}
+      {profile?.receivedInvitations.map(invitation => (
+        <div key={invitation.id}>
+          <p>คำเชิญจาก {invitation.sender.firstName} เข้าร่วมฟาร์ม {invitation.farm.name}</p>
+          {/* Accept/Decline buttons */}
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+### 6. ดึงกิจกรรมที่ครบกำหนด (Server Component)
+```typescript
+// app/dashboard/[farmId]/page.tsx
+import { createServerClient } from '@/lib/supabase'
+import { prisma } from '@/lib/prisma'
+
+export default async function DashboardPage({ 
+  params 
+}: { 
+  params: { farmId: string } 
+}) {
+  const supabase = createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  // ดึงกิจกรรมที่ครบกำหนด (RLS จะกรองให้อัตโนมัติ)
+  const overdueActivities = await prisma.activitySchedule.findMany({
+    where: {
+      status: "PENDING",
+      scheduledDate: {
+        lte: new Date()
+      },
+      animal: {
+        farmId: params.farmId
+      }
+    },
+    include: {
+      animal: {
+        select: {
+          id: true,
+          name: true,
+          animalType: true
+        }
+      }
+    }
+  })
+  
+  return (
+    <div>
+      {/* Render overdue activities */}
+    </div>
+  )
+}
+```
+
+### 5. Real-time Updates (Client Component)
+```typescript
+// hooks/useRealtimeActivities.ts
+'use client'
+import { useEffect, useState } from 'react'
+import { useSupabase } from '@/hooks/useSupabase'
+
+export function useRealtimeActivities(farmId: string) {
+  const { supabase } = useSupabase()
+  const [activities, setActivities] = useState([])
+  
+  useEffect(() => {
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel('activity_schedules')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'activity_schedules',
+        filter: `animal.farm_id=eq.${farmId}`
+      }, (payload) => {
+        // Handle real-time updates
+        console.log('Activity updated:', payload)
+      })
+      .subscribe()
+    
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [farmId])
+  
+  return activities
+}
+```
+
+## Security Considerations
+
+1. **Supabase RLS (Row Level Security)** - ป้องกันข้อมูลระดับ row อัตโนมัติ
+2. **Supabase Auth** - JWT-based authentication, password hashing ทำให้อัตโนมัติ
+3. **Storage Security** - RLS policies สำหรับไฟล์อัปโหลด
+4. **Input Validation** - ใช้ Zod หรือ Yup สำหรับ validation ใน Next.js
+5. **Environment Variables** - เก็บ API keys ใน .env.local
+6. **CORS Protection** - Supabase จัดการ CORS อัตโนมัติ
+7. **Rate Limiting** - ใช้ Supabase built-in rate limiting
+
+## Migration Strategy (Next.js + Supabase)
+
+### Phase 1: Database Setup
+```bash
+# 1. ติดตั้ง dependencies
+npm install @supabase/supabase-js @supabase/auth-helpers-nextjs
+npm install prisma @prisma/client
+npm install @types/node typescript tsx
+
+# 2. Setup Prisma
+npx prisma init
+# Copy schema.prisma content
+npx prisma generate
+npx prisma db push
+```
+
+### Phase 2: Supabase Configuration
+```sql
+-- 3. Enable RLS และสร้าง policies (ใน Supabase SQL Editor)
+-- Copy all RLS policies from above
+
+-- 4. สร้าง storage buckets
+-- Copy storage setup from above
+
+-- 5. สร้าง functions และ triggers
+-- Copy database functions from above
+
+-- 6. สร้าง indexes
+-- Copy indexes from above
+```
+
+### Phase 3: Next.js Integration
+```typescript
+// 7. Setup Supabase clients
+// lib/supabase.ts - Copy client setup from above
+
+// 8. Create auth context
+// contexts/AuthContext.tsx
+
+// 9. Setup middleware for auth
+// middleware.ts
+```
+
+### Phase 4: Testing & Seed Data
+```typescript
+// 10. สร้างข้อมูลทดสอบ
+// scripts/seed.ts
+const testUsers = [
+  { phone: '0929931147', firstName: 'สมชาย', lastName: 'ใจดี' },
+  { phone: '0812345678', firstName: 'สมหญิง', lastName: 'รักสัตว์' }
+]
+
+// 11. Test authentication flow
+// 12. Test RLS policies
+// 13. Test file uploads
+```
+
+## Package.json Dependencies
+
+```json
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.x.x",
+    "@supabase/auth-helpers-nextjs": "^0.x.x",
+    "@prisma/client": "^5.x.x",
+    "next": "^14.x.x",
+    "react": "^18.x.x",
+    "typescript": "^5.x.x"
+  },
+  "devDependencies": {
+    "prisma": "^5.x.x",
+    "@types/node": "^20.x.x",
+    "tsx": "^4.x.x"
+  }
+}
+```
+
+## สรุปข้อดีของ Architecture นี้
+
+✅ **ไม่ต้องสร้าง API routes** - ใช้ Supabase client โดยตรง
+✅ **Real-time โดยธรรมชาติ** - Supabase real-time subscriptions
+✅ **Authentication ง่าย** - Supabase Auth จัดการให้หมด
+✅ **Security แน่น** - RLS ป้องกันข้อมูลอัตโนมัติ
+✅ **Scalable** - Supabase รองรับ load สูง
+✅ **Type-safe** - Prisma + TypeScript
+✅ **ง่ายต่อ Deploy** - Vercel + Supabase
+
+Schema นี้ออกแบบมาสำหรับ **Full Stack Next.js + Supabase** โดยเฉพาะ ครอบคลุมทุก feature และพร้อมใช้งานจริง! 🚀

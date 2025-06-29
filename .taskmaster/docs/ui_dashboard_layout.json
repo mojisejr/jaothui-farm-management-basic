@@ -1,0 +1,211 @@
+{
+  "page": "dashboard",
+  "title": "หน้ารายการสัตว์ในฟาร์ม",
+  "path": "/dashboard/:id",
+  "alternativePaths": ["/list/:id"],
+  "links": ["/animal-detail", "/activity-detail", "/profile"],
+  "layout": {
+    "type": "tabbed_list_page",
+    "background": "#414141",
+    "sections": [
+      {
+        "name": "header",
+        "position": "outside_card",
+        "className": "flex justify-between items-center p-4 text-white",
+        "components": [
+          {
+            "type": "farm_title",
+            "text": "{farmName}",
+            "className": "text-xl font-semibold text-white"
+          },
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "size": "small",
+            "alt": "JAOTHUI Logo",
+            "className": "h-8 w-auto"
+          }
+        ]
+      },
+      {
+        "name": "main_content",
+        "className": "bg-white rounded-lg shadow-lg mx-4 p-6 min-h-[80vh]",
+        "components": [
+          {
+            "type": "tabs",
+            "className": "tabs tabs-boxed mb-6",
+            "activeTab": "animals",
+            "tabs": [
+              {
+                "id": "animals",
+                "label": "ข้อมูลสัตว์",
+                "className": "tab tab-active",
+                "content": {
+                  "type": "animal_list",
+                  "className": "space-y-4",
+                  "emptyState": {
+                    "text": "ยังไม่มีข้อมูลสัตว์ในฟาร์มนี้",
+                    "className": "text-center text-neutral py-8"
+                  },
+                  "itemTemplate": {
+                    "type": "animal_item",
+                    "className": "border border-base-300 rounded-lg p-4 hover:bg-base-200 cursor-pointer transition-colors",
+                    "components": [
+                      {
+                        "type": "animal_name",
+                        "text": "{animalName}",
+                        "className": "text-lg font-medium text-base-content"
+                      },
+                      {
+                        "type": "animal_details",
+                        "className": "flex gap-4 mt-2 text-sm text-neutral",
+                        "components": [
+                          {
+                            "type": "birth_date",
+                            "text": "เกิด: {birthDateBuddhistEra}",
+                            "className": "text-sm text-neutral"
+                          },
+                          {
+                            "type": "color",
+                            "text": "สี: {color}",
+                            "className": "text-sm text-neutral"
+                          },
+                          {
+                            "type": "gender",
+                            "text": "เพศ: {gender}",
+                            "className": "text-sm text-neutral"
+                          }
+                        ]
+                      }
+                    ],
+                    "onClick": {
+                      "action": "navigate",
+                      "target": "/animals/{animalId}"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "notifications",
+                "label": "รายการแจ้งเตือน",
+                "className": "tab",
+                "content": {
+                  "type": "notification_list",
+                  "className": "space-y-4",
+                  "emptyState": {
+                    "text": "ไม่มีรายการแจ้งเตือน",
+                    "className": "text-center text-neutral py-8"
+                  },
+                  "itemTemplate": {
+                    "type": "notification_item",
+                    "className": "border border-base-300 rounded-lg p-4 hover:bg-base-200 cursor-pointer transition-colors",
+                    "components": [
+                      {
+                        "type": "notification_header",
+                        "className": "flex justify-between items-start mb-2",
+                        "components": [
+                          {
+                            "type": "animal_name",
+                            "text": "{animalName}",
+                            "className": "text-lg font-medium text-base-content"
+                          },
+                          {
+                            "type": "due_date",
+                            "text": "{dueDate}",
+                            "className": "text-sm text-warning font-medium"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "activity_title",
+                        "text": "{activityTitle}",
+                        "className": "text-base text-base-content mb-1"
+                      },
+                      {
+                        "type": "notes",
+                        "text": "{notes}",
+                        "className": "text-sm text-neutral"
+                      }
+                    ],
+                    "onClick": {
+                      "action": "navigate",
+                      "target": "/animal/{animalId}/activity/{activityId}"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "footer_actions",
+        "className": "px-4 py-6",
+        "components": [
+          {
+            "type": "button",
+            "text": "กลับหน้าหลัก",
+            "className": "btn btn-outline btn-block text-white border-white hover:bg-white hover:text-neutral",
+            "action": "navigate",
+            "target": "/profile"
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#414141",
+      "cardBackground": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "farmName": "farm.name",
+    "animalList": "farm.animals",
+    "notificationList": "farm.notifications",
+    "animalName": "animal.name",
+    "animalId": "animal.id",
+    "birthDateBuddhistEra": "animal.birthDate_BE",
+    "color": "animal.color",
+    "gender": "animal.gender",
+    "activityTitle": "notification.activity.title",
+    "activityId": "notification.activity.id",
+    "notes": "notification.notes",
+    "dueDate": "notification.dueDate"
+  },
+  "date_formatting": {
+    "birthDate_BE": {
+      "input": "animal.birthDate",
+      "format": "buddhist_era",
+      "pattern": "d MMMM yyyy"
+    },
+    "dueDate": {
+      "input": "notification.dueDate",
+      "format": "buddhist_era",
+      "pattern": "d MMM yyyy"
+    }
+  },
+  "interactions": {
+    "tab_switch": {
+      "action": "change_tab",
+      "persist_state": true
+    },
+    "animal_click": {
+      "action": "navigate",
+      "target": "/animals/{animalId}",
+      "transition": "slide_left"
+    },
+    "notification_click": {
+      "action": "navigate", 
+      "target": "/animal/{animalId}/activity/{activityId}",
+      "transition": "slide_left"
+    }
+  }
+} 

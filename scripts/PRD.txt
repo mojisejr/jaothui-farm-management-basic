@@ -1,0 +1,525 @@
+# Farm Management E-ID System - Product Requirements Document
+
+# Overview
+ระบบ E-ID สำหรับการจัดการข้อมูลสัตว์ในฟาร์ม เป็นระบบ web application ที่ช่วยให้เกษตรกรไทยสามารถบริหารจัดการข้อมูลสัตว์เลี้ยง กำหนดการแจ้งเตือน และติดตามกิจกรรมต่างๆ ได้อย่างเป็นระบบ
+
+**ปัญหาที่แก้ไข:**
+- เกษตรกรจดบันทึกข้อมูลสัตว์แบบกระดาษ ทำให้หายง่าย ไม่เป็นระบบ
+- ลืมกิจกรรมสำคัญ เช่น การฉีดวัคซีน การตรวจสุขภาพ
+- ไม่มีระบบแจ้งเตือนล่วงหน้า
+- ข้อมูลไม่สามารถแบ่งปันระหว่างสมาชิกในฟาร์มได้
+
+**กลุ่มเป้าหมาย:**
+- เกษตรกรรายย่อยที่เลี้ยงสัตว์ในฟาร์ม
+- เจ้าของฟาร์มที่ต้องการจัดการทีมงาน
+- ผู้ที่ต้องการติดตามสุขภาพสัตว์อย่างเป็นระบบ
+
+**คุณค่าที่ได้รับ:**
+- ลดการสูญหายของข้อมูลสำคัญ
+- เพิ่มประสิทธิภาพในการดูแลสัตว์
+- ลดต้นทุนจากการลืมกิจกรรมสำคัญ
+- สร้างความโปร่งใสในการบริหารจัดการฟาร์ม
+
+# Core Features
+
+## 1. Authentication & User Management
+**สิ่งที่ทำ:** ระบบสมัครสมาชิก เข้าสู่ระบบ และจัดการโปรไฟล์ผู้ใช้
+**ความสำคัญ:** เป็นพื้นฐานของระบบ ให้ความปลอดภัยและการแยกข้อมูลระหว่างผู้ใช้
+**การทำงาน:**
+- สมัครสมาชิกด้วยเบอร์โทรศัพท์มือถือ (รูปแบบ 0929931147)
+- เข้าสู่ระบบด้วยเบอร์โทร + รหัสผ่าน
+- จัดการโปรไฟล์ (ชื่อ, นามสกุล, รูปโปรไฟล์)
+- ระบบลืมรหัสผ่าน
+
+## 2. Farm Management  
+**สิ่งที่ทำ:** สร้างและจัดการข้อมูลฟาร์ม
+**ความสำคัญ:** เป็นหน่วยงานหลักในการจัดกลุ่มสัตว์และผู้ดูแล
+**การทำงาน:**
+- แต่ละคนสามารถเป็นเจ้าของฟาร์มได้ 1 ฟาร์ม
+- แต่ละคนสามารถเป็นสมาชิกของฟาร์มอื่นได้ 1 ฟาร์ม
+- ตั้งชื่อฟาร์ม แก้ไขจังหวัด
+- เชิญสมาชิกใหม่ด้วยเบอร์โทรศัพท์
+- ระบบตอบรับคำเชิญ
+
+## 3. Animal Management (10 ประเภทสัตว์)
+**สิ่งที่ทำ:** บันทึกและจัดการข้อมูลสัตว์ในฟาร์ม
+**ความสำคัญ:** หัวใจหลักของระบบ เก็บข้อมูลรายละเอียดของสัตว์แต่ละตัว
+**การทำงาน:**
+- รองรับสัตว์ 10 ประเภท: หมู, ไก่, โค, วัว, ควาย, ไก่ชน, เป็ด, ห่าน, ไก่เนื้อ, ไก่ไข่
+- ข้อมูลพื้นฐาน: ชื่อ, ประเภท, วันเกิด (พ.ศ.), น้ำหนัก, ส่วนสูง, สี
+- ข้อมูลเพิ่มเติม: ชื่อพ่อพันธุ์, ชื่อแม่พันธุ์, รูปภาพ
+- รหัส Microchip อัตโนมัติ (TH{farmId}{timestamp}{random})
+- อัปโหลดรูปภาพผ่าน Supabase Storage
+
+## 4. Activity & Notification System
+**สิ่งที่ทำ:** จัดการกิจกรรมและการแจ้งเตือน
+**ความสำคัญ:** ช่วยให้ไม่ลืมกิจกรรมสำคัญ เพิ่มประสิทธิภาพการดูแลสัตว์
+**การทำงาน:**
+- กิจกรรม 2 ประเภท:
+  1. บันทึกหลังทำ (Activity) - บันทึกสิ่งที่ทำไปแล้ว
+  2. กำหนดวันนัดล่วงหน้า (ActivitySchedule) - ตั้งแจ้งเตือนล่วงหน้า
+- ข้อมูล: หัวข้อ, รายละเอียด, หมายเหตุ, วันที่
+- สถานะ: Pending, Completed, Cancelled, Overdue
+- การแจ้งเตือนแบบ Real-time
+
+## 5. Dashboard & Reporting
+**สิ่งที่ทำ:** แสดงภาพรวมข้อมูลสัตว์และการแจ้งเตือน
+**ความสำคัญ:** ให้มุมมองแบบองค์รวมและการเข้าถึงข้อมูลที่รวดเร็ว
+**การทำงาน:**
+- แบ่งเป็น 2 แท็บ: ข้อมูลสัตว์ และ รายการแจ้งเตือน
+- แสดงรายการสัตว์พร้อมข้อมูลพื้นฐาน (ชื่อ, วันเกิด, สี, เพศ)
+- แสดงรายการแจ้งเตือนที่ครบกำหนด
+- คลิกดูรายละเอียดสัตว์และกิจกรรม
+
+# User Experience
+
+## User Personas
+
+### Primary Persona: เกษตรกรเจ้าของฟาร์ม (45-55 ปี)
+- **พื้นหลัง:** มีประสบการณ์เลี้ยงสัตว์ 10+ ปี ใช้สมาร์ทโฟนได้ระดับพื้นฐาน
+- **ความต้องการ:** ต้องการระบบที่ใช้ง่าย ไม่ซับซ้อน ช่วยจดจำกิจกรรมสำคัญ
+- **พฤติกรรม:** เข้าใช้ระบบวันละ 2-3 ครั้ง ส่วนใหญ่ผ่านมือถือ
+
+### Secondary Persona: ลูกจ้างฟาร์ม/สมาชิก (25-35 ปี)  
+- **พื้นหลัง:** มีประสบการณ์ใช้เทคโนโลยีดี ช่วยดูแลสัตว์ในฟาร์ม
+- **ความต้องการ:** เข้าถึงข้อมูลสัตว์ บันทึกกิจกรรมรายวัน รายงานให้เจ้าของฟาร์ม
+- **พฤติกรรม:** ใช้งานระหว่างทำงาน เน้นการบันทึกข้อมูลเร็วและแม่นยำ
+
+## Key User Flows
+
+### 1. Registration & Onboarding Flow
+1. หน้าแรก (Welcome) → กดปุ่ม "เข้าสู่ระบบ"
+2. หน้า Login → คลิก "สมัครสมาชิก"
+3. หน้า Register → กรอกข้อมูล (ชื่อ, นามสกุล, เบอร์โทร, รหัสผ่าน)
+4. หน้า Success → เข้าสู่ระบบอัตโนมัติ
+5. หน้า Profile → สร้างฟาร์มใหม่หรือรอคำเชิญ
+
+### 2. Daily Farm Management Flow
+1. หน้า Profile → เลือกฟาร์มที่ดูแล
+2. หน้า Dashboard → ดูรายการสัตว์และแจ้งเตือน
+3. คลิกสัตว์ → หน้า Animal Detail → ดูประวัติ/เพิ่มกิจกรรม
+4. สร้างกิจกรรมใหม่ → บันทึก → กลับ Dashboard
+
+### 3. Animal Registration Flow
+1. หน้า Dashboard → เมนู "เพิ่มสัตว์ใหม่"
+2. หน้า Animal Create → กรอกข้อมูล (ชื่อ, ประเภท, วันเกิด, น้ำหนัก, ฯลฯ)
+3. อัปโหลดรูปภาพ (ถ้ามี) → บันทึก
+4. หน้า Success → กลับ Dashboard → เห็นสัตว์ใหม่ในรายการ
+
+## UI/UX Considerations
+
+### Design System
+- **Brand Theme:** "jaothui" - สีทองเหลือง (#D4AF37) สื่อถึงความเป็นเกษตรกรรม
+- **Typography:** Inter + Sarabun รองรับภาษาไทยได้ดี
+- **Components:** DaisyUI - ใช้ components สำเร็จรูป รองรับ accessibility
+- **Responsive:** Mobile-first design เหมาะกับการใช้งานในฟาร์ม
+
+### Accessibility & Usability
+- ขนาดตัวอักษรใหญ่พอ เหมาะกับผู้ใช้วัยกลางคน
+- ปุ่มขนาดใหญ่ ง่ายต่อการแตะบนมือถือ
+- สีคอนทราสต์สูง อ่านง่ายแม้ในแสงแดด
+- ข้อความภาษาไทยที่เข้าใจง่าย
+- navigation ที่ชัดเจน ไม่ซับซ้อน
+
+# Technical Architecture
+
+## System Components
+
+### Frontend (Next.js 15.3.4)
+- **Framework:** Next.js App Router - Full Stack framework
+- **UI Library:** DaisyUI + TailwindCSS 4
+- **Animation:** Framer Motion - ให้ประสบการณ์ที่ลื่นไหล
+- **Forms:** React Hook Form + Zod validation
+- **State Management:** React Query สำหรับ server state
+- **Notifications:** Sonner - แจ้งเตือนที่สวยงาม
+
+### Backend Services
+- **Database:** Supabase PostgreSQL
+- **Authentication:** Supabase Auth
+- **File Storage:** Supabase Storage (รูปโปรไฟล์ + รูปสัตว์)
+- **Real-time:** Supabase Subscriptions
+- **API:** Next.js Server Actions (ไม่ต้องสร้าง REST API แยก)
+
+### Development Tools
+- **ORM:** Prisma - Type-safe database queries
+- **Language:** TypeScript - Type safety ตลอดทั้งระบบ
+- **Testing:** Jest + React Testing Library
+- **Code Quality:** ESLint + Prettier
+- **Deployment:** Vercel (สำหรับ Next.js)
+
+## Data Models
+
+### Core Entities
+```
+Profile (ผู้ใช้)
+├── id, firstName, lastName, phoneNumber
+├── profileImage (Supabase Storage URL)
+├── ownedFarmId (ได้แค่ 1 ฟาร์ม)
+└── memberOfFarmId (ได้แค่ 1 ฟาร์ม)
+
+Farm (ฟาร์ม)
+├── id, name, province
+├── owner (Profile)
+└── members (Profile[])
+
+Animal (สัตว์)
+├── id, name, animalType, microchip
+├── birthDate, weight, height, color
+├── fatherName, motherName, image
+└── farmId (FK)
+
+Activity (กิจกรรมที่ทำแล้ว)
+├── id, title, description, notes
+├── activityDate, status
+└── animalId (FK)
+
+ActivitySchedule (การแจ้งเตือน)
+├── id, title, description, notes
+├── scheduledDate, status
+├── isRecurring, recurrenceType
+└── animalId (FK)
+```
+
+### Security (Row Level Security)
+- **Profile:** ผู้ใช้เห็นเฉพาะข้อมูลตัวเอง
+- **Farm:** เห็นได้เฉพาะฟาร์มที่เป็นเจ้าของหรือสมาชิก
+- **Animal:** เห็นได้เฉพาะสัตว์ในฟาร์มที่เกี่ยวข้อง
+- **Activity:** เห็นได้เฉพาะกิจกรรมของสัตว์ในฟาร์มที่เกี่ยวข้อง
+
+## APIs and Integrations
+
+### Internal APIs (Next.js Server Actions)
+- `auth-actions.ts` - Authentication operations
+- `farm-actions.ts` - Farm CRUD operations  
+- `animal-actions.ts` - Animal CRUD operations
+- `activity-actions.ts` - Activity/Schedule operations
+
+### External Integrations
+- **Supabase API** - Database operations, Auth, Storage
+- **Line Notify** (Future) - ส่งแจ้งเตือนผ่าน LINE
+- **Cloudinary** (Optional) - Image optimization
+
+## Infrastructure Requirements
+
+### Development Environment
+- **Node.js** 18+
+- **Supabase** Project
+- **Vercel** Account (for deployment)
+
+### Production Requirements
+- **Database:** Supabase Pro plan (สำหรับ unlimited API requests)
+- **Storage:** Supabase Storage (สำหรับรูปภาพ)
+- **Hosting:** Vercel Pro (สำหรับ production apps)
+- **Domain:** Custom domain for professional appearance
+
+### Performance Expectations
+- **Page Load:** < 2 seconds (3G connection)
+- **Image Upload:** < 10 seconds (2MB images)
+- **Real-time Updates:** < 1 second latency
+- **Offline Support:** Basic form data persistence
+
+# Development Roadmap
+
+## Phase 1: MVP Foundation (Week 1-2)
+**Scope:** ระบบพื้นฐานที่ใช้งานได้
+
+**Core Components:**
+- Project setup with all dependencies
+- Authentication system (register, login, logout)
+- Basic profile management
+- Single farm creation
+- Simple animal registration (ชื่อ, ประเภท, วันเกิด)
+- Basic animal listing
+
+**Infrastructure:**
+- Supabase project setup
+- Database schema deployment  
+- Basic security rules (RLS)
+- CI/CD pipeline with Vercel
+
+**Deliverables:**
+- Working authentication flow
+- Users can create one farm
+- Users can add animals with basic info
+- Animals display in simple list
+- Mobile-responsive design
+
+## Phase 2: Core Farm Management (Week 3-4) 
+**Scope:** ระบบจัดการฟาร์มและสัตว์แบบครบถ้วน
+
+**Animal Management:**
+- Complete animal form (weight, height, color, parents)
+- Image upload functionality
+- Animal detail pages with full information
+- Edit/delete animal capabilities
+- Microchip auto-generation
+
+**Farm Features:**
+- Farm member invitation system
+- Invitation acceptance/decline workflow
+- Member permission management
+- Farm settings (name, province editing)
+
+**UI Enhancements:**
+- Dashboard with organized tabs
+- Animal cards with proper styling
+- Image gallery for animals
+- Search and filter capabilities
+
+**Deliverables:**
+- Complete animal CRUD operations
+- Working farm invitation system
+- Professional dashboard interface
+- Image storage integration
+
+## Phase 3: Activity & Notification System (Week 5-6)
+**Scope:** ระบบกิจกรรมและการแจ้งเตือน
+
+**Activity Management:**
+- Activity logging for completed tasks
+- Activity scheduling for future reminders
+- Activity categories and templates
+- Bulk activity operations
+
+**Notification System:**
+- Real-time notifications
+- Overdue activity alerts
+- Email/SMS notifications (basic)
+- Notification preferences
+
+**Advanced Features:**
+- Recurring activity schedules
+- Activity templates for common tasks
+- Activity history and reports
+- Export capabilities
+
+**Deliverables:**
+- Working activity/schedule system
+- Real-time notification display
+- Activity detail pages
+- Basic reporting features
+
+## Phase 4: Polish & Optimization (Week 7-8)
+**Scope:** การปรับปรุงประสิทธิภาพและประสบการณ์ผู้ใช้
+
+**Performance Optimization:**
+- Image optimization and lazy loading
+- Database query optimization
+- Caching implementation
+- Bundle size optimization
+
+**User Experience:**
+- Animation and micro-interactions
+- Advanced error handling
+- Loading states and skeletons
+- Offline support basics
+
+**Production Readiness:**
+- Comprehensive error logging
+- Performance monitoring
+- Security audit
+- Accessibility compliance
+- Documentation completion
+
+**Deliverables:**
+- Production-ready application
+- Complete test coverage
+- Performance benchmarks met
+- User documentation
+
+# Logical Dependency Chain
+
+## Foundation First (Critical Path)
+1. **Project Setup & Dependencies** - Must be first, everything depends on this
+2. **Database Schema** - Core data structure needed before any features
+3. **Authentication System** - Required for all protected features
+4. **Basic Profile Management** - Needed for farm/user relationships
+
+## Progressive Feature Building
+5. **Single Farm Creation** - Simplest farm feature, no collaboration yet
+6. **Basic Animal Registration** - Core value proposition, build on farm foundation
+7. **Animal Listing/Dashboard** - Makes the system immediately useful
+8. **Farm Member System** - Builds on existing farm features
+9. **Complete Animal Management** - Enhances core functionality
+10. **Activity System** - Adds scheduling/tracking value
+11. **Real-time Notifications** - Enhances activity system
+12. **Polish & Optimization** - Final improvements
+
+## Getting to Usable Frontend Quickly
+**Week 1 Priority:** Get a working demo as fast as possible
+- Day 1-2: Basic Next.js + Supabase + Auth
+- Day 3-4: Simple farm creation + animal form
+- Day 5-7: Basic dashboard showing animals
+
+**Atomic Feature Scoping:**
+Each feature is designed to be:
+- **Self-contained:** Can be built and tested independently
+- **Buildable:** Has clear inputs/outputs and dependencies
+- **Improvable:** Can be enhanced in later phases without breaking
+- **Testable:** Can be validated with users immediately
+
+**Example - Animal Registration:**
+- Phase 1: Basic form (name, type, birth date) → Immediately useful
+- Phase 2: Add details (weight, height, parents) → Enhanced value
+- Phase 3: Add images → Visual appeal
+- Phase 4: Add validation, auto-complete → Polish
+
+# Risks and Mitigations
+
+## Technical Challenges
+
+### 1. Solo Developer Overwhelm
+**Risk:** Too many technologies and features to learn/implement alone
+**Mitigation:** 
+- Stick to chosen tech stack (Next.js + Supabase + DaisyUI)
+- Use pre-built components instead of custom development
+- Focus on MVP first, features later
+- Document decisions and learnings
+- Use AI assistance for code generation and debugging
+
+### 2. Database Performance at Scale
+**Risk:** Slow queries when farm has hundreds of animals
+**Mitigation:**
+- Implement proper database indexes from start
+- Use Prisma for optimized queries
+- Implement pagination early
+- Monitor query performance with Supabase dashboard
+- Use database query optimization tools
+
+### 3. Real-time Notification Complexity
+**Risk:** Real-time features adding significant complexity
+**Mitigation:**
+- Start with simple polling instead of WebSockets
+- Use Supabase's built-in real-time features
+- Implement basic notifications first
+- Add advanced features in later phases
+- Consider third-party services for email/SMS
+
+## MVP Definition & Scope Control
+
+### 1. Feature Creep
+**Risk:** Adding too many "nice-to-have" features before core value is proven
+**Mitigation:**
+- Strict MVP scope: Auth + Farm + Animals + Basic Dashboard
+- User testing after each phase to validate assumptions
+- Feature request log for post-MVP development
+- Regular scope reviews with clear priorities
+
+### 2. UI/UX Perfectionism  
+**Risk:** Spending too much time on design instead of functionality
+**Mitigation:**
+- Use DaisyUI components as-is initially
+- Focus on usability over visual perfection
+- Get user feedback early and often
+- Professional design improvements in Phase 4 only
+
+### 3. Over-engineering
+**Risk:** Building complex solutions for simple problems
+**Mitigation:**
+- "Good enough" mentality for MVP
+- Use simpler solutions first (forms before complex state management)
+- Refactor only when performance/usability issues arise
+- Document technical debt for future improvement
+
+## Resource Constraints
+
+### 1. Time Management
+**Risk:** Underestimating development time, missing milestones
+**Mitigation:**
+- Conservative time estimates with buffer
+- Daily progress tracking
+- Weekly milestone reviews
+- Cut features before extending timeline
+- Focus on "working" over "perfect"
+
+### 2. User Testing Resources
+**Risk:** Developing in isolation without user feedback
+**Mitigation:**
+- Recruit 2-3 farmer beta testers early
+- Simple feedback collection (Google Forms)
+- Weekly check-ins with beta users
+- Focus on usage patterns over feature requests
+
+### 3. Deployment & Infrastructure
+**Risk:** Complex deployment blocking launch
+**Mitigation:**
+- Use Vercel auto-deployment from day 1
+- Keep Supabase configuration simple
+- Document environment setup clearly
+- Have backup deployment strategy (manual deploy)
+
+# Appendix
+
+## Research Findings
+
+### Thai Agriculture Context
+- 65% of Thai farmers use smartphones regularly
+- Primary communication channel: LINE (85% adoption)
+- Prefer visual interfaces over text-heavy systems
+- Buddhist calendar (พ.ศ.) is standard for date references
+- Trust in technology increases with peer recommendations
+
+### Technology Adoption Patterns
+- Farmers prefer simple, single-purpose applications
+- Visual confirmation (photos) increases trust in digital records
+- Real-time notifications reduce anxiety about forgotten tasks
+- Mobile-first design essential (90% access via mobile)
+
+### Competitive Analysis
+- Existing solutions are either too complex or too basic
+- No solutions specifically designed for Thai farmers
+- Opportunity for Thai language + cultural considerations
+- Price sensitivity: prefer free/low-cost solutions
+
+## Technical Specifications
+
+### Browser Support
+- **Primary:** Safari Mobile, Chrome Mobile (iOS/Android)
+- **Secondary:** Chrome Desktop, Edge
+- **Minimum:** iOS 12+, Android 8+
+
+### Performance Benchmarks
+- **First Contentful Paint:** < 1.5s
+- **Largest Contentful Paint:** < 2.5s
+- **Cumulative Layout Shift:** < 0.1
+- **Time to Interactive:** < 3s
+
+### Data Storage Requirements
+- **Average farm:** 50 animals × 2KB = 100KB
+- **Images:** 20 animals × 2MB = 40MB per farm
+- **Growth projection:** 1000 farms = 40GB storage in year 1
+- **Backup frequency:** Daily automated backups
+
+### Security Requirements
+- **Data encryption:** In transit (HTTPS) and at rest
+- **Authentication:** Multi-factor optional for farm owners
+- **Session management:** 30-day remember me, auto-logout after 24h inactive
+- **Privacy compliance:** Basic GDPR principles (data export/deletion)
+
+### Integration Specifications
+
+#### Supabase Configuration
+```
+Database: PostgreSQL 15
+Connection pooling: Enabled
+Row Level Security: Enabled on all tables
+Storage: Images up to 10MB per file
+Authentication: Email/Password + Phone (future)
+```
+
+#### Next.js Configuration
+```
+Framework: Next.js 15.3.4 App Router
+Rendering: Server Components + Client Components hybrid
+Image optimization: Next/Image with Supabase Storage
+Caching: React Query for client state
+```
+
+### Deployment Architecture
+```
+Frontend: Vercel (Edge runtime)
+Database: Supabase (managed PostgreSQL)
+Storage: Supabase Storage (AWS S3 compatible)
+CDN: Vercel Edge Network
+Monitoring: Vercel Analytics + Supabase Dashboard
+``` 

@@ -1,0 +1,118 @@
+{
+  "page": "login",
+  "title": "หน้าเข้าสู่ระบบ",
+  "path": "/login",
+  "links": ["/register", "/forgot-password"],
+  "layout": {
+    "type": "form_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "hero_section",
+        "components": [
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "position": "top_center",
+            "size": "large",
+            "alt": "JAOTHUI Logo"
+          },
+          {
+            "type": "heading",
+            "text": "ยินดีต้อนรับ",
+            "level": "h1",
+            "className": "text-4xl font-bold text-base-content text-center mt-8",
+            "position": "center"
+          },
+          {
+            "type": "subtitle",
+            "text": "โปรดเข้าสู่ระบบ",
+            "className": "text-xl font-normal text-base-content text-center mt-2",
+            "position": "center"
+          }
+        ]
+      },
+      {
+        "name": "login_form",
+        "components": [
+          {
+            "type": "form",
+            "className": "max-w-md mx-auto mt-8 space-y-4",
+            "fields": [
+              {
+                "type": "input",
+                "name": "phoneNumber",
+                "label": "เบอร์โทรศัพท์",
+                "placeholder": "กรอกเบอร์โทรศัพท์",
+                "inputType": "tel",
+                "pattern": "^0[0-9]{8,9}$",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "input",
+                "name": "password",
+                "label": "รหัสผ่าน",
+                "placeholder": "กรอกรหัสผ่าน",
+                "inputType": "password",
+                "required": true,
+                "className": "input input-bordered w-full"
+              }
+            ],
+            "actions": [
+              {
+                "type": "link",
+                "text": "ลืมรหัสผ่าน",
+                "target": "/forgot-password",
+                "className": "link link-primary text-sm text-right block mt-2"
+              },
+              {
+                "type": "button",
+                "text": "เข้าสู่ระบบ",
+                "className": "btn btn-primary w-full mt-6",
+                "action": "submit",
+                "submitType": "login"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "register_section",
+        "components": [
+          {
+            "type": "text_with_link",
+            "text": "ยังไม่มีบัญชี ?",
+            "linkText": "สร้างบัญชี",
+            "linkTarget": "/register",
+            "className": "text-center mt-6 text-sm",
+            "linkClassName": "link link-primary ml-1"
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "validation": {
+    "phoneNumber": {
+      "pattern": "^0[0-9]{8,9}$",
+      "autoFormat": true,
+      "example": "0929931147"
+    },
+    "password": {
+      "minLength": 6,
+      "required": true
+    }
+  }
+} 

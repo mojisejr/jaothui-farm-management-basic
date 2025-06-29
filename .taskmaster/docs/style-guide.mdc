@@ -1,0 +1,686 @@
+# JAOTHUI Farm Management - Style Guide
+
+## 📋 Table of Contents
+
+- [Brand Identity](#brand-identity)
+- [Color Palette](#color-palette)
+- [Typography](#typography)
+- [DaisyUI Theme Configuration](#daisyui-theme-configuration)
+- [Component Library](#component-library)
+- [Layout Patterns](#layout-patterns)
+- [Animation Guidelines](#animation-guidelines)
+- [Responsive Design](#responsive-design)
+- [Accessibility](#accessibility)
+- [Usage Examples](#usage-examples)
+
+---
+
+## 🎨 Brand Identity
+
+### Logo
+
+- **Primary Logo**: `/images/jaothui-logo.png`
+- **Usage**: ใช้ในขนาดต่างๆ ตามบริบท
+- **Minimum Size**: 24x24px
+- **Colors**: สีทองเหลือง (#D4AF37) หรือขาวบนพื้นหลังเข้ม
+
+### Brand Personality
+
+- **Modern & Professional**: สะอาดตา ใช้งานง่าย
+- **Agricultural Focus**: เน้นความเป็นเกษตรกรรม
+- **Thai-Friendly**: รองรับภาษาไทยเป็นหลัก
+- **Technology-Forward**: ทันสมัยแต่เข้าใจง่าย
+
+---
+
+## 🎨 Color Palette
+
+### Primary Colors
+
+```css
+:root {
+  --primary: #d4af37; /* ทองเหลือง - สีหลักของแบรนด์ */
+  --primary-content: #ffffff; /* ข้อความบนสีหลัก */
+  --secondary: #f4d03f; /* ทองอ่อน - สีรอง */
+  --secondary-content: #2c3e50;
+}
+```
+
+### Neutral Colors
+
+```css
+:root {
+  --base-100: #ffffff; /* พื้นหลังหลัก */
+  --base-200: #f8f9fa; /* พื้นหลังรอง */
+  --base-300: #e9ecef; /* เส้นขอบ */
+  --base-content: #2c3e50; /* ข้อความหลัก */
+  --neutral: #2c3e50; /* เทาเข้ม */
+  --neutral-content: #ffffff;
+}
+```
+
+### Semantic Colors
+
+```css
+:root {
+  --success: #10b981; /* เขียว - สำเร็จ/สุขภาพดี */
+  --warning: #f59e0b; /* เหลือง - เตือน */
+  --error: #ef4444; /* แดง - ข้อผิดพลาด/อันตราย */
+  --info: #3b82f6; /* น้ำเงิน - ข้อมูล */
+}
+```
+
+### Usage Guidelines
+
+- **Primary**: ใช้สำหรับ CTA buttons, navigation active, brand elements
+- **Secondary**: ใช้สำหรับ highlights, hover states
+- **Success**: สุขภาพดี, การทำงานสำเร็จ, วัคซีนครบ
+- **Warning**: การแจ้งเตือน, สถานะรอการดำเนินการ
+- **Error**: ข้อผิดพลาด, สัตว์ป่วย, การกระทำอันตราย
+
+---
+
+## 📝 Typography
+
+### Font Stack
+
+```css
+font-family: "Inter", "Sarabun", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  sans-serif;
+```
+
+### Font Sizes & Hierarchy
+
+```css
+/* Headings */
+.text-4xl {
+  font-size: 2.25rem;
+} /* หัวข้อหลัก */
+.text-3xl {
+  font-size: 1.875rem;
+} /* หัวข้อรอง */
+.text-2xl {
+  font-size: 1.5rem;
+} /* หัวข้อย่อย */
+.text-xl {
+  font-size: 1.25rem;
+} /* หัวข้อเล็ก */
+
+/* Body Text */
+.text-base {
+  font-size: 1rem;
+} /* ข้อความปกติ */
+.text-sm {
+  font-size: 0.875rem;
+} /* ข้อความเล็ก */
+.text-xs {
+  font-size: 0.75rem;
+} /* ข้อความขนาดเล็กสุด */
+
+/* Special */
+.font-mono {
+  font-family: "Fira Code", monospace;
+} /* รหัสสัตว์ */
+```
+
+### Font Weights
+
+- `font-normal` (400): ข้อความทั่วไป
+- `font-medium` (500): ข้อความเน้น
+- `font-semibold` (600): หัวข้อย่อย
+- `font-bold` (700): หัวข้อหลัก
+
+---
+
+## ⚙️ DaisyUI Theme Configuration
+
+### Tailwind Config
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "Sarabun", "sans-serif"],
+        mono: ["Fira Code", "monospace"],
+      },
+    },
+  },
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        jaothui: {
+          primary: "#D4AF37",
+          "primary-content": "#FFFFFF",
+          secondary: "#F4D03F",
+          "secondary-content": "#2C3E50",
+          accent: "#85929E",
+          "accent-content": "#FFFFFF",
+          neutral: "#2C3E50",
+          "neutral-content": "#FFFFFF",
+          "base-100": "#FFFFFF",
+          "base-200": "#F8F9FA",
+          "base-300": "#E9ECEF",
+          "base-content": "#2C3E50",
+          info: "#3B82F6",
+          "info-content": "#FFFFFF",
+          success: "#10B981",
+          "success-content": "#FFFFFF",
+          warning: "#F59E0B",
+          "warning-content": "#FFFFFF",
+          error: "#EF4444",
+          "error-content": "#FFFFFF",
+        },
+      },
+    ],
+  },
+};
+```
+
+---
+
+## 🧩 Component Library
+
+### Buttons
+
+```html
+<!-- Primary Actions -->
+<button class="btn btn-primary">เข้าสู่ระบบ</button>
+<button class="btn btn-primary btn-lg">เพิ่มสัตว์ใหม่</button>
+
+<!-- Secondary Actions -->
+<button class="btn btn-ghost">ยกเลิก</button>
+<button class="btn btn-outline">ดูรายละเอียด</button>
+
+<!-- Status Buttons -->
+<button class="btn btn-success btn-sm">ทำเสร็จ</button>
+<button class="btn btn-warning btn-sm">แก้ไข</button>
+<button class="btn btn-error btn-outline btn-sm">ลบ</button>
+```
+
+### Cards
+
+```html
+<!-- Standard Card -->
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title">ควายดำ 001</h2>
+    <p>BUF001</p>
+    <div class="card-actions justify-end">
+      <button class="btn btn-primary btn-sm">ดูรายละเอียด</button>
+    </div>
+  </div>
+</div>
+
+<!-- Animal Card -->
+<div
+  class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300"
+>
+  <figure class="px-4 pt-4">
+    <img src="/animal-image.jpg" class="rounded-xl w-full h-48 object-cover" />
+  </figure>
+  <div class="card-body">
+    <h2 class="card-title text-primary">ควายดำ 001</h2>
+    <p class="text-sm text-gray-500 font-mono">BUF001</p>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+      <span>อายุ: 3 ปี</span>
+      <span>เพศ: เมีย</span>
+    </div>
+    <div class="badge badge-success">สุขภาพดี</div>
+  </div>
+</div>
+```
+
+### Forms
+
+```html
+<!-- Form Control -->
+<div class="form-control w-full">
+  <label class="label">
+    <span class="label-text text-gray-700 font-medium">ชื่อสัตว์</span>
+  </label>
+  <input
+    type="text"
+    placeholder="ชื่อสัตว์"
+    class="input input-bordered w-full focus:ring-2 focus:ring-primary"
+  />
+</div>
+
+<!-- Select -->
+<select class="select select-bordered w-full">
+  <option disabled selected>เลือกประเภทสัตว์</option>
+  <option value="buffalo">ควาย</option>
+  <option value="cow">วัว</option>
+</select>
+
+<!-- Radio Group -->
+<div class="flex gap-4">
+  <label class="label cursor-pointer">
+    <input
+      type="radio"
+      name="gender"
+      value="male"
+      class="radio radio-primary"
+    />
+    <span class="label-text ml-2">ผู้</span>
+  </label>
+  <label class="label cursor-pointer">
+    <input
+      type="radio"
+      name="gender"
+      value="female"
+      class="radio radio-primary"
+    />
+    <span class="label-text ml-2">เมีย</span>
+  </label>
+</div>
+```
+
+### Navigation
+
+```html
+<!-- Navbar -->
+<div class="navbar bg-base-100 shadow-md">
+  <div class="navbar-start">
+    <img src="/images/jaothui-logo.png" class="w-12 h-12" alt="JAOTHUI" />
+    <span class="text-2xl font-bold text-primary ml-3">JAOTHUI</span>
+  </div>
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      <li><a class="btn btn-ghost btn-active">หน้าหลัก</a></li>
+      <li><a class="btn btn-ghost">สัตว์</a></li>
+      <li><a class="btn btn-ghost">การแจ้งเตือน</a></li>
+    </ul>
+  </div>
+  <div class="navbar-end">
+    <div class="dropdown dropdown-end">
+      <div class="avatar placeholder" tabindex="0">
+        <div class="bg-neutral-focus text-neutral-content rounded-full w-10">
+          <span>U</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumbs -->
+<div class="breadcrumbs text-sm mb-6">
+  <ul>
+    <li><a href="/">หน้าหลัก</a></li>
+    <li><a href="/animals">รายการสัตว์</a></li>
+    <li>รายละเอียด</li>
+  </ul>
+</div>
+```
+
+### Status Indicators
+
+```html
+<!-- Badges -->
+<div class="badge badge-success">สุขภาพดี</div>
+<div class="badge badge-warning">ต้องดูแล</div>
+<div class="badge badge-error">ป่วย</div>
+<div class="badge badge-info">ตั้งท้อง</div>
+
+<!-- Progress -->
+<progress
+  class="progress progress-primary w-full"
+  value="70"
+  max="100"
+></progress>
+
+<!-- Stats -->
+<div class="stats shadow">
+  <div class="stat place-items-center">
+    <div class="stat-title">จำนวนสัตว์</div>
+    <div class="stat-value text-primary">24</div>
+    <div class="stat-desc">ตัว</div>
+  </div>
+</div>
+```
+
+---
+
+## 📐 Layout Patterns
+
+### Page Layouts
+
+```html
+<!-- Home Page Layout -->
+<div class="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5">
+  <header class="navbar bg-base-100 shadow-md">
+    <!-- Navigation -->
+  </header>
+  <main>
+    <section class="hero min-h-[60vh]">
+      <!-- Hero Content -->
+    </section>
+    <section class="py-16">
+      <!-- Features -->
+    </section>
+  </main>
+  <footer class="footer footer-center p-10 bg-base-200">
+    <!-- Footer -->
+  </footer>
+</div>
+
+<!-- Dashboard Layout -->
+<div class="container mx-auto px-4 py-6">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-primary mb-2">รายการสัตว์</h1>
+    <div class="flex gap-4 items-center">
+      <input
+        class="input input-bordered w-full max-w-xs"
+        placeholder="ค้นหา..."
+      />
+      <button class="btn btn-primary">เพิ่มสัตว์ใหม่</button>
+    </div>
+  </header>
+  <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Content Grid -->
+  </main>
+</div>
+
+<!-- Form Layout -->
+<div class="container mx-auto px-4 py-6 max-w-3xl">
+  <button class="btn btn-ghost mb-4">← กลับ</button>
+  <h1 class="text-3xl font-bold text-primary mb-6">เพิ่มสัตว์ใหม่</h1>
+  <form class="space-y-6">
+    <div class="card bg-base-100 shadow-xl p-6">
+      <!-- Form Fields -->
+    </div>
+    <div class="flex gap-4 justify-end">
+      <button type="button" class="btn btn-ghost">ยกเลิก</button>
+      <button type="submit" class="btn btn-primary">บันทึก</button>
+    </div>
+  </form>
+</div>
+```
+
+### Grid Systems
+
+```html
+<!-- Responsive Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Items -->
+</div>
+
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <div class="lg:col-span-3">
+    <!-- Main Content -->
+  </div>
+  <div class="lg:col-span-1">
+    <!-- Sidebar -->
+  </div>
+</div>
+```
+
+---
+
+## 🎬 Animation Guidelines
+
+### Framer Motion Patterns
+
+```javascript
+// Page Entrance
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" },
+};
+
+// Card Animations
+const cardVariants = {
+  initial: { scale: 0.9, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  transition: { duration: 0.5 },
+};
+
+// Button Interactions
+const buttonVariants = {
+  whileHover: { scale: 1.02 },
+  whileTap: { scale: 0.98 },
+};
+
+// Stagger Children
+const containerVariants = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+// Logo Spin-in
+const logoVariants = {
+  initial: { scale: 0, rotate: -180, opacity: 0 },
+  animate: { scale: 1, rotate: 0, opacity: 1 },
+  transition: { duration: 1, ease: "easeOut" },
+};
+```
+
+### CSS Transitions
+
+```css
+/* Smooth Hover Effects */
+.card {
+  @apply transition-all duration-300;
+}
+
+.card:hover {
+  @apply shadow-2xl transform -translate-y-1;
+}
+
+/* Button States */
+.btn {
+  @apply transition-all duration-200;
+}
+
+/* Focus Styles */
+.focus-style {
+  @apply focus:ring-2 focus:ring-primary focus:ring-offset-2;
+}
+```
+
+---
+
+## 📱 Responsive Design
+
+### Breakpoints
+
+```css
+/* Mobile First Approach */
+/* sm: 640px */
+/* md: 768px */
+/* lg: 1024px */
+/* xl: 1280px */
+/* 2xl: 1536px */
+```
+
+### Responsive Patterns
+
+```html
+<!-- Mobile Navigation -->
+<div class="navbar">
+  <div class="navbar-start">
+    <div class="dropdown lg:hidden">
+      <label class="btn btn-ghost">☰</label>
+      <ul class="menu dropdown-content">
+        <!-- Mobile Menu -->
+      </ul>
+    </div>
+  </div>
+  <div class="navbar-center hidden lg:flex">
+    <!-- Desktop Menu -->
+  </div>
+</div>
+
+<!-- Responsive Grid -->
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+>
+  <!-- Cards -->
+</div>
+
+<!-- Responsive Text -->
+<h1 class="text-2xl md:text-3xl lg:text-4xl font-bold">
+  หัวข้อที่ปรับขนาดตามหน้าจอ
+</h1>
+```
+
+---
+
+## ♿ Accessibility
+
+### Guidelines
+
+- ใช้ semantic HTML tags
+- มี aria-labels สำหรับ interactive elements
+- รองรับ keyboard navigation
+- มี color contrast ที่เพียงพอ
+- รองรับ screen readers
+
+### Implementation
+
+```html
+<!-- Semantic Structure -->
+<main role="main">
+  <section aria-labelledby="animals-heading">
+    <h2 id="animals-heading">รายการสัตว์</h2>
+    <!-- Content -->
+  </section>
+</main>
+
+<!-- Accessible Forms -->
+<form role="form" aria-label="แบบฟอร์มเพิ่มสัตว์">
+  <div class="form-control">
+    <label for="animal-name" class="label">
+      <span class="label-text">ชื่อสัตว์</span>
+    </label>
+    <input
+      id="animal-name"
+      type="text"
+      required
+      aria-describedby="name-help"
+      class="input input-bordered focus-style"
+    />
+    <div id="name-help" class="text-sm text-gray-600">กรุณากรอกชื่อสัตว์</div>
+  </div>
+</form>
+
+<!-- Accessible Buttons -->
+<button class="btn btn-primary" aria-label="เพิ่มสัตว์ใหม่เข้าระบบ">
+  <span aria-hidden="true">➕</span>
+  เพิ่มสัตว์ใหม่
+</button>
+```
+
+---
+
+## 💡 Usage Examples
+
+### Animal Card Component
+
+```tsx
+interface AnimalCardProps {
+  animal: {
+    id: string;
+    name: string;
+    code: string;
+    species: string;
+    status: "healthy" | "sick" | "pregnant";
+    image: string;
+  };
+}
+
+const AnimalCard: React.FC<AnimalCardProps> = ({ animal }) => {
+  return (
+    <motion.div
+      className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300"
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      whileHover={{ y: -4 }}
+    >
+      <figure className="px-4 pt-4">
+        <img
+          src={animal.image}
+          alt={animal.name}
+          className="rounded-xl w-full h-48 object-cover"
+        />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title text-primary">{animal.name}</h2>
+        <p className="text-sm text-gray-500 font-mono">{animal.code}</p>
+        <div className="badge badge-success">{animal.status}</div>
+        <div className="card-actions justify-end">
+          <button className="btn btn-primary btn-sm">ดูรายละเอียด</button>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+```
+
+### Form Section Component
+
+```tsx
+interface FormSectionProps {
+  title: string;
+  icon: string;
+  children: React.ReactNode;
+}
+
+const FormSection: React.FC<FormSectionProps> = ({ title, icon, children }) => {
+  return (
+    <motion.div
+      className="card bg-base-100 shadow-xl p-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <span>{icon}</span>
+        {title}
+      </h3>
+      <div className="space-y-4">{children}</div>
+    </motion.div>
+  );
+};
+```
+
+---
+
+## 📝 Notes
+
+### Best Practices
+
+1. **Consistency**: ใช้ design tokens และ components อย่างสม่ำเสมอ
+2. **Performance**: ใช้ lazy loading สำหรับรูปภาพ
+3. **Accessibility**: ทดสอบด้วย screen readers
+4. **Mobile-First**: เริ่มออกแบบจาก mobile ก่อน
+5. **Color Contrast**: ใช้เครื่องมือตรวจสอบ contrast ratio
+
+### Common Patterns
+
+- Card layouts สำหรับ data display
+- Form layouts สำหรับ data input
+- Modal dialogs สำหรับ confirmations
+- Toast notifications สำหรับ feedback
+- Loading states สำหรับ async operations
+
+### Resources
+
+- [DaisyUI Documentation](https://daisyui.com/)
+- [Tailwind CSS Documentation](https://tailwindcss.com/)
+- [Framer Motion Documentation](https://www.framer.com/motion/)
+- [React Hook Form](https://react-hook-form.com/)
+
+---
+
+**Last Updated**: December 2024  
+**Version**: 1.0  
+**Maintained by**: JAOTHUI Development Team

@@ -1,0 +1,196 @@
+{
+  "page": "profile",
+  "title": "หน้าโปรไฟล์ผู้ใช้",
+  "path": "/profile",
+  "links": ["/dashboard", "/list"],
+  "layout": {
+    "type": "profile_page",
+    "background": "#414141",
+    "sections": [
+      {
+        "name": "header",
+        "position": "outside_card",
+        "className": "flex justify-between items-center p-4 text-white",
+        "components": [
+          {
+            "type": "text",
+            "text": "ระบบ E-ID",
+            "className": "text-xl font-semibold text-white",
+            "position": "left"
+          },
+          {
+            "type": "logo",
+            "src": "/images/jaothui-logo.png",
+            "position": "right",
+            "size": "small",
+            "alt": "JAOTHUI Logo",
+            "className": "h-8 w-auto"
+          }
+        ]
+      },
+      {
+        "name": "profile_card",
+        "className": "bg-white rounded-lg shadow-lg mx-4 p-6",
+        "components": [
+          {
+            "type": "profile_header",
+            "className": "flex justify-between items-center mb-6",
+            "components": [
+              {
+                "type": "greeting",
+                "text": "สวัสดี ! คุณ {username}",
+                "className": "text-lg font-medium text-base-content"
+              },
+              {
+                "type": "notification_bell",
+                "icon": "bell",
+                "className": "btn btn-ghost btn-circle",
+                "action": "show_notifications"
+              }
+            ]
+          },
+          {
+            "type": "user_profile_image",
+            "src": "{userProfileImage}",
+            "fallback": "/images/default-profile.png",
+            "className": "avatar w-16 h-16 rounded-full mx-auto mb-6"
+          }
+        ]
+      },
+      {
+        "name": "farm_member_card",
+        "className": "bg-white rounded-lg shadow-lg mx-4 mt-4 p-6",
+        "components": [
+          {
+            "type": "card_title",
+            "text": "เชิญสมาชิกฟาร์ม",
+            "className": "text-lg font-medium text-base-content mb-4"
+          },
+          {
+            "type": "invite_form",
+            "components": [
+              {
+                "type": "input",
+                "name": "invitePhoneNumber",
+                "placeholder": "เบอร์โทรศัพท์ของสมาชิกที่ต้องการเชิญ",
+                "inputType": "tel",
+                "className": "input input-bordered w-full mb-2"
+              },
+              {
+                "type": "button",
+                "text": "เชิญสมาชิก",
+                "className": "btn btn-primary btn-sm",
+                "action": "invite_member"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "farm_list_section",
+        "className": "bg-white rounded-lg shadow-lg mx-4 mt-4 p-6",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "ฟาร์มที่คุณดูแลอยู่",
+            "className": "text-lg font-medium text-base-content mb-4"
+          },
+          {
+            "type": "farm_list",
+            "className": "space-y-3",
+            "itemTemplate": {
+              "type": "farm_item",
+              "className": "border border-base-300 rounded-lg p-4 hover:bg-base-200 cursor-pointer",
+              "components": [
+                {
+                  "type": "farm_name",
+                  "text": "{farmName}",
+                  "className": "text-base font-medium text-base-content"
+                },
+                {
+                  "type": "farm_location",
+                  "text": "{province}",
+                  "className": "text-sm text-neutral mt-1"
+                },
+                {
+                  "type": "farm_actions",
+                  "className": "flex gap-2 mt-3",
+                  "components": [
+                    {
+                      "type": "button",
+                      "text": "เพิ่มข้อมูลกระบือ",
+                      "className": "btn btn-primary btn-sm",
+                      "action": "navigate",
+                      "target": "/{farmId}/create"
+                    },
+                    {
+                      "type": "search_section",
+                      "className": "flex gap-2 ml-auto",
+                      "components": [
+                        {
+                          "type": "input",
+                          "name": "animalSearch",
+                          "placeholder": "ค้นหาด้วย microchip",
+                          "inputType": "text",
+                          "className": "input input-bordered input-sm w-40"
+                        },
+                        {
+                          "type": "button",
+                          "text": "ค้นหา",
+                          "className": "btn btn-outline btn-sm",
+                          "action": "search_animal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "onClick": {
+                "action": "navigate",
+                "target": "/dashboard/{farmId}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#414141",
+      "cardBackground": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "username": "user.firstName",
+    "userProfileImage": "user.profileImage",
+    "farmList": "user.farms",
+    "farmName": "farm.name",
+    "province": "farm.province",
+    "farmId": "farm.id"
+  },
+  "interactions": {
+    "invite_member": {
+      "action": "api_call",
+      "endpoint": "/api/farms/invite",
+      "method": "POST",
+      "payload": ["invitePhoneNumber"]
+    },
+    "search_animal": {
+      "action": "search",
+      "type": "microchip_search",
+      "scope": "current_farm"
+    },
+    "show_notifications": {
+      "action": "navigate",
+      "target": "/notifications"
+    }
+  }
+} 

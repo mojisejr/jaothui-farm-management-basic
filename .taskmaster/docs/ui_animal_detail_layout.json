@@ -1,0 +1,339 @@
+{
+  "page": "animal_detail",
+  "title": "หน้ารายละเอียดสัตว์",
+  "path": "/animals/:id",
+  "links": [],
+  "layout": {
+    "type": "detail_page",
+    "background": "base-100",
+    "sections": [
+      {
+        "name": "header",
+        "className": "navbar bg-primary text-primary-content",
+        "components": [
+          {
+            "type": "back_button",
+            "icon": "arrow-left",
+            "className": "btn btn-ghost text-primary-content",
+            "action": "navigate_back"
+          },
+          {
+            "type": "page_title",
+            "text": "รายละเอียดสัตว์",
+            "className": "flex-1 text-xl font-semibold text-center"
+          },
+          {
+            "type": "menu_button",
+            "icon": "menu",
+            "className": "btn btn-ghost text-primary-content",
+            "action": "show_menu"
+          }
+        ]
+      },
+      {
+        "name": "animal_info_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "ข้อมูลสัตว์",
+            "className": "text-xl font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "animal_image",
+            "src": "{animalImage}",
+            "fallback": "/images/default-animal.png",
+            "className": "w-32 h-32 object-cover rounded-lg mx-auto mb-4"
+          },
+          {
+            "type": "animal_details_grid",
+            "className": "grid grid-cols-2 gap-4",
+            "components": [
+              {
+                "type": "detail_item",
+                "label": "ชื่อ",
+                "value": "{animalName}",
+                "className": "flex flex-col"
+              },
+              {
+                "type": "detail_item",
+                "label": "วันเดือนปีเกิด",
+                "value": "{birthDateBuddhistEra}",
+                "className": "flex flex-col"
+              },
+              {
+                "type": "detail_item",
+                "label": "Microchip",
+                "value": "{microchip}",
+                "className": "flex flex-col font-mono"
+              },
+              {
+                "type": "detail_item",
+                "label": "น้ำหนัก",
+                "value": "{weight} กก.",
+                "className": "flex flex-col"
+              },
+              {
+                "type": "detail_item",
+                "label": "ส่วนสูง",
+                "value": "{height} ซม.",
+                "className": "flex flex-col"
+              },
+              {
+                "type": "detail_item",
+                "label": "สี",
+                "value": "{color}",
+                "className": "flex flex-col"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "activity_list_section",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_header",
+            "className": "flex justify-between items-center mb-4",
+            "components": [
+              {
+                "type": "section_title",
+                "text": "รายการกิจกรรม",
+                "className": "text-xl font-semibold text-base-content"
+              },
+              {
+                "type": "add_activity_button",
+                "text": "เพิ่มกิจกรรม",
+                "className": "btn btn-primary btn-sm",
+                "action": "show_activity_form"
+              }
+            ]
+          },
+          {
+            "type": "activity_list",
+            "className": "space-y-3",
+            "emptyState": {
+              "text": "ยังไม่มีกิจกรรมที่บันทึกไว้",
+              "className": "text-center text-neutral py-8"
+            },
+            "itemTemplate": {
+              "type": "activity_item",
+              "className": "border border-base-300 rounded-lg p-4 hover:bg-base-200 cursor-pointer transition-colors",
+              "components": [
+                {
+                  "type": "activity_header",
+                  "className": "flex justify-between items-start mb-2",
+                  "components": [
+                    {
+                      "type": "activity_title",
+                      "text": "{activityTitle}",
+                      "className": "text-base font-medium text-base-content"
+                    },
+                    {
+                      "type": "activity_date",
+                      "text": "{activityDate}",
+                      "className": "text-sm text-neutral"
+                    }
+                  ]
+                },
+                {
+                  "type": "activity_description",
+                  "text": "{activityDescription}",
+                  "className": "text-sm text-neutral"
+                },
+                {
+                  "type": "activity_status",
+                  "condition": "hasNotification",
+                  "components": [
+                    {
+                      "type": "notification_badge",
+                      "text": "แจ้งเตือน: {notificationDate}",
+                      "className": "badge badge-warning badge-sm mt-2"
+                    }
+                  ]
+                }
+              ],
+              "onClick": {
+                "action": "navigate",
+                "target": "/animal/{animalId}/activity/{activityId}"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "action_menu",
+        "className": "bg-white shadow-sm p-6 m-4 rounded-lg",
+        "components": [
+          {
+            "type": "section_title",
+            "text": "การจัดการ",
+            "className": "text-xl font-semibold text-base-content mb-4"
+          },
+          {
+            "type": "action_buttons",
+            "className": "grid grid-cols-1 gap-3",
+            "components": [
+              {
+                "type": "button",
+                "text": "สร้างกิจกรรมใหม่",
+                "className": "btn btn-primary w-full",
+                "action": "show_activity_form",
+                "description": "บันทึกเฉยๆ หรือตั้งแจ้งเตือนได้"
+              },
+              {
+                "type": "button",
+                "text": "แก้ไขข้อมูลสัตว์",
+                "className": "btn btn-outline w-full",
+                "action": "edit_animal"
+              },
+              {
+                "type": "button",
+                "text": "ลบสัตว์",
+                "className": "btn btn-error btn-outline w-full",
+                "action": "delete_animal",
+                "confirm": "คุณแน่ใจหรือไม่ที่จะลบข้อมูลสัตว์นี้?"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "modals": [
+      {
+        "name": "activity_form_modal",
+        "title": "สร้างกิจกรรมใหม่",
+        "className": "modal",
+        "components": [
+          {
+            "type": "form",
+            "className": "space-y-4",
+            "fields": [
+              {
+                "type": "input",
+                "name": "activityTitle",
+                "label": "ชื่อกิจกรรม",
+                "placeholder": "เช่น ฉีดวัคซีน, ตรวจสุขภาพ",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "textarea",
+                "name": "activityDescription",
+                "label": "รายละเอียด",
+                "placeholder": "รายละเอียดของกิจกรรม",
+                "className": "textarea textarea-bordered w-full"
+              },
+              {
+                "type": "date",
+                "name": "activityDate",
+                "label": "วันที่ทำกิจกรรม",
+                "required": true,
+                "className": "input input-bordered w-full"
+              },
+              {
+                "type": "checkbox",
+                "name": "setNotification",
+                "label": "ตั้งแจ้งเตือน",
+                "className": "checkbox"
+              },
+              {
+                "type": "date",
+                "name": "notificationDate",
+                "label": "วันที่แจ้งเตือน",
+                "condition": "setNotification",
+                "className": "input input-bordered w-full"
+              }
+            ],
+            "actions": [
+              {
+                "type": "button",
+                "text": "ยกเลิก",
+                "className": "btn btn-ghost",
+                "action": "close_modal"
+              },
+              {
+                "type": "button",
+                "text": "บันทึก",
+                "className": "btn btn-primary",
+                "action": "save_activity"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "styling": {
+    "theme": "jaothui",
+    "colors": {
+      "primary": "#D4AF37",
+      "background": "#FFFFFF",
+      "text": "#2C3E50"
+    },
+    "typography": {
+      "fontFamily": "Inter, Sarabun, sans-serif",
+      "language": "thai"
+    }
+  },
+  "data_bindings": {
+    "animalName": "animal.name",
+    "animalId": "animal.id",
+    "animalImage": "animal.image",
+    "birthDateBuddhistEra": "animal.birthDate_BE",
+    "microchip": "animal.microchip",
+    "weight": "animal.weight",
+    "height": "animal.height",
+    "color": "animal.color",
+    "activityList": "animal.activities",
+    "activityTitle": "activity.title",
+    "activityId": "activity.id",
+    "activityDescription": "activity.description",
+    "activityDate": "activity.date_BE",
+    "hasNotification": "activity.notification",
+    "notificationDate": "activity.notification.date_BE"
+  },
+  "date_formatting": {
+    "birthDate_BE": {
+      "input": "animal.birthDate",
+      "format": "buddhist_era",
+      "pattern": "d MMMM yyyy"
+    },
+    "activityDate_BE": {
+      "input": "activity.date",
+      "format": "buddhist_era",
+      "pattern": "d MMM yyyy"
+    },
+    "notificationDate_BE": {
+      "input": "activity.notification.date",
+      "format": "buddhist_era",
+      "pattern": "d MMM yyyy"
+    }
+  },
+  "interactions": {
+    "show_activity_form": {
+      "action": "open_modal",
+      "target": "activity_form_modal"
+    },
+    "save_activity": {
+      "action": "api_call",
+      "endpoint": "/api/animals/{animalId}/activities",
+      "method": "POST",
+      "onSuccess": "refresh_activities"
+    },
+    "edit_animal": {
+      "action": "navigate",
+      "target": "/animals/{animalId}/edit"
+    },
+    "delete_animal": {
+      "action": "api_call",
+      "endpoint": "/api/animals/{animalId}",
+      "method": "DELETE",
+      "onSuccess": "navigate_back"
+    }
+  },
+  "notifications": {
+    "description": "การแจ้งเตือนเป็นแบบแจ้งเตือนเป็นวัน check และ update เมื่อเข้ามาในแอพ ไม่มี push notification"
+  }
+} 

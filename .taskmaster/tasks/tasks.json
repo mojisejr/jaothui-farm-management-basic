@@ -23,7 +23,72 @@
           1
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Supabase project and basic configuration",
+            "description": "Set up a new Supabase project, configure authentication settings, and establish basic project parameters including environment variables and connection strings.",
+            "dependencies": [],
+            "details": "Initialize Supabase project, configure authentication providers, set up environment variables, and test basic connectivity.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Design and create Profile and Farm tables",
+            "description": "Create the foundational Profile and Farm tables with proper relationships, constraints, and indexes to support user management and farm organization.",
+            "dependencies": [
+              1
+            ],
+            "details": "Define Profile table schema for user data, create Farm table with ownership relationships, establish foreign key constraints, and add necessary indexes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Animal table with all attributes",
+            "description": "Design and implement the Animal table with comprehensive attributes including identification, health records, breeding information, and farm associations.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create Animal table schema with fields for identification, species, health data, breeding records, location tracking, and relationships to Farm table.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create Activity and ActivitySchedule tables",
+            "description": "Implement Activity and ActivitySchedule tables to manage farm activities, tasks, and scheduling with proper relationships to animals and farms.",
+            "dependencies": [
+              3
+            ],
+            "details": "Design Activity table for task definitions, create ActivitySchedule for scheduling and tracking, establish relationships with Animal and Farm tables.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Row Level Security policies",
+            "description": "Configure comprehensive Row Level Security (RLS) policies across all tables to ensure proper data access control and user isolation.",
+            "dependencies": [
+              4
+            ],
+            "details": "Enable RLS on all tables, create policies for user-specific data access, implement farm-based access controls, and test security boundaries.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Setup Supabase Storage and Prisma integration",
+            "description": "Configure Supabase Storage for file uploads and integrate Prisma ORM for type-safe database operations and schema management.",
+            "dependencies": [
+              5
+            ],
+            "details": "Set up Supabase Storage buckets, configure file upload policies, install and configure Prisma, generate schema, and test integration.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 3,
@@ -127,7 +192,77 @@
           9
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create activity and schedule forms with templates",
+            "description": "Design and implement forms for creating activities and schedules with pre-built templates for common activity types",
+            "dependencies": [],
+            "details": "Build user-friendly forms with validation, template selection, and dynamic field generation based on activity type",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement activity status management system",
+            "description": "Create a comprehensive status tracking system for activities with state transitions and workflow management",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement status states (pending, in-progress, completed, cancelled), transition rules, and status update mechanisms",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build recurring schedule functionality",
+            "description": "Develop system for creating and managing recurring activities with flexible scheduling patterns",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement recurring patterns (daily, weekly, monthly), exception handling, and automatic schedule generation",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create activity detail pages and history",
+            "description": "Build comprehensive activity detail views with complete history tracking and audit trails",
+            "dependencies": [
+              2
+            ],
+            "details": "Design detailed activity pages showing all information, status changes, completion records, and historical data",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Add activity categories and templates",
+            "description": "Implement categorization system and template management for different types of activities",
+            "dependencies": [
+              1
+            ],
+            "details": "Create category hierarchy, template creation/editing interface, and template-based activity generation",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Integrate with animal management system",
+            "description": "Connect activity system with animal records for animal-specific activities and cross-system data synchronization",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "details": "Implement animal-activity associations, data synchronization, and unified interface between systems",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 11,
@@ -140,7 +275,76 @@
           10
         ],
         "status": "pending",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup Supabase Real-time Subscriptions",
+            "description": "Configure Supabase real-time listeners for database changes, establish WebSocket connections, and implement subscription management for notifications",
+            "dependencies": [],
+            "details": "Set up Supabase real-time client configuration, create database triggers for notification events, implement connection handling and reconnection logic, and establish channel subscriptions for different notification types",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Notification Components and Center",
+            "description": "Build React components for notification display, notification center UI, and toast notifications with proper styling and animations",
+            "dependencies": [
+              1
+            ],
+            "details": "Develop notification item components, notification center modal/dropdown, toast notification system, notification badges, and implement proper state management for notification UI components",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build Notification Types and Automatic Triggers",
+            "description": "Define different notification types, create trigger logic for automatic notifications, and implement notification categorization system",
+            "dependencies": [
+              1
+            ],
+            "details": "Create notification type definitions (system, user, activity, etc.), implement automatic trigger conditions, build notification creation logic, and establish priority levels and categorization",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Add Notification Preferences and Settings",
+            "description": "Implement user preference management for notifications, create settings UI, and build notification filtering based on user preferences",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Build notification settings page, implement preference storage and retrieval, create notification filtering logic, add opt-in/opt-out functionality, and implement notification frequency controls",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Push Notification Preparation",
+            "description": "Set up service worker for push notifications, implement notification permission handling, and prepare infrastructure for browser push notifications",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "Configure service worker for push notifications, implement permission request flow, set up notification registration and token management, and create push notification payload handling",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Integrate with Activity System for Automated Alerts",
+            "description": "Connect notification system with existing activity tracking, implement automated alert generation, and ensure seamless integration with current application flow",
+            "dependencies": [
+              3,
+              4,
+              5
+            ],
+            "details": "Integrate with activity logging system, implement automated notification triggers based on user activities, create activity-based notification rules, and ensure proper notification delivery and tracking",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
       },
       {
         "id": 12,

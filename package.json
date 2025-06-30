@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@prisma/client": "^6.10.1",
+    "@supabase/supabase-js": "^2.50.2",
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-query-devtools": "^5.81.5",
     "daisyui": "^5.0.43",
@@ -28,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint-config-prettier": "^10.1.5",
     "prettier": "^3.6.2",
+    "prisma": "^6.10.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

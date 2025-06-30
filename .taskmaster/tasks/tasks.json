@@ -78,7 +78,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -86,7 +86,7 @@
             "description": "Set up a new Supabase project, configure authentication settings, and establish basic project parameters including environment variables and connection strings.",
             "dependencies": [],
             "details": "Initialize Supabase project, configure authentication providers, set up environment variables, and test basic connectivity.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -97,7 +97,7 @@
               1
             ],
             "details": "Define Profile table schema for user data, create Farm table with ownership relationships, establish foreign key constraints, and add necessary indexes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -108,7 +108,7 @@
               2
             ],
             "details": "Create Animal table schema with fields for identification, species, health data, breeding records, location tracking, and relationships to Farm table.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -119,7 +119,7 @@
               3
             ],
             "details": "Design Activity table for task definitions, create ActivitySchedule for scheduling and tracking, establish relationships with Animal and Farm tables.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -130,7 +130,7 @@
               4
             ],
             "details": "Enable RLS on all tables, create policies for user-specific data access, implement farm-based access controls, and test security boundaries.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -141,7 +141,7 @@
               5
             ],
             "details": "Set up Supabase Storage buckets, configure file upload policies, install and configure Prisma, generate schema, and test integration.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -418,7 +418,7 @@
     ],
     "metadata": {
       "created": "2025-06-29T16:54:35.046Z",
-      "updated": "2025-06-29T17:27:44.577Z",
+      "updated": "2025-06-30T13:31:54.568Z",
       "description": "Tasks for master context"
     }
   }

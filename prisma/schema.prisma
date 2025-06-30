@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
+
+}
+
+model Profile {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  firstName     String?
+  lastName      String?
+  phoneNumber   String?
+  profileImage  String?      @map("profile_image")
+
+  ownedFarms    Farm[]       @relation("FarmOwner")
+  memberOfFarms FarmMember[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Farm {
+  id        String       @id @default(uuid())
+  name      String
+  province  String
+
+  ownerId   String
+  owner     Profile      @relation("FarmOwner", fields: [ownerId], references: [id])
+
+  members   FarmMember[]
+  animals   Animal[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("farms")
+}
+
+model FarmMember {
+  profileId String
+  farmId    String
+
+  profile Profile @relation(fields: [profileId], references: [id])
+  farm    Farm    @relation(fields: [farmId], references: [id])
+
+  @@id([profileId, farmId])
+  @@map("farm_members")
+}
+
+model Animal {
+  id          String   @id @default(uuid())
+  name        String
+  animalType  String   @map("animal_type")
+  microchip   String?
+  birthDate   DateTime? @map("birth_date")
+  weight      Float?
+  height      Float?
+  color       String?
+  fatherName  String?  @map("father_name")
+  motherName  String?  @map("mother_name")
+  image       String?
+
+  farmId      String
+  farm        Farm     @relation(fields: [farmId], references: [id])
+  
+  activities         Activity[]
+  activitySchedules  ActivitySchedule[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("animals")
+}
+
+enum ActivityStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  notes       String?
+  activityDate DateTime @map("activity_date")
+  status      ActivityStatus
+
+  animalId    String
+  animal      Animal   @relation(fields: [animalId], references: [id])
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("activities")
+}
+
+model ActivitySchedule {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  notes           String?
+  scheduledDate   DateTime @map("scheduled_date")
+  status          ActivityStatus
+  isRecurring     Boolean  @default(false) @map("is_recurring")
+  recurrenceType  String?  @map("recurrence_type") // e.g., "daily", "weekly", "monthly"
+
+  animalId        String
+  animal          Animal   @relation(fields: [animalId], references: [id])
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("activity_schedules")
+}

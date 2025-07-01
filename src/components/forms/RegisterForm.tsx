@@ -41,7 +41,9 @@ export function RegisterForm() {
         formData.append('confirmPassword', data.confirmPassword)
         formData.append('firstName', data.firstName)
         formData.append('lastName', data.lastName)
-        formData.append('email', data.email)
+        if (data.email) {
+          formData.append('email', data.email)
+        }
 
         const result = await signup(null, formData)
 

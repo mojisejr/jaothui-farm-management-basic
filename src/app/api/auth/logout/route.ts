@@ -3,16 +3,18 @@ import { clearAuthCookies } from '@/lib/jwt'
 
 export async function POST() {
   try {
-    // Clear auth cookies
-    await clearAuthCookies()
-
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: 'ออกจากระบบสำเร็จ',
       },
       { status: 200 },
     )
+
+    // Clear auth cookies
+    await clearAuthCookies()
+
+    return response
   } catch (error) {
     console.error('Logout error:', error)
     return NextResponse.json(

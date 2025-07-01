@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import {
   verifyPassword,
   validateThaiPhoneNumber,
@@ -7,7 +6,7 @@ import {
 } from '@/lib/password'
 import { generateTokenPair, setAuthCookies } from '@/lib/jwt'
 
-const prisma = new PrismaClient()
+import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,13 +75,10 @@ export async function POST(request: NextRequest) {
       lastName: user.lastName || undefined,
     })
 
-    // Set auth cookies
-    await setAuthCookies(tokenPair.accessToken, tokenPair.refreshToken)
-
     // Return success response (without password hash)
     const { passwordHash: _passwordHash, ...userResponse } = user
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: 'เข้าสู่ระบบสำเร็จ',
@@ -94,6 +90,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 },
     )
+
+    // Set auth cookies
+    await setAuthCookies(tokenPair.accessToken, tokenPair.refreshToken)
+
+    return response
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(

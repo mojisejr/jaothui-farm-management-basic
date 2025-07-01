@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Phone, Lock, LogIn } from 'lucide-react'
-import { login } from '@/app/login/actions'
 import { loginSchema, type LoginFormData } from '@/types/auth'
 
 export function LoginForm() {
@@ -32,29 +31,36 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormData) => {
     startTransition(async () => {
       try {
-        const formData = new FormData()
-        formData.append('phone', data.phone)
-        formData.append('password', data.password)
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phoneNumber: data.phone,
+            password: data.password,
+          }),
+          credentials: 'include',
+        })
 
-        const result = await login(null, formData)
+        const result = await response.json()
 
-        if (result.success) {
-          toast.success(result.message || 'Login successful!')
-          if (result.redirectUrl) {
-            router.push(result.redirectUrl)
-            router.refresh()
-          }
+        if (response.ok) {
+          toast.success(result.message || 'เข้าสู่ระบบสำเร็จ')
+          router.push('/profile')
+          router.refresh()
         } else {
-          toast.error(result.message || 'Login failed')
-          // Set form-level error if it's a general issue
-          if (result.message?.includes('credentials')) {
-            setError('phone', { message: 'Invalid credentials' })
-            setError('password', { message: 'Invalid credentials' })
+          toast.error(result.error || 'เข้าสู่ระบบไม่สำเร็จ')
+
+          // Show validation errors if any
+          if (result.error?.includes('ไม่พบบัญชีผู้ใช้')) {
+            setError('phone', { message: 'ไม่พบบัญชีผู้ใช้' })
+            setError('password', { message: 'หรือรหัสผ่านไม่ถูกต้อง' })
           }
         }
       } catch (error) {
         console.error('Form submission error:', error)
-        toast.error('An unexpected error occurred')
+        toast.error('เกิดข้อผิดพลาดที่ไม่คาดคิด')
       }
     })
   }

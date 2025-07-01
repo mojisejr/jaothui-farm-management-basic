@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
+import { jwtVerify, type JWTPayload } from 'jose'
+
+const JWT_SECRET = process.env.JWT_SECRET || ''
 
 // Protected routes that require authentication
 const PROTECTED_ROUTES = ['/profile', '/farm/create', '/farm', '/dashboard']
@@ -24,12 +26,13 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Get access token from cookies
-    const accessToken = await getAccessTokenFromCookies()
+    const accessToken = request.cookies.get('access_token')?.value || null
+    // const accessToken = await getAccessTokenFromCookies()
     let user = null
 
     // Verify token if it exists
     if (accessToken) {
-      const tokenPayload = verifyAccessToken(accessToken)
+      const tokenPayload = await verifyAccessTokenEdge(accessToken)
       if (tokenPayload) {
         user = {
           id: tokenPayload.userId,
@@ -102,6 +105,21 @@ function isAuthRoutes(pathname: string): boolean {
 
 function _isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.includes(pathname)
+}
+
+// Helper function to verify JWT in Edge Runtime using jose
+async function verifyAccessTokenEdge(
+  token: string,
+): Promise<JWTPayload | null> {
+  try {
+    if (!JWT_SECRET) return null
+    const secret = new TextEncoder().encode(JWT_SECRET)
+    const { payload } = await jwtVerify(token, secret)
+    if (payload.type !== 'access') return null
+    return payload
+  } catch (_error) {
+    return null
+  }
 }
 
 export const config = {

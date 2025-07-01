@@ -16,6 +16,7 @@ export async function POST(_request: NextRequest) {
     const refreshToken = await getRefreshTokenFromCookies()
 
     if (!refreshToken) {
+      await clearAuthCookies()
       return NextResponse.json(
         { error: 'ไม่พบ refresh token' },
         { status: 401 },
@@ -25,7 +26,6 @@ export async function POST(_request: NextRequest) {
     // Verify refresh token
     const tokenPayload = verifyRefreshToken(refreshToken)
     if (!tokenPayload) {
-      // Clear invalid cookies
       await clearAuthCookies()
       return NextResponse.json(
         { error: 'Refresh token ไม่ถูกต้องหรือหมดอายุ' },
@@ -48,7 +48,6 @@ export async function POST(_request: NextRequest) {
     })
 
     if (!user) {
-      // User no longer exists, clear cookies
       await clearAuthCookies()
       return NextResponse.json({ error: 'ไม่พบบัญชีผู้ใช้' }, { status: 401 })
     }
@@ -61,9 +60,6 @@ export async function POST(_request: NextRequest) {
       firstName: user.firstName || undefined,
       lastName: user.lastName || undefined,
     })
-
-    // Set new auth cookies
-    await setAuthCookies(newTokenPair.accessToken, newTokenPair.refreshToken)
 
     // Prepare user data for response (without sensitive data)
     const userData = {
@@ -78,6 +74,8 @@ export async function POST(_request: NextRequest) {
     }
 
     // Return success response with user data
+    await setAuthCookies(newTokenPair.accessToken, newTokenPair.refreshToken)
+
     return NextResponse.json(
       {
         success: true,
@@ -92,7 +90,6 @@ export async function POST(_request: NextRequest) {
     )
   } catch (error) {
     console.error('Token refresh error:', error)
-    // Clear cookies on any error
     await clearAuthCookies()
     return NextResponse.json(
       { error: 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์' },

@@ -31,15 +31,18 @@ model Profile {
 }
 
 model Farm {
-  id        String       @id @default(uuid())
-  name      String
-  province  String
-  ownerId   String
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-  animals   Animal[]
-  members   FarmMember[]
-  owner     Profile      @relation("FarmOwner", fields: [ownerId], references: [id])
+  id          String       @id @default(uuid())
+  name        String
+  province    String
+  size        Float?       // ขนาดพื้นที่ในไร่
+  cropTypes   String[]     @default([]) @map("crop_types") // ประเภทพืชที่ปลูก
+  description String?      // รายละเอียดเพิ่มเติม
+  ownerId     String
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  animals     Animal[]
+  members     FarmMember[]
+  owner       Profile      @relation("FarmOwner", fields: [ownerId], references: [id])
 
   @@map("farms")
 }

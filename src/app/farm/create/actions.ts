@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { farmCreateSchema } from '@/types/farm'
 
 const prisma = new PrismaClient()
 
@@ -45,18 +46,40 @@ export async function createFarm(
       }
     }
 
+    // Get form data
     const name = formData.get('name') as string
     const province = formData.get('province') as string
+    const sizeStr = formData.get('size') as string
+    const description = formData.get('description') as string
+    const cropTypes = formData.getAll('cropTypes') as string[]
 
-    if (!name || !province) {
-      return { message: 'กรุณากรอกชื่อฟาร์มและจังหวัด' }
+    // Convert size to number
+    const size = sizeStr ? parseFloat(sizeStr) : undefined
+
+    // Zod validation
+    const parsed = farmCreateSchema.safeParse({
+      name,
+      province,
+      size,
+      cropTypes,
+      description: description || undefined,
+    })
+
+    if (!parsed.success) {
+      const firstError = parsed.error.errors[0]?.message || 'ข้อมูลไม่ถูกต้อง'
+      return { message: firstError }
     }
+
+    const validatedData = parsed.data
 
     // Create new farm
     const newFarm = await prisma.farm.create({
       data: {
-        name: name.trim(),
-        province: province.trim(),
+        name: validatedData.name,
+        province: validatedData.province,
+        size: validatedData.size,
+        cropTypes: validatedData.cropTypes,
+        description: validatedData.description,
         ownerId: profile.id,
       },
     })

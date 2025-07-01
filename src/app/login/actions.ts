@@ -26,17 +26,20 @@ export async function login(
     const { phone, password } = validatedFields.data
 
     // Call login API
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/login`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: phone,
+          password,
+        }),
+        credentials: 'include',
       },
-      body: JSON.stringify({
-        phoneNumber: phone,
-        password,
-      }),
-      credentials: 'include',
-    })
+    )
 
     const data = await response.json()
 

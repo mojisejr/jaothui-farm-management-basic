@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { ArrowLeft, PawPrint } from 'lucide-react'
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     farmId?: string
-  }
+  }>
 }
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default async function AnimalCreatePage({ searchParams }: Props) {
   }
 
   // Get farmId from search params
-  const { farmId } = searchParams
+  const { farmId } = await searchParams
 
   if (!farmId) {
     redirect('/farms')

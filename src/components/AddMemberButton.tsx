@@ -28,7 +28,7 @@ export default function AddMemberButton({ farmId }: Props) {
       } else {
         toast.error(data.error || 'ไม่สามารถเพิ่มสมาชิกได้')
       }
-    } catch (e) {
+    } catch (_e) {
       toast.error('เกิดข้อผิดพลาด')
     } finally {
       setIsLoading(false)

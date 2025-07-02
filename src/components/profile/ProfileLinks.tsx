@@ -51,7 +51,7 @@ export default function ProfileLinks() {
         const data = await res.json()
         toast.error(data.error || 'เกิดข้อผิดพลาด')
       }
-    } catch (e) {
+    } catch (_e) {
       toast.error('เกิดข้อผิดพลาด')
     } finally {
       setLoading(false)

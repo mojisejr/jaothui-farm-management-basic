@@ -40,12 +40,7 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            // @ts-ignore - Prisma types will be updated after migration
-            animalType: {
-              select: {
-                name: true,
-              },
-            },
+            microchip: true,
           },
         },
         _count: {

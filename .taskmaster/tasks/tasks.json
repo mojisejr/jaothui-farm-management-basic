@@ -424,8 +424,81 @@
         "dependencies": [
           6
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "in-progress",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "สร้าง Tab Navigation และ Dashboard Layout",
+            "description": "สร้างคอมโพเนนต์ DashboardLayout และ TabNavigation (DaisyUI Tabs) สำหรับ 2 แท็บ: \"ข้อมูลสัตว์\" และ \"กิจกรรม\" รวมถึงเส้นทางหลัก /farm/[id]/dashboard",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 2,
+            "title": "สร้าง Animals List Tab",
+            "description": "Develop AnimalsList page: fetch animals for farm, grid card layout, search & filter by keyword/type, loading & empty states",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 3,
+            "title": "สร้าง Activity List Tab",
+            "description": "Develop ActivityList page: fetch activities, table view with filters (status, date), pagination, loading & empty states",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 4,
+            "title": "เชื่อมต่อ API + React Query & Error Boundary",
+            "description": "Integrate data fetching with React Query, add Suspense, error handling, ensure responsive design, and unit tests",
+            "details": "",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 5,
+            "title": "สร้าง Search & Filter Components",
+            "description": "พัฒนา SearchBar พร้อม dropdown ให้เลือก field (Name / Microchip) ใน Animals, (Name / Microchip / Due Date) ใน Activities และ FilterDrawer (AnimalType, Activity Status, Date Range)",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 6,
+            "title": "เพิ่ม Pagination & Mobile Optimized Page Size",
+            "description": "กำหนด page size = 20 รายการต่อหน้า (เหมาะกับ mobile), เพิ่มตัวควบคุม pagination หรือ infinite-scroll สำหรับ Animal และ Activity list",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 7,
+            "title": "ออกแบบ Empty State + CTA",
+            "description": "สร้าง EmptyState component พร้อมไอคอนและปุ่ม CTA ไปยัง /animal/create หรือ /activity/create เมื่อไม่มีข้อมูลในแต่ละแท็บ",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7
+          },
+          {
+            "id": 8,
+            "title": "สร้าง Top Navbar สำหรับ Dashboard",
+            "description": "เพิ่ม Navbar ด้านบนภายใน DashboardLayout แสดงชื่อฟาร์ม, ปุ่มกลับหน้า Farm Overview, และอาจโชว์สรุปจำนวนสัตว์/กิจกรรม",
+            "details": "",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 7
+          }
+        ]
       },
       {
         "id": 8,
@@ -739,7 +812,7 @@
     ],
     "metadata": {
       "created": "2025-06-29T16:54:35.046Z",
-      "updated": "2025-07-02T08:11:32.480Z",
+      "updated": "2025-07-02T15:49:07.510Z",
       "description": "Tasks for master context"
     }
   }

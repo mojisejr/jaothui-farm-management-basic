@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DeleteFarmButton from '@/components/DeleteFarmButton'
 import AddMemberButton from '@/components/AddMemberButton'
+import { COOKIE } from '@/constants/cookies'
 
 interface FarmDetail {
   id: string
@@ -18,8 +19,9 @@ interface FarmDetail {
   isMember: boolean
   owner: {
     id: string
-    name: string
-    email: string
+    firstName: string | null
+    lastName: string | null
+    phoneNumber: string
   }
   _count: {
     animals: number
@@ -29,7 +31,7 @@ interface FarmDetail {
 
 async function getFarmDetail(farmId: string): Promise<FarmDetail> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('token')?.value
+  const token = cookieStore.get(COOKIE.ACCESS)?.value
 
   if (!token) {
     redirect('/auth/login')
@@ -39,7 +41,7 @@ async function getFarmDetail(farmId: string): Promise<FarmDetail> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/farm/${farmId}`, {
       headers: {
-        Cookie: `token=${token}`,
+        Cookie: `${COOKIE.ACCESS}=${token}`,
         'Cache-Control': 'no-cache',
       },
       cache: 'no-store',
@@ -61,7 +63,8 @@ async function getFarmDetail(farmId: string): Promise<FarmDetail> {
       throw new Error('Failed to fetch farm details')
     }
 
-    return await response.json()
+    const data = await response.json()
+    return data.farm as FarmDetail
   } catch (error) {
     console.error('Error fetching farm details:', error)
     throw error
@@ -97,7 +100,10 @@ export default async function FarmDetailPage({
             <li>
               <Link href="/farms">ฟาร์มของฉัน</Link>
             </li>
-            <li>{farm.name}</li>
+            <li>
+              {`${farm.owner.firstName ?? ''} ${farm.owner.lastName ?? ''}`.trim() ||
+                farm.owner.phoneNumber}
+            </li>
           </ul>
         </div>
 
@@ -167,7 +173,10 @@ export default async function FarmDetailPage({
                     </h3>
                     <p className="flex items-center gap-2">
                       <span>👤</span>
-                      <span>{farm.owner.name}</span>
+                      <span>
+                        {`${farm.owner.firstName ?? ''} ${farm.owner.lastName ?? ''}`.trim() ||
+                          farm.owner.phoneNumber}
+                      </span>
                     </p>
                   </div>
 

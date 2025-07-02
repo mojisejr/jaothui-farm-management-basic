@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
+import { COOKIE } from '@/constants/cookies'
 
 if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required')
@@ -121,7 +122,7 @@ export async function setAuthCookies(
   const cookieStore = await cookies()
 
   // Access Token Cookie (httpOnly, secure)
-  cookieStore.set('access_token', accessToken, {
+  cookieStore.set(COOKIE.ACCESS, accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -130,7 +131,7 @@ export async function setAuthCookies(
   })
 
   // Refresh Token Cookie (httpOnly, secure)
-  cookieStore.set('refresh_token', refreshToken, {
+  cookieStore.set(COOKIE.REFRESH, refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -145,8 +146,8 @@ export async function setAuthCookies(
 export async function clearAuthCookies() {
   const cookieStore = await cookies()
 
-  cookieStore.delete('access_token')
-  cookieStore.delete('refresh_token')
+  cookieStore.delete(COOKIE.ACCESS)
+  cookieStore.delete(COOKIE.REFRESH)
 }
 
 /**
@@ -155,7 +156,7 @@ export async function clearAuthCookies() {
 export async function getAccessTokenFromCookies(): Promise<string | null> {
   try {
     const cookieStore = await cookies()
-    return cookieStore.get('access_token')?.value || null
+    return cookieStore.get(COOKIE.ACCESS)?.value || null
   } catch (error) {
     console.error('Error reading access token from cookies:', error)
     return null
@@ -168,7 +169,7 @@ export async function getAccessTokenFromCookies(): Promise<string | null> {
 export async function getRefreshTokenFromCookies(): Promise<string | null> {
   try {
     const cookieStore = await cookies()
-    return cookieStore.get('refresh_token')?.value || null
+    return cookieStore.get(COOKIE.REFRESH)?.value || null
   } catch (error) {
     console.error('Error reading refresh token from cookies:', error)
     return null

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
+import { COOKIE } from '@/constants/cookies'
 
 interface FarmData {
   id: string
@@ -31,7 +32,7 @@ interface FarmResponse {
 
 async function getFarms(): Promise<FarmResponse> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('access_token')?.value
+  const token = cookieStore.get(COOKIE.ACCESS)?.value
 
   if (!token) {
     redirect('/auth/login')
@@ -41,13 +42,11 @@ async function getFarms(): Promise<FarmResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/farm`, {
       headers: {
-        Cookie: `access_token=${token}`,
+        Cookie: `${COOKIE.ACCESS}=${token}`,
         'Cache-Control': 'no-cache',
       },
       cache: 'no-store',
     })
-
-    console.log('response: ', response)
 
     if (response.status === 401) {
       redirect('/profile')

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { jwtVerify, type JWTPayload } from 'jose'
+import { COOKIE } from '@/constants/cookies'
 
 const JWT_SECRET = process.env.JWT_SECRET || ''
 
@@ -26,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Get access token from cookies
-    const accessToken = request.cookies.get('access_token')?.value || null
+    const accessToken = request.cookies.get(COOKIE.ACCESS)?.value || null
     // const accessToken = await getAccessTokenFromCookies()
     let user = null
 

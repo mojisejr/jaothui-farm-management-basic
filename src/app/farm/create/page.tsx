@@ -1,15 +1,15 @@
 'use client'
-
 import { useFormState } from 'react-dom'
 import { createFarm } from './actions'
 import { THAI_PROVINCES } from '@/types/farm'
+import { useActionState } from 'react'
 
 const initialState = {
   message: '',
 }
 
 export default function CreateFarmPage() {
-  const [state, formAction] = useFormState(createFarm, initialState)
+  const [state, formAction] = useActionState(createFarm, initialState)
 
   return (
     <div className="p-4 sm:p-6 md:p-8">

@@ -2,8 +2,7 @@
 
 import { useFormState } from 'react-dom'
 import { createFarm } from './actions'
-import { THAI_PROVINCES, CROP_TYPES } from '@/types/farm'
-import { useState } from 'react'
+import { THAI_PROVINCES } from '@/types/farm'
 
 const initialState = {
   message: '',
@@ -11,15 +10,6 @@ const initialState = {
 
 export default function CreateFarmPage() {
   const [state, formAction] = useFormState(createFarm, initialState)
-  const [selectedCrops, setSelectedCrops] = useState<string[]>([])
-
-  const handleCropChange = (crop: string, checked: boolean) => {
-    if (checked) {
-      setSelectedCrops([...selectedCrops, crop])
-    } else {
-      setSelectedCrops(selectedCrops.filter((c) => c !== crop))
-    }
-  }
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
@@ -85,42 +75,6 @@ export default function CreateFarmPage() {
                   className="input input-bordered"
                   placeholder="เช่น 5.5"
                 />
-              </div>
-
-              {/* ประเภทพืชที่ปลูก */}
-              <div className="form-control mt-4">
-                <label className="label">
-                  <span className="label-text">ประเภทพืชที่ปลูก</span>
-                  <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-4 border border-base-300 rounded-lg max-h-48 overflow-y-auto">
-                  {CROP_TYPES.map((crop) => (
-                    <label
-                      key={crop}
-                      className="cursor-pointer label justify-start gap-2 p-1"
-                    >
-                      <input
-                        type="checkbox"
-                        value={crop}
-                        checked={selectedCrops.includes(crop)}
-                        onChange={(e) =>
-                          handleCropChange(crop, e.target.checked)
-                        }
-                        className="checkbox checkbox-sm"
-                      />
-                      <span className="label-text text-sm">{crop}</span>
-                    </label>
-                  ))}
-                </div>
-                {/* Hidden inputs for selected crops */}
-                {selectedCrops.map((crop, index) => (
-                  <input
-                    key={index}
-                    type="hidden"
-                    name="cropTypes"
-                    value={crop}
-                  />
-                ))}
               </div>
 
               {/* รายละเอียดเพิ่มเติม */}

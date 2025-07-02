@@ -1,0 +1,67 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- **Component Split: Page Wrapper vs. Client Form**
+  - Page components (`/app/login/page.tsx`) remain *server* by default; wrap heavy client logic in a nested component + `<Suspense>`.
+  - Interactive pieces declare `'use client'` at top (e.g., `LoginForm.tsx`).
+
+- **File Naming & Locations**
+  - Pages: `src/app/<route>/page.tsx`.
+  - Pure form UI: `src/components/forms/*Form.tsx`.
+  - Actions: colocate under route folder (`src/app/<route>/actions.ts`).
+
+- **Hook Ordering & Schema Validation**
+  - Always use `react-hook-form` + `zodResolver` for form validation.
+  - Define schema in `@/types/*` and import (`loginSchema`).
+  - Call hooks (`useState`, `useTransition`, `useForm`) before any logic.
+
+- **Async Flow with Transition**
+  - Wrap async form submission in `startTransition` to keep UI responsive.
+  - Use `isPending` flag to disable inputs / show loading states.
+
+- **UI / Tailwind + DaisyUI**
+  - Use `card`, `input input-bordered`, `btn btn-primary` classes for consistent look.
+  - Apply gradient background for full-page auth screens: `bg-gradient-to-br from-base-200 to-base-300`.
+  - Icons via `lucide-react` – size 16-24 px inside labels, 4-6 px margin.
+
+- **Error & Success Feedback**
+  - Display server-side flash messages as `alert alert-error|success` blocks.
+  - Use `toast` (sonner) for async feedback (`toast.success`, `toast.error`).
+
+- **Accessibility Guidelines**
+  - Provide `<label htmlFor>` for each input.
+  - `button` icons need hidden text or descriptive label text.
+
+- **Form Field Structure**
+  - Wrapper: `div.form-control` with nested `label` + `input`.
+  - Validation error: render under field inside `label-text-alt text-error`.
+
+- **Server Actions (actions.ts)**
+  - ไฟล์ `actions.ts` ต้องวางในโฟลเดอร์ route (`src/app/<route>/actions.ts`).
+  - ใช้ `"use server"` ด้านบนเพื่อระบุว่าเป็น Server Action เมื่อจำเป็น (Next 14).
+  - รับ `FormData` หรือพารามิเตอร์อนุญาต และตรวจด้วย `zod` schema เดียวกับฝั่ง client.
+  - ห่อโค้ดใน `try/catch`; คืน `{ success: boolean, message?: string, error?: string }` เป็น JSON.
+  - เมื่อบันทึกข้อมูลสำเร็จ เรียก `revalidatePath('/profile')` หรือ path ที่เกี่ยวข้องเพื่อ refresh cache.
+  - หลีกเลี่ยงการโยน Error ออกนอก action; จัดการและส่งข้อความเองเพื่อ UX ที่คาดเดาได้.
+
+- **`use client` Conventions**
+  - Only include when component truly needs client-side hooks/events.
+  - Keep exports default for single component; named exports for utility forms (`LoginForm`).
+
+- **Strict TypeScript**
+  - Strongly type form data (`LoginFormData`) & API responses.
+  - Narrow exception handling: `catch (error) { console.error('Form submission error:', error) }`.
+
+- **Link & Navigation**
+  - Use `next/link` for SPA nav; avoid page reload.
+  - Provide fallback `<Suspense>` loaders with full-size spinner.
+
+- **Style Consistency Checklist (PR Review)**
+  - ☐ Page wrapper minimal, delegates to client component.
+  - ☐ Form uses `react-hook-form` + `zod`.
+  - ☐ Loading & disabled states implemented.
+  - ☐ Tailwind classes follow pattern above.
+  - ☐ Alerts + toast for feedback.
+  - ☐ All inputs labelled; icons sized consistently.

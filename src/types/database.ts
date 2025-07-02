@@ -135,7 +135,7 @@ export { ActivityStatus }
 // Search and filter types
 export interface AnimalFilters {
   farmId?: string
-  animalType?: string
+  animalTypeId?: string
   name?: string
   microchip?: string
 }

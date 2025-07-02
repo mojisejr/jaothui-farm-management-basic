@@ -1,0 +1,25 @@
+{
+  "name": "Jaothui Farm Management",
+  "short_name": "JaothuiFarm",
+  "description": "ระบบจัดการฟาร์มครบวงจรสำหรับเกษตรกรไทย",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/images/jaothui-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/jaothui-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

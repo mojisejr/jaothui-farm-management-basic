@@ -25,15 +25,13 @@ interface FarmResponse {
   farms: FarmData[]
   stats: {
     totalFarms: number
-    ownedFarms: number
-    memberFarms: number
     totalAnimals: number
   }
 }
 
 async function getFarms(): Promise<FarmResponse> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('token')?.value
+  const token = cookieStore.get('access_token')?.value
 
   if (!token) {
     redirect('/auth/login')
@@ -43,14 +41,16 @@ async function getFarms(): Promise<FarmResponse> {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/farm`, {
       headers: {
-        Cookie: `token=${token}`,
+        Cookie: `access_token=${token}`,
         'Cache-Control': 'no-cache',
       },
       cache: 'no-store',
     })
 
+    console.log('response: ', response)
+
     if (response.status === 401) {
-      redirect('/auth/login')
+      redirect('/profile')
     }
 
     if (!response.ok) {
@@ -71,11 +71,7 @@ function FarmCard({ farm }: { farm: FarmData }) {
         <div className="flex justify-between items-start">
           <h3 className="card-title text-lg">{farm.name}</h3>
           <div className="badge badge-sm">
-            {farm.isOwner ? (
-              <span className="text-primary">เจ้าของ</span>
-            ) : (
-              <span className="text-secondary">สมาชิก</span>
-            )}
+            <span className="text-primary">เจ้าของ</span>
           </div>
         </div>
 
@@ -88,23 +84,6 @@ function FarmCard({ farm }: { farm: FarmData }) {
               <span className="font-medium">ขนาด:</span>{' '}
               {farm.size.toLocaleString()} ไร่
             </p>
-          )}
-          {farm.cropTypes.length > 0 && (
-            <div>
-              <span className="font-medium">พืชผล:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {farm.cropTypes.slice(0, 3).map((crop, index) => (
-                  <span key={index} className="badge badge-outline badge-xs">
-                    {crop}
-                  </span>
-                ))}
-                {farm.cropTypes.length > 3 && (
-                  <span className="text-xs text-gray-500">
-                    +{farm.cropTypes.length - 3} อื่นๆ
-                  </span>
-                )}
-              </div>
-            </div>
           )}
         </div>
 
@@ -135,12 +114,10 @@ function StatsCard({
   title,
   value,
   icon,
-  description,
 }: {
   title: string
   value: number
   icon: string
-  description?: string
 }) {
   return (
     <div className="stat bg-base-100 border rounded-lg">
@@ -151,7 +128,6 @@ function StatsCard({
       <div className="stat-value text-2xl text-primary">
         {value.toLocaleString()}
       </div>
-      {description && <div className="stat-desc text-xs">{description}</div>}
     </div>
   )
 }
@@ -176,29 +152,11 @@ export default async function FarmsPage() {
 
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatsCard
-            title="ฟาร์มทั้งหมด"
-            value={stats.totalFarms}
-            icon="🏠"
-            description="ที่เป็นเจ้าของและสมาชิก"
-          />
-          <StatsCard
-            title="ฟาร์มที่เป็นเจ้าของ"
-            value={stats.ownedFarms}
-            icon="👑"
-            description="ฟาร์มที่คุณเป็นเจ้าของ"
-          />
-          <StatsCard
-            title="ฟาร์มที่เป็นสมาชิก"
-            value={stats.memberFarms}
-            icon="👥"
-            description="ฟาร์มที่คุณเป็นสมาชิก"
-          />
+          <StatsCard title="ฟาร์มทั้งหมด" value={stats.totalFarms} icon="🏠" />
           <StatsCard
             title="สัตว์ทั้งหมด"
             value={stats.totalAnimals}
             icon="🐄"
-            description="ในฟาร์มทั้งหมด"
           />
         </div>
 

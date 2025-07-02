@@ -40,7 +40,12 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            animalType: true,
+            // @ts-ignore - Prisma types will be updated after migration
+            animalType: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
         _count: {
@@ -128,14 +133,13 @@ export async function PUT(
 
     // รับข้อมูลจาก request body
     const body = await request.json()
-    const { name, province, size, cropTypes, description } = body
+    const { name, province, size, description } = body
 
     // Validate ข้อมูลด้วย Zod
     const validationResult = farmCreateSchema.safeParse({
       name,
       province,
       size,
-      cropTypes,
       description,
     })
 
@@ -154,7 +158,6 @@ export async function PUT(
         name: validatedData.name,
         province: validatedData.province,
         size: validatedData.size,
-        cropTypes: validatedData.cropTypes,
         description: validatedData.description,
       },
       include: {

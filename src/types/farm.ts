@@ -82,38 +82,6 @@ export const THAI_PROVINCES = [
   'นราธิวาส',
 ] as const
 
-export const CROP_TYPES = [
-  'ข้าว',
-  'ข้าวโพด',
-  'มันสำปะหลัง',
-  'อ้อย',
-  'ถั่วเหลือง',
-  'ถั่วเขียว',
-  'งา',
-  'ทำนบ',
-  'มะม่วง',
-  'มะละกอ',
-  'กล้วย',
-  'ส้ม',
-  'มะนาว',
-  'ทุเรียน',
-  'มังคุด',
-  'เงาะ',
-  'ลิ้นจี่',
-  'ลองกอง',
-  'กะหล่ำปลี',
-  'ผักบุ้ง',
-  'คะน้า',
-  'ผักชี',
-  'ต้นหอม',
-  'พริก',
-  'มะเขือเทศ',
-  'แตงกวา',
-  'ถั่วฝักยาว',
-  'มะเขือ',
-  'พืชอื่นๆ',
-] as const
-
 export const farmCreateSchema = z.object({
   name: z
     .string({ required_error: 'กรุณากรอกชื่อฟาร์ม' })
@@ -126,9 +94,6 @@ export const farmCreateSchema = z.object({
     .number({ required_error: 'กรุณากรอกขนาดพื้นที่' })
     .min(0.1, { message: 'ขนาดพื้นที่ต้องมากกว่า 0.1 ไร่' })
     .max(10000, { message: 'ขนาดพื้นที่ต้องไม่เกิน 10,000 ไร่' }),
-  cropTypes: z
-    .array(z.enum(CROP_TYPES))
-    .min(1, { message: 'กรุณาเลือกประเภทพืชที่ปลูกอย่างน้อย 1 ชนิด' }),
   description: z.string().optional(),
 })
 

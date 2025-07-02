@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DeleteFarmButton from '@/components/DeleteFarmButton'
+import AddMemberButton from '@/components/AddMemberButton'
 
 interface FarmDetail {
   id: string
@@ -183,25 +184,6 @@ export default async function FarmDetailPage({
               </div>
             </div>
 
-            {/* Crop Types */}
-            {farm.cropTypes.length > 0 && (
-              <div className="card bg-base-100 shadow-xl">
-                <div className="card-body">
-                  <h2 className="card-title text-xl mb-4">พืชผลที่ปลูก</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {farm.cropTypes.map((crop, index) => (
-                      <span
-                        key={index}
-                        className="badge badge-outline badge-lg"
-                      >
-                        {crop}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Description */}
             {farm.description && (
               <div className="card bg-base-100 shadow-xl">
@@ -260,12 +242,7 @@ export default async function FarmDetailPage({
                   >
                     🐄 จัดการสัตว์
                   </Link>
-                  <Link
-                    href={`/members?farm=${farm.id}`}
-                    className="btn btn-outline w-full justify-start"
-                  >
-                    👥 จัดการสมาชิก
-                  </Link>
+                  <AddMemberButton farmId={farm.id} />
                   <Link
                     href={`/reports?farm=${farm.id}`}
                     className="btn btn-outline w-full justify-start"

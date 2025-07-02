@@ -51,7 +51,6 @@ export async function createFarm(
     const province = formData.get('province') as string
     const sizeStr = formData.get('size') as string
     const description = formData.get('description') as string
-    const cropTypes = formData.getAll('cropTypes') as string[]
 
     // Convert size to number
     const size = sizeStr ? parseFloat(sizeStr) : undefined
@@ -61,7 +60,6 @@ export async function createFarm(
       name,
       province,
       size,
-      cropTypes,
       description: description || undefined,
     })
 
@@ -78,7 +76,6 @@ export async function createFarm(
         name: validatedData.name,
         province: validatedData.province,
         size: validatedData.size,
-        cropTypes: validatedData.cropTypes,
         description: validatedData.description,
         ownerId: profile.id,
       },

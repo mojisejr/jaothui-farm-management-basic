@@ -18,7 +18,7 @@ export async function GET(_request: NextRequest) {
 
     const userId = authResult.userId!
 
-    // ค้นหาฟาร์มที่เป็นเจ้าของ
+    // ค้นหาฟาร์มที่ผู้ใช้เป็นเจ้าของเท่านั้น
     const ownedFarms = await prisma.farm.findMany({
       where: { ownerId: userId },
       include: {
@@ -32,60 +32,20 @@ export async function GET(_request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    // ค้นหาฟาร์มที่เป็นสมาชิก
-    const memberFarms = await prisma.farmMember.findMany({
-      where: { profileId: userId },
-      include: {
-        farm: {
-          include: {
-            owner: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                phoneNumber: true,
-              },
-            },
-            _count: {
-              select: {
-                animals: true,
-                members: true,
-              },
-            },
-          },
-        },
-      },
-    })
-
-    // รวมข้อมูลฟาร์มทั้งหมด
-    const allFarms = [
-      ...ownedFarms.map((farm) => ({
-        ...farm,
-        role: 'owner' as const,
-        isOwner: true,
-        isMember: false,
-      })),
-      ...memberFarms.map((membership) => ({
-        ...membership.farm,
-        role: 'member' as const,
-        isOwner: false,
-        isMember: true,
-      })),
-    ]
-
-    // สถิติฟาร์ม
     const stats = {
-      totalFarms: allFarms.length,
-      ownedFarms: ownedFarms.length,
-      memberFarms: memberFarms.length,
-      totalAnimals: allFarms.reduce(
+      totalFarms: ownedFarms.length,
+      totalAnimals: ownedFarms.reduce(
         (sum, farm) => sum + farm._count.animals,
         0,
       ),
     }
 
     return NextResponse.json({
-      farms: allFarms,
+      farms: ownedFarms.map((farm) => ({
+        ...farm,
+        isOwner: true,
+        isMember: false,
+      })),
       stats,
     })
   } catch (error) {

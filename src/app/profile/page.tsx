@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import { redirect } from 'next/navigation'
 import ProfileCard from '@/components/profile/ProfileCard'
+import ProfileLinks from '@/components/profile/ProfileLinks'
 import { updateProfile } from './actions'
 
 const prisma = new PrismaClient()
@@ -55,6 +56,9 @@ export default async function ProfilePage() {
           profile={profile}
           updateProfileAction={updateProfile}
         />
+
+        {/* Quick Links */}
+        <ProfileLinks />
       </div>
     </div>
   )

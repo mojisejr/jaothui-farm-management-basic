@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { THAI_PROVINCES, CROP_TYPES } from '@/types/farm'
+import { THAI_PROVINCES } from '@/types/farm'
 
 interface FarmDetail {
   id: string
   name: string
   province: string
   size: number | null
-  cropTypes: string[]
   description: string | null
 }
 
@@ -27,18 +26,8 @@ export default function FarmEditForm({ farm }: FarmEditFormProps) {
     name: farm.name,
     province: farm.province,
     size: farm.size?.toString() || '',
-    cropTypes: farm.cropTypes,
     description: farm.description || '',
   })
-
-  const handleCropTypeChange = (crop: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      cropTypes: checked
-        ? [...prev.cropTypes, crop]
-        : prev.cropTypes.filter((c) => c !== crop),
-    }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,7 +39,6 @@ export default function FarmEditForm({ farm }: FarmEditFormProps) {
         name: formData.name,
         province: formData.province,
         size: formData.size ? parseFloat(formData.size) : null,
-        cropTypes: formData.cropTypes,
         description: formData.description || null,
       }
 
@@ -146,35 +134,6 @@ export default function FarmEditForm({ farm }: FarmEditFormProps) {
         <label className="label">
           <span className="label-text-alt text-gray-500">
             ระบุขนาดพื้นที่ฟาร์มเป็นไร่ (เช่น 5.5 ไร่)
-          </span>
-        </label>
-      </div>
-
-      {/* Crop Types */}
-      <div className="form-control">
-        <label className="label">
-          <span className="label-text font-medium">ประเภทพืชผลที่ปลูก</span>
-        </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-          {CROP_TYPES.map((crop) => (
-            <label
-              key={crop}
-              className="label cursor-pointer justify-start gap-2 p-2 hover:bg-base-200 rounded"
-            >
-              <input
-                type="checkbox"
-                checked={formData.cropTypes.includes(crop)}
-                onChange={(e) => handleCropTypeChange(crop, e.target.checked)}
-                className="checkbox checkbox-sm checkbox-primary"
-                disabled={isSubmitting}
-              />
-              <span className="label-text text-sm">{crop}</span>
-            </label>
-          ))}
-        </div>
-        <label className="label">
-          <span className="label-text-alt text-gray-500">
-            เลือกประเภทพืชผลที่คุณปลูกในฟาร์ม (สามารถเลือกได้หลายประเภท)
           </span>
         </label>
       </div>

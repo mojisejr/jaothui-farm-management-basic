@@ -1,4 +1,5 @@
 import { Prisma, ActivityStatus } from '@prisma/client'
+import { z } from 'zod'
 
 // Profile types
 export type Profile = Prisma.ProfileGetPayload<Record<string, never>>
@@ -46,6 +47,13 @@ export type FarmComplete = Prisma.FarmGetPayload<{
     animals: true
   }
 }>
+
+// AnimalType (simple interface based on schema)
+export interface AnimalType {
+  id: string
+  name: string
+  description?: string | null
+}
 
 // Animal types
 export type Animal = Prisma.AnimalGetPayload<Record<string, never>>
@@ -152,6 +160,94 @@ export interface FarmFilters {
   province?: string
   name?: string
 }
+
+// Animal registration form types
+export interface AnimalRegistrationForm {
+  name: string
+  animalTypeId: string
+  microchip?: string
+  birthDate?: Date
+  weight?: number
+  height?: number
+  color?: string
+  fatherName?: string
+  motherName?: string
+  farmId: string
+}
+
+// Thai livestock types enum
+export const THAI_LIVESTOCK_TYPES = [
+  'หมู',
+  'ไก่',
+  'โค',
+  'วัว',
+  'ควาย',
+  'ไก่ชน',
+  'เป็ด',
+  'ห่าน',
+  'ไก่เนื้อ',
+  'ไก่ไข่',
+] as const
+
+export type ThaiLivestockType = (typeof THAI_LIVESTOCK_TYPES)[number]
+
+// Zod validation schemas
+export const animalRegistrationSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'กรุณาระบุชื่อสัตว์')
+    .min(2, 'ชื่อสัตว์ต้องมีอย่างน้อย 2 ตัวอักษร')
+    .max(100, 'ชื่อสัตว์ต้องไม่เกิน 100 ตัวอักษร'),
+
+  animalTypeId: z.string().min(1, 'กรุณาเลือกประเภทสัตว์'),
+
+  microchip: z
+    .string()
+    .min(1, 'กรุณาระบุเลขไมโครชิป')
+    .max(50, 'ไมโครชิปต้องไม่เกิน 50 ตัวอักษร')
+    .optional(),
+
+  birthDate: z
+    .date()
+    .optional()
+    .refine((date) => {
+      if (!date) return true
+      const today = new Date()
+      const maxAge = new Date()
+      maxAge.setFullYear(today.getFullYear() - 50) // สัตว์อายุไม่เกิน 50 ปี
+      return date >= maxAge && date <= today
+    }, 'วันเกิดไม่ถูกต้อง'),
+
+  weight: z
+    .number()
+    .positive('น้ำหนักต้องเป็นจำนวนบวก')
+    .max(10000, 'น้ำหนักต้องไม่เกิน 10,000 กิโลกรัม')
+    .optional(),
+
+  height: z
+    .number()
+    .positive('ส่วนสูงต้องเป็นจำนวนบวก')
+    .max(1000, 'ส่วนสูงต้องไม่เกิน 1,000 เซนติเมตร')
+    .optional(),
+
+  color: z.string().max(50, 'สีต้องไม่เกิน 50 ตัวอักษร').optional(),
+
+  fatherName: z
+    .string()
+    .max(100, 'ชื่อพ่อพันธุ์ต้องไม่เกิน 100 ตัวอักษร')
+    .optional(),
+
+  motherName: z
+    .string()
+    .max(100, 'ชื่อแม่พันธุ์ต้องไม่เกิน 100 ตัวอักษร')
+    .optional(),
+
+  farmId: z.string().min(1, 'ไม่พบข้อมูลฟาร์ม'),
+})
+
+export type AnimalRegistrationFormData = z.infer<
+  typeof animalRegistrationSchema
+>
 
 // Pagination types
 export interface PaginationOptions {

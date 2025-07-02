@@ -354,8 +354,65 @@
         "dependencies": [
           5
         ],
-        "status": "pending",
-        "subtasks": []
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Setup Animal Types and Type Definitions",
+            "description": "Create type definitions for animals and ensure all 10 Thai livestock types are in database",
+            "details": "Create TypeScript types for Animal in /types/database.ts, implement seed data for AnimalType table with 10 Thai livestock types (หมู, ไก่, โค, วัว, ควาย, ไก่ชน, เป็ด, ห่าน, ไก่เนื้อ, ไก่ไข่), and create validation schemas",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 6
+          },
+          {
+            "id": 2,
+            "title": "Create Microchip Generation Utility",
+            "description": "Implement microchip generation system with format TH{farmId}{timestamp}{random}",
+            "details": "Create utility function in /lib/microchip.ts that generates unique microchips following the format TH{farmId}{timestamp}{random}, ensure uniqueness across the system, and include proper error handling",
+            "status": "done",
+            "dependencies": [
+              1
+            ],
+            "parentTaskId": 6
+          },
+          {
+            "id": 3,
+            "title": "Create Animal Registration Form Components",
+            "description": "Build React components for animal registration form with DaisyUI styling",
+            "details": "Create AnimalCreateForm component with animal type selector, date picker for Buddhist calendar (พ.ศ.), input fields for weight/height/color, form validation with react-hook-form and zod, proper error handling and loading states",
+            "status": "done",
+            "dependencies": [
+              1,
+              2
+            ],
+            "parentTaskId": 6
+          },
+          {
+            "id": 4,
+            "title": "Implement Animal Registration Server Actions",
+            "description": "Create server actions for animal CRUD operations with JWT authentication",
+            "details": "Create server actions in /app/animal/create/actions.ts for creating animals, include JWT token verification, database operations with Prisma, automatic microchip generation, and proper error handling with validation",
+            "status": "done",
+            "dependencies": [
+              2,
+              3
+            ],
+            "parentTaskId": 6
+          },
+          {
+            "id": 5,
+            "title": "Create Animal Registration Page and Routes",
+            "description": "Build complete animal registration page with navigation and form integration",
+            "details": "Create /app/animal/create/page.tsx with protected route, integrate AnimalCreateForm component, add navigation from farm dashboard, implement success/error feedback, and ensure responsive design with DaisyUI",
+            "status": "done",
+            "dependencies": [
+              3,
+              4
+            ],
+            "parentTaskId": 6
+          }
+        ]
       },
       {
         "id": 7,
@@ -682,7 +739,7 @@
     ],
     "metadata": {
       "created": "2025-06-29T16:54:35.046Z",
-      "updated": "2025-07-01T14:59:09.507Z",
+      "updated": "2025-07-02T08:11:32.480Z",
       "description": "Tasks for master context"
     }
   }

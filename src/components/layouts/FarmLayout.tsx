@@ -3,6 +3,7 @@
 import { Home, Plus, Users } from 'lucide-react'
 import { PageLayout, type BreadcrumbItem } from './PageLayout'
 import JaothuiLogo from '../JaothuiLogo'
+import Link from 'next/link'
 
 export interface FarmLayoutProps {
   // Content
@@ -118,22 +119,22 @@ export function FarmLayout({
   const floatingActions = (
     <div className="flex flex-col gap-3">
       {showCreateButton && (
-        <a
+        <Link
           href="/farm/create"
           className="btn btn-primary btn-circle shadow-lg"
           title="สร้างฟาร์มใหม่"
         >
           <Plus className="w-5 h-5" />
-        </a>
+        </Link>
       )}
       {showMembersButton && farmId && (
-        <a
+        <Link
           href={`/farm/${farmId}/members`}
           className="btn btn-secondary btn-circle shadow-lg"
           title="จัดการสมาชิก"
         >
           <Users className="w-5 h-5" />
-        </a>
+        </Link>
       )}
     </div>
   )

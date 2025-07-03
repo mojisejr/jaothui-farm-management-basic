@@ -41,7 +41,7 @@ export interface FilterDrawerProps {
 }
 
 // Helper function to format status labels
-const getStatusLabel = (status: string): string => {
+const _getStatusLabel = (status: string): string => {
   const statusMap: Record<string, string> = {
     PENDING: 'รอดำเนินการ',
     IN_PROGRESS: 'กำลังดำเนินการ',
@@ -52,7 +52,7 @@ const getStatusLabel = (status: string): string => {
 }
 
 // Helper function to get status color
-const getStatusColor = (status: string): string => {
+const _getStatusColor = (status: string): string => {
   const statusColors: Record<string, string> = {
     PENDING: 'badge-warning',
     IN_PROGRESS: 'badge-info',

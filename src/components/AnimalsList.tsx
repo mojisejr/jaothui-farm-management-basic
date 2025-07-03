@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, RefreshCw, Plus } from 'lucide-react'
+import { Filter, RefreshCw, Plus } from 'lucide-react'
 import { useFarmAnimals } from '@/hooks'
 import AnimalCard from './AnimalCard'
 import SearchBar, { AnimalSearchField } from './SearchBar'
@@ -10,12 +10,12 @@ import Pagination from './common/Pagination'
 import EmptyState from './common/EmptyState'
 import Link from 'next/link'
 
-interface AnimalType {
+interface _AnimalType {
   id: string
   name: string
 }
 
-interface Animal {
+interface _Animal {
   id: string
   name: string
   microchip: string | null
@@ -25,7 +25,7 @@ interface Animal {
   color: string | null
   image: string | null
   createdAt: string
-  animalType: AnimalType | null
+  animalType: _AnimalType | null
 }
 
 interface Pagination {

@@ -1,4 +1,4 @@
-import { Users, MapPin, Settings, Crown } from 'lucide-react'
+import { MapPin, Settings, Crown } from 'lucide-react'
 
 interface FarmHeaderCardProps {
   farm: {

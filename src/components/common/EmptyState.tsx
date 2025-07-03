@@ -1,6 +1,6 @@
 'use client'
 
-import { Plus, Users, Calendar, Trash2 } from 'lucide-react'
+import { Plus, Users, Calendar } from 'lucide-react'
 import Link from 'next/link'
 
 interface EmptyStateProps {

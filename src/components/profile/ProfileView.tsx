@@ -1,7 +1,5 @@
-import { JWTUser } from '@/types/auth'
 import { Profile } from '@/types/database'
-import { Edit, Mail, Phone, Calendar, User as UserIcon } from 'lucide-react'
-import { formatPhoneNumber, formatDateThai } from '@/lib/utils'
+import { JWTUser } from '@/types/auth'
 import ImageUpload from './ImageUpload'
 
 interface ProfileViewProps {

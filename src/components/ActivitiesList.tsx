@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, RefreshCw, Plus, Calendar } from 'lucide-react'
+import { Filter, RefreshCw, Plus } from 'lucide-react'
 import { useFarmActivities } from '@/hooks'
 import ActivityCard from './ActivityCard'
 import SearchBar, { ActivitySearchField } from './SearchBar'
@@ -18,7 +18,7 @@ interface Animal {
   } | null
 }
 
-interface Activity {
+interface _Activity {
   id: string
   title: string
   description: string | null
@@ -29,7 +29,7 @@ interface Activity {
   animal: Animal
 }
 
-interface StatusOption {
+interface _StatusOption {
   value: string
   label: string
 }

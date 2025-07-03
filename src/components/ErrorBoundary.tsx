@@ -130,7 +130,7 @@ export default ErrorBoundary
 
 // Hook version for functional components
 export const useErrorHandler = () => {
-  const handleError = React.useCallback((error: Error, errorInfo?: any) => {
+  const handleError = React.useCallback((error: Error, errorInfo?: unknown) => {
     console.error('Error caught by error handler:', error)
 
     if (errorInfo) {

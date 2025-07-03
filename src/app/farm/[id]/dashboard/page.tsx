@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import { COOKIE } from '@/constants/cookies'
 import DashboardLayout from '@/components/DashboardLayout'
 

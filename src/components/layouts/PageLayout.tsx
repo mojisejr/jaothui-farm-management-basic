@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Home } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useTheme, ThemeSelector } from '@/contexts/ThemeContext'
 
 export interface BreadcrumbItem {
@@ -15,7 +15,7 @@ export interface TabConfig {
   id: string
   label: string
   icon?: React.ComponentType<{ className?: string }>
-  component?: React.ComponentType<any>
+  component?: React.ComponentType<Record<string, unknown>>
   badge?: string | number
 }
 

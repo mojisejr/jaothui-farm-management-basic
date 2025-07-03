@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Settings, Shield, Bell, LogOut, Home } from 'lucide-react'
+import { User, Settings, Shield, Bell, Home } from 'lucide-react'
 import { PageLayout, type TabConfig, type BreadcrumbItem } from './PageLayout'
+import JaothuiLogo from '../JaothuiLogo'
 
 export interface ProfileLayoutProps {
   // Content
@@ -65,8 +66,7 @@ export function ProfileLayout({
   children,
   title,
   subtitle,
-  variant = 'default',
-  background = 'gradient',
+  variant: _variant = 'default',
   tabs,
   activeTab,
   onTabChange,
@@ -103,10 +103,10 @@ export function ProfileLayout({
     }
 
     // Add profile context based on variant
-    if (variant === 'settings') {
+    if (_variant === 'settings') {
       breadcrumbs.push({ label: 'โปรไฟล์', href: '/profile' })
       breadcrumbs.push({ label: 'ตั้งค่า' })
-    } else if (variant === 'secure') {
+    } else if (_variant === 'secure') {
       breadcrumbs.push({ label: 'โปรไฟล์', href: '/profile' })
       breadcrumbs.push({ label: 'ความปลอดภัย' })
     } else {
@@ -114,18 +114,6 @@ export function ProfileLayout({
     }
 
     return breadcrumbs
-  }
-
-  // Get background style
-  const getBackgroundStyle = () => {
-    switch (background) {
-      case 'gradient':
-        return 'gradient'
-      case 'dark':
-        return 'dark'
-      default:
-        return 'default'
-    }
   }
 
   // Profile quick actions for mobile
@@ -148,13 +136,15 @@ export function ProfileLayout({
       showBackButton={true}
       backUrl={backUrl}
       breadcrumbs={buildBreadcrumbs()}
-      // Header
+      // Dashboard Header
+      variant="dashboard"
+      background="dark"
+      dashboardTitle={title}
+      dashboardLogo={<JaothuiLogo />}
+      // Header subtitle inside card
       title={title}
       subtitle={subtitle}
-      // Layout - no header card as per requirement
-      variant="container"
-      background={getBackgroundStyle()}
-      // Tabs - Dynamic tab support
+      // Tabs
       tabs={profileTabs}
       activeTab={activeTab || currentTab}
       onTabChange={handleTabChange}
@@ -165,8 +155,8 @@ export function ProfileLayout({
       // Error Handling
       error={error}
       onRetry={onRetry}
-      // Profile-specific styling
-      contentClassName="container mx-auto px-4 py-8 max-w-4xl"
+      // Content class inside big card
+      contentClassName="max-w-4xl mx-auto"
     >
       {children}
     </PageLayout>

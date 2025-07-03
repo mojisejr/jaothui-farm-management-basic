@@ -554,7 +554,7 @@
         "dependencies": [
           7
         ],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -852,11 +852,91 @@
             "testStrategy": "End-to-end testing of complete authentication flow, file upload functionality, and system integration testing"
           }
         ]
+      },
+      {
+        "id": 14,
+        "title": "Refactor and Unify Page Layouts with Shared PageLayout Component",
+        "description": "Create a unified PageLayout component with mobile back-button, desktop breadcrumb, and optional header card slot to replace individual layouts across Dashboard, Farm, and Profile pages while adding dynamic tab support for Profile pages.",
+        "details": "Create a shared PageLayout component that provides consistent navigation patterns across all pages. The component should include: mobile back-button navigation with proper routing, desktop breadcrumb navigation showing page hierarchy, optional header card slot for contextual information, responsive design that adapts to screen sizes. Build specific layout components: update existing DashboardLayout to use PageLayout, create new FarmLayout with farm-specific navigation, create new ProfileLayout with dynamic tab support (no header card needed). Implement tab system for Profile pages supporting multiple sections like personal info, settings, and preferences. Migrate existing pages to use the new layout system: Dashboard pages, Farm management pages, Profile pages. Ensure proper TypeScript typing for all layout props and maintain consistent styling with DaisyUI theme. Add proper error boundaries and loading states for each layout. Consider accessibility with proper ARIA labels and keyboard navigation support.",
+        "testStrategy": "Verify PageLayout component renders correctly on both mobile and desktop viewports. Test back-button functionality navigates to correct previous pages. Validate breadcrumb navigation shows proper page hierarchy and links work correctly. Test optional header card slot displays content when provided and hides when not needed. Verify DashboardLayout, FarmLayout, and ProfileLayout all use PageLayout consistently. Test Profile page tab navigation switches between sections properly. Validate responsive design adapts layouts correctly across different screen sizes. Test all migrated pages maintain their functionality while using new layouts. Verify accessibility compliance with keyboard navigation and screen reader support.",
+        "status": "pending",
+        "dependencies": [
+          7
+        ],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Analyze and Design API & Props for Shared PageLayout Component",
+            "description": "Define the comprehensive API and prop structure for the PageLayout component that will serve as the foundation for all page layouts. This includes designing props for mobile back-button navigation, desktop breadcrumb navigation, optional header card slot, and dynamic tab support.",
+            "dependencies": [],
+            "details": "Create TypeScript interfaces for PageLayoutProps including: backButton (mobile navigation config), breadcrumbs (desktop navigation array), headerCard (optional React node slot), tabs (dynamic tab configuration), children (page content), and responsive behavior flags. Design the component architecture to support different layout modes (dashboard, farm, profile) while maintaining consistency. Document prop specifications, default values, and usage patterns. Consider accessibility requirements for ARIA labels and keyboard navigation.",
+            "status": "pending",
+            "testStrategy": "Create comprehensive prop validation tests and document API usage examples"
+          },
+          {
+            "id": 2,
+            "title": "Implement Core PageLayout Component with Responsive Styles",
+            "description": "Build the foundational PageLayout component with responsive design, mobile back-button navigation, desktop breadcrumb navigation, optional header card slot, and dynamic tab support using DaisyUI styling.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement the PageLayout component based on the designed API. Include responsive breakpoints for mobile/desktop navigation switching, proper routing integration for back-button functionality, breadcrumb rendering with proper hierarchy display, header card slot implementation, and tab navigation system. Apply DaisyUI classes for consistent theming and ensure proper TypeScript typing. Add error boundaries and loading states. Implement accessibility features including ARIA labels, keyboard navigation, and screen reader support.",
+            "status": "pending",
+            "testStrategy": "Unit tests for component rendering, responsive behavior tests, accessibility tests with screen readers, and navigation functionality tests"
+          },
+          {
+            "id": 3,
+            "title": "Refactor DashboardLayout to Use PageLayout Component",
+            "description": "Update the existing DashboardLayout component to wrap the TabNavigation system using the new PageLayout component, maintaining all current functionality while adopting the unified layout structure.",
+            "dependencies": [
+              2
+            ],
+            "details": "Refactor DashboardLayout to use PageLayout as the base component while preserving existing TabNavigation functionality. Configure appropriate breadcrumbs for dashboard pages, set up mobile back-button navigation, and ensure the header card slot is properly utilized for dashboard-specific content. Update all dashboard page imports and ensure backward compatibility. Maintain existing styling and behavior while leveraging the new unified layout system.",
+            "status": "pending",
+            "testStrategy": "Regression tests to ensure dashboard functionality remains intact, visual comparison tests, and navigation flow tests"
+          },
+          {
+            "id": 4,
+            "title": "Create FarmLayout Component and Migrate Farm Pages",
+            "description": "Develop a new FarmLayout component that extends PageLayout with farm-specific navigation patterns and migrate all farm management pages including edit, members, and other farm subpages to use this new layout.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create FarmLayout component extending PageLayout with farm-specific configurations including appropriate breadcrumb hierarchies for farm pages, mobile back-button routing to farm overview, and header card slot for farm context information. Migrate existing farm pages (farm edit, farm members, farm settings, etc.) to use FarmLayout. Ensure proper navigation flow between farm pages and maintain farm-specific styling requirements. Update routing and page components to use the new layout system.",
+            "status": "pending",
+            "testStrategy": "Integration tests for farm page navigation, user flow tests for farm management tasks, and mobile/desktop layout verification"
+          },
+          {
+            "id": 5,
+            "title": "Create ProfileLayout with Dynamic Tab Support and Migrate Profile Pages",
+            "description": "Develop ProfileLayout component with dynamic tab support for multiple profile sections (personal info, settings, preferences) and migrate all existing profile pages to use this new layout system.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create ProfileLayout component extending PageLayout with dynamic tab configuration supporting multiple profile sections. Implement tab switching functionality, proper routing for tab navigation, and state management for active tab selection. Configure breadcrumbs for profile pages and mobile back-button navigation. Migrate existing profile pages to use ProfileLayout and organize content into appropriate tab sections. Ensure smooth transitions between tabs and proper URL routing for deep linking to specific profile sections.",
+            "status": "pending",
+            "testStrategy": "Tab navigation tests, deep linking tests for profile sections, state management tests for tab switching, and user experience tests for profile workflows"
+          },
+          {
+            "id": 6,
+            "title": "QA & Polish: Responsive Design, Accessibility, and Regression Testing",
+            "description": "Conduct comprehensive quality assurance including responsive design verification, accessibility compliance testing, and regression testing across all migrated pages on both desktop and mobile platforms.",
+            "dependencies": [
+              3,
+              4,
+              5
+            ],
+            "details": "Perform thorough testing of all layout components across different screen sizes and devices. Conduct accessibility audits using automated tools and manual testing with screen readers. Verify keyboard navigation functionality, ARIA label correctness, and color contrast compliance. Run regression tests on all migrated pages to ensure no functionality was lost during migration. Test navigation flows, error boundaries, loading states, and edge cases. Polish styling inconsistencies and optimize performance. Document any remaining issues and create follow-up tasks if needed.",
+            "status": "pending",
+            "testStrategy": "Cross-browser testing, accessibility compliance testing with WAVE and axe tools, responsive design testing on multiple devices, performance testing, and comprehensive user acceptance testing"
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-06-29T16:54:35.046Z",
-      "updated": "2025-07-03T04:22:12.889Z",
+      "updated": "2025-07-03T05:43:19.498Z",
       "description": "Tasks for master context"
     }
   }

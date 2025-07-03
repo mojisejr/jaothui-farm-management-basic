@@ -22,6 +22,7 @@ export async function GET(_request: NextRequest) {
     const ownedFarms = await prisma.farm.findMany({
       where: { ownerId: userId },
       include: {
+        owner: true,
         _count: {
           select: {
             animals: true,

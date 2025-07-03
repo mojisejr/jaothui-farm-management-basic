@@ -35,7 +35,7 @@ export default function ProfileCard({
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="w-full">
       {isEditing ? (
         <ProfileEditForm
           user={user}

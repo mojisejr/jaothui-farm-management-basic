@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { COOKIE } from '@/constants/cookies'
+import FarmLayout from '@/components/layouts/FarmLayout'
 import FarmEditForm from '@/components/FarmEditForm'
 
 interface FarmDetail {
@@ -9,39 +10,37 @@ interface FarmDetail {
   name: string
   province: string
   size: number | null
-  cropTypes: string[]
   description: string | null
-  createdAt: string
-  updatedAt: string
   isOwner: boolean
   isMember: boolean
   owner: {
     id: string
-    name: string
-    email: string
+    firstName: string | null
+    lastName: string | null
+    phoneNumber: string
   }
 }
 
 async function getFarmForEdit(farmId: string): Promise<FarmDetail> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('token')?.value
+  const token = cookieStore.get(COOKIE.ACCESS)?.value
 
   if (!token) {
-    redirect('/auth/login')
+    redirect('/login')
   }
 
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/farm/${farmId}`, {
       headers: {
-        Cookie: `token=${token}`,
+        Cookie: `${COOKIE.ACCESS}=${token}`,
         'Cache-Control': 'no-cache',
       },
       cache: 'no-store',
     })
 
     if (response.status === 401) {
-      redirect('/auth/login')
+      redirect('/login')
     }
 
     if (response.status === 404) {
@@ -56,12 +55,13 @@ async function getFarmForEdit(farmId: string): Promise<FarmDetail> {
       throw new Error('Failed to fetch farm details')
     }
 
-    const farm = await response.json()
+    const data = await response.json()
+    const farm = data.farm as FarmDetail
 
     // ตรวจสอบว่าเป็นเจ้าของหรือไม่
     if (!farm.isOwner) {
       redirect(
-        `/farm/${farmId}?error=เฉพาะเจ้าของฟาร์มเท่านั้นที่สามารถแก้ไขได้`,
+        `/farm/${farmId}/dashboard?error=เฉพาะเจ้าของฟาร์มเท่านั้นที่สามารถแก้ไขได้`,
       )
     }
 
@@ -83,54 +83,38 @@ export default async function EditFarmPage({
     const farm = await getFarmForEdit(id)
 
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* Breadcrumb */}
-        <div className="breadcrumbs text-sm mb-6">
-          <ul>
-            <li>
-              <Link href="/farms">ฟาร์มของฉัน</Link>
-            </li>
-            <li>
-              <Link href={`/farm/${farm.id}`}>{farm.name}</Link>
-            </li>
-            <li>แก้ไข</li>
-          </ul>
-        </div>
-
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">แก้ไขฟาร์ม</h1>
-          <p className="text-gray-600">
-            ปรับปรุงข้อมูลฟาร์ม &quot;{farm.name}&quot;
-          </p>
-        </div>
-
-        {/* Edit Form */}
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <FarmEditForm farm={farm} />
-          </div>
-        </div>
-
-        {/* Back Button */}
-        <div className="text-center mt-6">
-          <Link href={`/farm/${farm.id}`} className="btn btn-ghost">
-            ← กลับไปหน้าฟาร์ม
-          </Link>
-        </div>
-      </div>
+      <FarmLayout
+        title="แก้ไขฟาร์ม"
+        subtitle={`ปรับปรุงข้อมูลฟาร์ม "${farm.name}"`}
+        farmId={farm.id}
+        farmName={farm.name}
+        variant="form"
+        maxWidth="md"
+        backUrl={`/farm/${farm.id}/dashboard`}
+      >
+        <FarmEditForm farm={farm} />
+      </FarmLayout>
     )
   } catch (error) {
     console.error('Error loading farm edit page:', error)
+
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="alert alert-error mb-4">
-          <span>เกิดข้อผิดพลาดในการโหลดข้อมูลฟาร์ม กรุณาลองใหม่อีกครั้ง</span>
+      <FarmLayout
+        title="เกิดข้อผิดพลาด"
+        subtitle="ไม่สามารถโหลดข้อมูลฟาร์มได้"
+        backUrl="/farms"
+        error={error as Error}
+        onRetry={() => window.location.reload()}
+      >
+        <div className="text-center">
+          <div className="alert alert-error mb-4">
+            <span>เกิดข้อผิดพลาดในการโหลดข้อมูลฟาร์ม กรุณาลองใหม่อีกครั้ง</span>
+          </div>
+          <a href="/farms" className="btn btn-primary">
+            กลับไปหน้ารายการฟาร์ม
+          </a>
         </div>
-        <Link href="/farms" className="btn btn-primary">
-          กลับไปหน้ารายการฟาร์ม
-        </Link>
-      </div>
+      </FarmLayout>
     )
   }
 }

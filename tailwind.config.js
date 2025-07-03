@@ -26,6 +26,11 @@ const config = {
     themes: [
       'light',
       'dark',
+      'cupcake',
+      'bumblebee',
+      'emerald',
+      'corporate',
+      'retro',
       {
         jaothui: {
           primary: '#D4AF37',
@@ -33,6 +38,9 @@ const config = {
           accent: '#37cdbe',
           neutral: '#3d4451',
           'base-100': '#ffffff',
+          'base-200': '#f9fafb',
+          'base-300': '#e5e7eb',
+          'base-content': '#1f2937',
         },
       },
     ],

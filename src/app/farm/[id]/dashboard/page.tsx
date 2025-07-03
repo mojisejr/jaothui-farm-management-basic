@@ -77,36 +77,7 @@ export default async function FarmDashboardPage({
   try {
     const farm = await getFarmDetail(id)
 
-    return (
-      <div className="min-h-screen bg-[#414141]">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 text-white">
-          <h1 className="text-xl font-semibold text-white">{farm.name}</h1>
-          <Image
-            src="/images/jaothui-logo.png"
-            alt="JAOTHUI Logo"
-            width={32}
-            height={32}
-            className="h-8 w-auto"
-          />
-        </div>
-
-        {/* Main Content Card */}
-        <div className="bg-white rounded-lg shadow-lg mx-4 p-6 min-h-[80vh]">
-          <DashboardLayout farmId={farm.id} farmName={farm.name} farm={farm} />
-        </div>
-
-        {/* Footer Actions */}
-        <div className="px-4 py-6">
-          <a
-            href="/farms"
-            className="btn btn-outline btn-block text-white border-white hover:bg-white hover:text-neutral"
-          >
-            กลับหน้าหลัก
-          </a>
-        </div>
-      </div>
-    )
+    return <DashboardLayout farmId={farm.id} farmName={farm.name} farm={farm} />
   } catch (error) {
     console.error('Error loading farm dashboard:', error)
     return (

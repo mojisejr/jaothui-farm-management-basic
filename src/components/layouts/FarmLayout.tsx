@@ -163,7 +163,7 @@ export function FarmLayout({
       }
       // Error Boundary
       error={error}
-      onRetry={onRetry}
+      {...(onRetry ? { onRetry } : {})}
     >
       {/* Render children directly; nested card for form variant inside big card */}
       {variant === 'form' ? (

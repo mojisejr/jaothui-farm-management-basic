@@ -1,5 +1,6 @@
 import { Calendar, Tag, Weight, Ruler, Palette } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface AnimalType {
   id: string
@@ -72,9 +73,11 @@ export default function AnimalCard({ animal }: AnimalCardProps) {
           {animal.image && (
             <div className="avatar">
               <div className="w-12 h-12 rounded-full">
-                <img
+                <Image
                   src={animal.image}
                   alt={animal.name}
+                  width={48}
+                  height={48}
                   className="w-full h-full object-cover"
                 />
               </div>

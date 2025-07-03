@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 interface ImageUploadProps {
   currentImage?: string | null
@@ -154,10 +155,13 @@ export default function ImageUpload({
       <div className="relative">
         <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
           {preview ? (
-            <img
+            <Image
               src={preview}
               alt="Profile Preview"
+              width={128}
+              height={128}
               className="w-full h-full object-cover"
+              unoptimized
             />
           ) : (
             <Camera size={32} className="text-gray-400" />

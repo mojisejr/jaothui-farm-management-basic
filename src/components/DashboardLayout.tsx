@@ -1,20 +1,50 @@
 'use client'
 
 import { useState } from 'react'
-import { Users, Calendar } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Users, Calendar, ArrowLeft, Home } from 'lucide-react'
 import ErrorBoundary, { QueryErrorBoundary } from './ErrorBoundary'
 import SuspenseWrapper, { TabContentFallback } from './common/SuspenseWrapper'
 import AnimalsList from './AnimalsList'
 import ActivitiesList from './ActivitiesList'
+import FarmHeaderCard from './FarmHeaderCard'
+import FloatingActionButton from './common/FloatingActionButton'
+
+interface FarmData {
+  id: string
+  name: string
+  province: string
+  size: number | null
+  description: string | null
+  isOwner: boolean
+  isMember: boolean
+  owner: {
+    id: string
+    firstName: string | null
+    lastName: string | null
+    phoneNumber: string
+  }
+  _count: {
+    animals: number
+    members: number
+  }
+}
 
 interface DashboardLayoutProps {
   farmId: string
+  farmName: string
+  farm: FarmData
 }
 
-export default function DashboardLayout({ farmId }: DashboardLayoutProps) {
+export default function DashboardLayout({
+  farmId,
+  farmName,
+  farm,
+}: DashboardLayoutProps) {
   const [activeTab, setActiveTab] = useState<'animals' | 'activities'>(
     'animals',
   )
+  const router = useRouter()
 
   const tabs = [
     {
@@ -35,6 +65,46 @@ export default function DashboardLayout({ farmId }: DashboardLayoutProps) {
 
   return (
     <div className="w-full">
+      {/* Header - Mobile Back Button + Desktop Breadcrumb */}
+      <div className="mb-4">
+        {/* Mobile Back Button */}
+        <div className="md:hidden">
+          <button
+            onClick={() => router.back()}
+            className="btn btn-ghost btn-sm gap-2 p-2 -ml-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm">ย้อนกลับ</span>
+          </button>
+        </div>
+
+        {/* Desktop Breadcrumb */}
+        <div className="hidden md:block">
+          <div className="breadcrumbs text-sm">
+            <ul>
+              <li>
+                <a
+                  href="/farms"
+                  className="flex items-center gap-1 hover:text-primary"
+                >
+                  <Home className="w-4 h-4" />
+                  ฟาร์มของฉัน
+                </a>
+              </li>
+              <li>
+                <span className="text-base-content/70">{farmName}</span>
+              </li>
+              <li>
+                <span className="text-base-content font-medium">Dashboard</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Farm Header Card */}
+      <FarmHeaderCard farm={farm} />
+
       {/* Tab Navigation */}
       <div className="tabs tabs-bordered w-full mb-6">
         {tabs.map((tab) => {
@@ -95,6 +165,9 @@ export default function DashboardLayout({ farmId }: DashboardLayoutProps) {
           </QueryErrorBoundary>
         </ErrorBoundary>
       </div>
+
+      {/* Floating Action Button - Mobile Only */}
+      <FloatingActionButton activeTab={activeTab} farmId={farmId} />
     </div>
   )
 }

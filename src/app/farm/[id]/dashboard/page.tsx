@@ -93,7 +93,7 @@ export default async function FarmDashboardPage({
 
         {/* Main Content Card */}
         <div className="bg-white rounded-lg shadow-lg mx-4 p-6 min-h-[80vh]">
-          <DashboardLayout farmId={farm.id} />
+          <DashboardLayout farmId={farm.id} farmName={farm.name} farm={farm} />
         </div>
 
         {/* Footer Actions */}

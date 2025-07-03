@@ -4,6 +4,10 @@ import { useState } from 'react'
 import { Search, Filter, RefreshCw, Plus, Calendar } from 'lucide-react'
 import { useFarmActivities } from '@/hooks'
 import ActivityCard from './ActivityCard'
+import SearchBar, { ActivitySearchField } from './SearchBar'
+import FilterDrawer, { ActivityFilters } from './FilterDrawer'
+import Pagination from './common/Pagination'
+import EmptyState from './common/EmptyState'
 
 interface Animal {
   id: string
@@ -46,7 +50,9 @@ interface ActivitiesListProps {
 export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   // Search & Filter states
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('')
+  const [searchField, setSearchField] = useState<ActivitySearchField>('name')
+  const [filters, setFilters] = useState<ActivityFilters>({})
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   // React Query data fetching
@@ -55,8 +61,8 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
       farmId,
       page: currentPage,
       search: searchTerm.trim() || undefined,
-      status: selectedStatus || undefined,
-      limit: 10,
+      status: filters.status || undefined,
+      limit: 20,
     })
 
   const activities = data?.activities || []
@@ -64,14 +70,13 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   const pagination = data?.pagination
 
   // Handle search
-  const handleSearch = (newSearchTerm: string) => {
-    setSearchTerm(newSearchTerm)
+  const handleSearch = () => {
     setCurrentPage(1) // Reset to first page when searching
   }
 
-  // Handle status filter
-  const handleStatusFilter = (newStatus: string) => {
-    setSelectedStatus(newStatus)
+  // Handle filter change
+  const handleFiltersChange = (newFilters: ActivityFilters) => {
+    setFilters(newFilters)
     setCurrentPage(1) // Reset to first page when filtering
   }
 
@@ -129,31 +134,6 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           </div>
         </div>
       ))}
-    </div>
-  )
-
-  // Empty state
-  const EmptyState = () => (
-    <div className="text-center py-12">
-      <Calendar className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
-        ยังไม่มีกิจกรรม
-      </h3>
-      <p className="text-gray-600 mb-6">
-        {searchTerm || selectedStatus
-          ? 'ไม่พบกิจกรรมที่ตรงกับการค้นหา'
-          : 'เริ่มต้นด้วยการบันทึกกิจกรรมแรกของคุณ'}
-      </p>
-      <button
-        className="btn btn-primary"
-        onClick={() => {
-          // TODO: Add create activity functionality
-          alert('ฟีเจอร์สร้างกิจกรรมจะเพิ่มในเร็วๆ นี้')
-        }}
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        เพิ่มกิจกรรม
-      </button>
     </div>
   )
 
@@ -224,46 +204,33 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
 
       {/* Search & Filter */}
       <div className="flex flex-col lg:flex-row gap-4">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-base-content/50" />
-          <input
-            type="text"
-            placeholder="ค้นหากิจกรรม, ชื่อสัตว์..."
-            className="input input-bordered w-full pl-10"
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
+        {/* Search Bar */}
+        <SearchBar
+          context="activities"
+          searchTerm={searchTerm}
+          searchField={searchField}
+          onSearchTermChange={setSearchTerm}
+          onSearchFieldChange={(field) =>
+            setSearchField(field as ActivitySearchField)
+          }
+          onSearch={handleSearch}
+          isLoading={isLoading || isRefetching}
+          className="flex-1"
+        />
 
-        {/* Status Filter */}
-        <div className="dropdown dropdown-end">
-          <div tabIndex={0} role="button" className="btn btn-outline">
-            <Filter className="w-4 h-4 mr-2" />
-            {selectedStatus
-              ? statuses.find((s) => s.value === selectedStatus)?.label ||
-                'สถานะ'
-              : 'สถานะ'}
-          </div>
-          <ul
-            tabIndex={0}
-            className="dropdown-content menu bg-base-100 rounded-box z-[1] w-48 p-2 shadow-lg border"
-          >
-            <li>
-              <button onClick={() => handleStatusFilter('')}>ทั้งหมด</button>
-            </li>
-            {statuses.map((status) => (
-              <li key={status.value}>
-                <button
-                  onClick={() => handleStatusFilter(status.value)}
-                  className={selectedStatus === status.value ? 'active' : ''}
-                >
-                  {status.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Filter Button */}
+        <button
+          onClick={() => setIsFilterDrawerOpen(true)}
+          className="btn btn-outline"
+        >
+          <Filter className="w-4 h-4 mr-2" />
+          ตัวกรอง
+          {(filters.status ||
+            filters.dateRange?.from ||
+            filters.dateRange?.to) && (
+            <div className="badge badge-primary ml-2">•</div>
+          )}
+        </button>
       </div>
 
       {/* Results Count */}
@@ -272,8 +239,8 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           <span>
             พบ {pagination.totalCount} กิจกรรม
             {searchTerm && ` สำหรับ "${searchTerm}"`}
-            {selectedStatus &&
-              ` สถานะ ${statuses.find((s) => s.value === selectedStatus)?.label}`}
+            {filters.status &&
+              ` สถานะ ${statuses.find((s) => s.value === filters.status)?.label}`}
           </span>
           <span>
             หน้า {pagination.page} จาก {pagination.totalPages}
@@ -283,7 +250,20 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
 
       {/* Activities List */}
       {activities.length === 0 ? (
-        <EmptyState />
+        <EmptyState
+          context="activities"
+          isFiltered={Boolean(
+            searchTerm ||
+              filters.status ||
+              filters.dateRange?.from ||
+              filters.dateRange?.to,
+          )}
+          farmId={farmId}
+          onCreateClick={() => {
+            // TODO: Add create activity functionality
+            alert('ฟีเจอร์สร้างกิจกรรมจะเพิ่มในเร็วๆ นี้')
+          }}
+        />
       ) : (
         <>
           <div className="space-y-4">
@@ -293,59 +273,15 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           </div>
 
           {/* Pagination */}
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex justify-center">
-              <div className="join">
-                <button
-                  className="join-item btn"
-                  disabled={!pagination.hasPrevious || isLoading}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  «
-                </button>
-
-                {/* Page numbers */}
-                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
-                  .filter((pageNum) => {
-                    // Show first page, last page, current page and adjacent pages
-                    return (
-                      pageNum === 1 ||
-                      pageNum === pagination.totalPages ||
-                      Math.abs(pageNum - currentPage) <= 2
-                    )
-                  })
-                  .map((pageNum, index, array) => {
-                    // Add ellipsis if there's a gap
-                    const showEllipsis =
-                      index > 0 && pageNum - array[index - 1] > 1
-
-                    return (
-                      <div key={pageNum} className="join-item">
-                        {showEllipsis && (
-                          <button className="btn btn-disabled join-item">
-                            ...
-                          </button>
-                        )}
-                        <button
-                          className={`join-item btn ${currentPage === pageNum ? 'btn-active' : ''}`}
-                          disabled={isLoading}
-                          onClick={() => handlePageChange(pageNum)}
-                        >
-                          {pageNum}
-                        </button>
-                      </div>
-                    )
-                  })}
-
-                <button
-                  className="join-item btn"
-                  disabled={!pagination.hasNext || isLoading}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  »
-                </button>
-              </div>
-            </div>
+          {pagination && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pagination.totalPages}
+              hasNext={pagination.hasNext}
+              hasPrevious={pagination.hasPrevious}
+              isLoading={isLoading}
+              onPageChange={handlePageChange}
+            />
           )}
         </>
       )}

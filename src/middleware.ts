@@ -64,15 +64,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/profile', request.url))
     }
 
-    // Redirect unauthenticated users from root to login
-    if (!user && pathname === '/') {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-
-    // If authenticated and on root, redirect to profile
-    if (user && pathname === '/') {
-      return NextResponse.redirect(new URL('/profile', request.url))
-    }
+    // Allow '/' for everyone; optionally redirect authenticated users if desired
 
     // Add security headers
     response.headers.set('X-Frame-Options', 'DENY')

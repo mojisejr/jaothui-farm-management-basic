@@ -5,7 +5,7 @@ import { Filter, RefreshCw, Plus } from 'lucide-react'
 import { useFarmActivities } from '@/hooks'
 import ActivityCard from './ActivityCard'
 import SearchBar, { ActivitySearchField } from './SearchBar'
-import FilterDrawer, { ActivityFilters } from './FilterDrawer'
+import { ActivityFilters } from './FilterDrawer'
 import Pagination from './common/Pagination'
 import EmptyState from './common/EmptyState'
 
@@ -52,7 +52,6 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchField, setSearchField] = useState<ActivitySearchField>('name')
   const [filters, setFilters] = useState<ActivityFilters>({})
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   // React Query data fetching
@@ -72,17 +71,6 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   // Handle search
   const handleSearch = () => {
     setCurrentPage(1) // Reset to first page when searching
-  }
-
-  // Handle filter change
-  const handleFiltersChange = (newFilters: ActivityFilters) => {
-    setFilters(newFilters)
-    setCurrentPage(1) // Reset to first page when filtering
-  }
-
-  // Handle pagination
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage)
   }
 
   // Handle refresh
@@ -219,10 +207,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
         />
 
         {/* Filter Button */}
-        <button
-          onClick={() => setIsFilterDrawerOpen(true)}
-          className="btn btn-outline"
-        >
+        <button className="btn btn-outline">
           <Filter className="w-4 h-4 mr-2" />
           ตัวกรอง
           {(filters.status ||
@@ -280,7 +265,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
               hasNext={pagination.hasNext}
               hasPrevious={pagination.hasPrevious}
               isLoading={isLoading}
-              onPageChange={handlePageChange}
+              onPageChange={setCurrentPage}
             />
           )}
         </>

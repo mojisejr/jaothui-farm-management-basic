@@ -51,7 +51,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   // Search & Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [searchField, setSearchField] = useState<ActivitySearchField>('name')
-  const [filters, setFilters] = useState<ActivityFilters>({})
+  const [_filters] = useState<ActivityFilters>({})
   const [currentPage, setCurrentPage] = useState(1)
 
   // React Query data fetching
@@ -60,7 +60,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
       farmId,
       page: currentPage,
       search: searchTerm.trim() || undefined,
-      status: filters.status || undefined,
+      status: _filters.status || undefined,
       limit: 20,
     })
 
@@ -210,9 +210,9 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
         <button className="btn btn-outline">
           <Filter className="w-4 h-4 mr-2" />
           ตัวกรอง
-          {(filters.status ||
-            filters.dateRange?.from ||
-            filters.dateRange?.to) && (
+          {(_filters.status ||
+            _filters.dateRange?.from ||
+            _filters.dateRange?.to) && (
             <div className="badge badge-primary ml-2">•</div>
           )}
         </button>
@@ -224,8 +224,8 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           <span>
             พบ {pagination.totalCount} กิจกรรม
             {searchTerm && ` สำหรับ "${searchTerm}"`}
-            {filters.status &&
-              ` สถานะ ${statuses.find((s) => s.value === filters.status)?.label}`}
+            {_filters.status &&
+              ` สถานะ ${statuses.find((s) => s.value === _filters.status)?.label}`}
           </span>
           <span>
             หน้า {pagination.page} จาก {pagination.totalPages}
@@ -239,9 +239,9 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           context="activities"
           isFiltered={Boolean(
             searchTerm ||
-              filters.status ||
-              filters.dateRange?.from ||
-              filters.dateRange?.to,
+              _filters.status ||
+              _filters.dateRange?.from ||
+              _filters.dateRange?.to,
           )}
           farmId={farmId}
           onCreateClick={() => {

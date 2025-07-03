@@ -35,7 +35,15 @@ const AVAILABLE_THEMES: Theme[] = [
 ]
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME)
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof document !== 'undefined') {
+      const attr = document.documentElement.getAttribute(
+        'data-theme',
+      ) as Theme | null
+      if (attr && AVAILABLE_THEMES.includes(attr)) return attr
+    }
+    return DEFAULT_THEME
+  })
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Load theme from localStorage on mount

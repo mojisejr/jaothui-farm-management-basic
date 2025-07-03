@@ -220,7 +220,6 @@ export default async function FarmsPage() {
         subtitle="ไม่สามารถโหลดข้อมูลฟาร์มได้"
         backUrl="/profile"
         error={error as Error}
-        onRetry={() => window.location.reload()}
       >
         <div className="container mx-auto text-center">
           <div className="alert alert-error">

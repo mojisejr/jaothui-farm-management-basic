@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: 'เพิ่มสัตว์เลี้ยงใหม่เข้าสู่ระบบจัดการฟาร์ม',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function AnimalCreatePage({ searchParams }: Props) {
   // Check authentication
   const accessToken = await getAccessTokenFromCookies()

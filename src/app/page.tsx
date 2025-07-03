@@ -1,17 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { COOKIE } from '@/constants/cookies'
 
-export default async function HomePage() {
-  // Redirect authenticated users straight to dashboard/farms
-  const cookieStore = await cookies()
-  const token = cookieStore.get(COOKIE.ACCESS)?.value
-  if (token) {
-    redirect('/farms')
-  }
-
+export default function HomePage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center bg-base-100 px-4 pt-16 pb-10"

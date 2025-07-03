@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
-import { AnimalCreateForm } from '@/components/forms/AnimalCreateForm'
+import { AnimalCreateFormWrapper } from '@/components/forms/AnimalCreateFormWrapper'
 import prisma from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, PawPrint } from 'lucide-react'
@@ -94,13 +94,7 @@ export default async function AnimalCreatePage({ searchParams }: Props) {
         {/* Animal Registration Form */}
         <div className="flex justify-center">
           <div className="w-full max-w-3xl">
-            <AnimalCreateForm
-              farmId={farmId}
-              onSuccess={(animalId) => {
-                // Redirect to farm page with success message
-                window.location.href = `/farm/${farmId}?success=animal-created&animalId=${animalId}`
-              }}
-            />
+            <AnimalCreateFormWrapper farmId={farmId} />
           </div>
         </div>
 

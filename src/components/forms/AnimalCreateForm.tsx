@@ -216,7 +216,9 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
                 errors.microchip ? 'input-error' : ''
               } ${isPending ? 'input-disabled' : ''}`}
               disabled={isPending}
-              {...register('microchip')}
+              {...register('microchip', {
+                setValueAs: (v) => (v === '' ? undefined : v),
+              })}
             />
             {errors.microchip && (
               <label className="label">

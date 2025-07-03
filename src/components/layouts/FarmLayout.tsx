@@ -1,7 +1,8 @@
 'use client'
 
-import { Home, Plus, Edit, Users } from 'lucide-react'
+import { Home, Plus, Users } from 'lucide-react'
 import { PageLayout, type BreadcrumbItem } from './PageLayout'
+import JaothuiLogo from '../JaothuiLogo'
 
 export interface FarmLayoutProps {
   // Content
@@ -107,7 +108,7 @@ export function FarmLayout({
       case 'form':
         return `${baseClasses} pb-24` // Extra bottom padding for forms
       case 'list':
-        return 'w-full px-4 py-6' // Full width for lists
+        return 'px-4 py-6 max-w-6xl mx-auto'
       default:
         return baseClasses
     }
@@ -143,32 +144,32 @@ export function FarmLayout({
       showBackButton={true}
       backUrl={backUrl}
       breadcrumbs={buildBreadcrumbs()}
-      // Header
+      // Dashboard Header
+      variant="dashboard"
+      background="dark"
+      dashboardTitle={title}
+      dashboardLogo={<JaothuiLogo />}
+      // Header Subtitle (inside card header section)
       title={title}
       subtitle={subtitle}
-      // Layout
-      variant="container"
-      background="default"
       // Theme
       showThemeSelector={showThemeSelector}
-      // Floating Actions
+      // Layout customization - keep extra padding for forms/lists if needed
+      contentClassName={getContentClasses()}
+      // Tabs / Floating actions remain unchanged
       floatingAction={
         showCreateButton || showMembersButton ? floatingActions : undefined
       }
-      // Customization
-      contentClassName={getContentClasses()}
       // Error Boundary
       error={error}
       onRetry={onRetry}
     >
-      {/* Content based on variant */}
+      {/* Render children directly; nested card for form variant inside big card */}
       {variant === 'form' ? (
-        // Form variant: Card wrapper for forms
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">{children}</div>
+        <div className="card bg-base-100 shadow-md">
+          <div className="card-body space-y-4">{children}</div>
         </div>
       ) : (
-        // Default: Direct content rendering
         children
       )}
     </PageLayout>

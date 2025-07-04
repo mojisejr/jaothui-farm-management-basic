@@ -1,7 +1,7 @@
 'use client'
 
 import React, { Component, ReactNode } from 'react'
-import { RefreshCw, AlertTriangle, Home } from 'lucide-react'
+import { RefreshCw, AlertTriangle, ArrowLeft } from 'lucide-react'
 
 interface Props {
   children: ReactNode
@@ -60,8 +60,12 @@ class ErrorBoundary extends Component<Props, State> {
     })
   }
 
-  handleGoHome = () => {
-    window.location.href = '/farms'
+  handleGoBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back()
+    } else {
+      window.location.href = '/'
+    }
   }
 
   render() {
@@ -111,9 +115,13 @@ class ErrorBoundary extends Component<Props, State> {
                   ลองใหม่
                 </button>
 
-                <button className="btn btn-outline" onClick={this.handleGoHome}>
-                  <Home className="w-4 h-4 mr-2" />
-                  กลับหน้าหลัก
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={this.handleGoBack}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  กลับหน้าก่อนหน้า
                 </button>
               </div>
             </div>

@@ -26,6 +26,7 @@ model Profile {
   resetTokenExpiry DateTime?    @map("reset_token_expiry")
   memberOfFarms    FarmMember[]
   ownedFarms       Farm[]       @relation("FarmOwner")
+  sentInvitations  Invitation[] @relation("InviterInvitations")
 
   @@map("profiles")
 }
@@ -42,8 +43,14 @@ model Farm {
   animals     Animal[]
   members     FarmMember[]
   owner       Profile      @relation("FarmOwner", fields: [ownerId], references: [id])
+  invitations Invitation[]
 
   @@map("farms")
+}
+
+enum FarmRole {
+  OWNER
+  MEMBER
 }
 
 model FarmMember {
@@ -51,6 +58,7 @@ model FarmMember {
   farmId    String
   farm      Farm    @relation(fields: [farmId], references: [id])
   profile   Profile @relation(fields: [profileId], references: [id])
+  role      FarmRole @default(MEMBER)
 
   @@id([profileId, farmId])
   @@map("farm_members")
@@ -125,4 +133,26 @@ enum ActivityStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+model Invitation {
+  id          String   @id @default(uuid())
+  farmId      String
+  phoneNumber String
+  inviterId   String
+  token       String   @unique
+  status      InviteStatus @default(PENDING)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now()) @map("created_at")
+  farm        Farm     @relation(fields: [farmId], references: [id])
+  inviter     Profile  @relation("InviterInvitations", fields: [inviterId], references: [id])
+
+  @@map("invitations")
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
 }

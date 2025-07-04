@@ -1,8 +1,9 @@
 'use client'
 
 import React, { Component, ReactNode, ErrorInfo } from 'react'
-import { AlertTriangle, RotateCcw, Home } from 'lucide-react'
+import { AlertTriangle, RotateCcw, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface Props {
   children: ReactNode
@@ -43,6 +44,14 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   handleRetry = () => {
     this.setState({ hasError: false, error: undefined, errorInfo: undefined })
+  }
+
+  handleGoBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back()
+    } else {
+      window.location.href = '/'
+    }
   }
 
   render() {
@@ -96,13 +105,14 @@ export default class ErrorBoundary extends Component<Props, State> {
                 ลองใหม่
               </button>
 
-              <Link
-                href="/"
+              <button
+                onClick={this.handleGoBack}
                 className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                type="button"
               >
-                <Home size={16} />
-                กลับหน้าหลัก
-              </Link>
+                <ArrowLeft size={16} />
+                กลับหน้าก่อนหน้า
+              </button>
             </div>
           </div>
         </div>

@@ -14,6 +14,7 @@ import AnimalsList from './AnimalsList'
 import ActivitiesList from './ActivitiesList'
 import FarmHeaderCard from './FarmHeaderCard'
 import FloatingActionButton from './common/FloatingActionButton'
+import PendingInvitationsBell from './invitations/PendingInvitationsBell'
 
 interface FarmData {
   id: string
@@ -167,13 +168,17 @@ export default function DashboardLayout({
       // Dashboard Header
       dashboardTitle={farmName}
       dashboardLogo={
-        <Image
-          src="/images/jaothui-logo.png"
-          alt="JAOTHUI Logo"
-          width={32}
-          height={32}
-          className="h-8 w-auto"
-        />
+        <div className="flex items-center gap-4">
+          <Image
+            src="/images/jaothui-logo.png"
+            alt="JAOTHUI Logo"
+            width={32}
+            height={32}
+            className="h-8 w-auto"
+          />
+          {/* Pending Invitations badge */}
+          <PendingInvitationsBell />
+        </div>
       }
       // Header Content
       headerCard={<FarmHeaderCard farm={farm} />}

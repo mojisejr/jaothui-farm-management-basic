@@ -65,6 +65,22 @@ export async function GET(
       },
     })
 
+    // If requester is owner but not yet recorded in farm_members, insert with OWNER role (sync legacy data)
+    if (isOwner && !isMember) {
+      try {
+        // @ts-ignore – ensure compatibility if types not updated yet
+        await prisma.farmMember.create({
+          data: {
+            farmId: farm.id,
+            profileId: tokenPayload.userId,
+            role: 'OWNER',
+          } as any,
+        })
+      } catch (err) {
+        console.error('Error syncing owner FarmMember:', err)
+      }
+    }
+
     if (!isOwner && !isMember) {
       return NextResponse.json(
         { error: 'คุณไม่มีสิทธิ์เข้าถึงฟาร์มนี้' },

@@ -1,4 +1,5 @@
-import { MapPin, Settings, Crown } from 'lucide-react'
+import { MapPin, Settings, Users, Crown } from 'lucide-react'
+import Link from 'next/link'
 
 interface FarmHeaderCardProps {
   farm: {
@@ -89,11 +90,25 @@ export default function FarmHeaderCard({ farm }: FarmHeaderCardProps) {
             {/* Actions */}
             {farm.isOwner && (
               <div className="flex gap-2">
-                <button className="btn btn-primary btn-sm gap-1">
+                {/* Edit Farm */}
+                <Link
+                  href={`/farm/${farm.id}/edit`}
+                  className="btn btn-primary btn-sm gap-1"
+                >
                   <Settings className="w-3 h-3" />
                   <span className="hidden md:inline">จัดการฟาร์ม</span>
-                  <span className="md:hidden">จัดการ</span>
-                </button>
+                  <span className="md:hidden">แก้ไข</span>
+                </Link>
+
+                {/* Manage Members */}
+                <Link
+                  href={`/farm/${farm.id}/members`}
+                  className="btn btn-secondary btn-sm gap-1"
+                >
+                  <Users className="w-3 h-3" />
+                  <span className="hidden md:inline">สมาชิก</span>
+                  <span className="md:hidden">สมาชิก</span>
+                </Link>
               </div>
             )}
           </div>

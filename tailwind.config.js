@@ -24,13 +24,6 @@ const config = {
   ],
   daisyui: {
     themes: [
-      'light',
-      'dark',
-      'cupcake',
-      'bumblebee',
-      'emerald',
-      'corporate',
-      'retro',
       {
         jaothui: {
           primary: '#D4AF37',
@@ -55,6 +48,7 @@ const config = {
           error: '#ff5724',
         },
       },
+      'dark',
     ],
   },
 };

@@ -2,15 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme =
-  | 'jaothui'
-  | 'light'
-  | 'dark'
-  | 'cupcake'
-  | 'bumblebee'
-  | 'emerald'
-  | 'corporate'
-  | 'retro'
+type Theme = 'jaothui' | 'dark'
 
 interface ThemeContextType {
   theme: Theme
@@ -23,16 +15,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 const THEME_STORAGE_KEY = 'jaothui-theme'
 const DEFAULT_THEME: Theme = 'jaothui'
 
-const AVAILABLE_THEMES: Theme[] = [
-  'jaothui',
-  'light',
-  'dark',
-  'cupcake',
-  'bumblebee',
-  'emerald',
-  'corporate',
-  'retro',
-]
+const AVAILABLE_THEMES: Theme[] = ['jaothui', 'dark']
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -104,13 +87,7 @@ export function ThemeSelector({ className = '' }: { className?: string }) {
 
   const themeLabels: Record<Theme, string> = {
     jaothui: 'Jaothui (ทอง)',
-    light: 'Light (สว่าง)',
     dark: 'Dark (มืด)',
-    cupcake: 'Cupcake (หวาน)',
-    bumblebee: 'Bumblebee (ผึ้ง)',
-    emerald: 'Emerald (เขียว)',
-    corporate: 'Corporate (อย่างเป็นทางการ)',
-    retro: 'Retro (คลาสสิก)',
   }
 
   return (
@@ -146,19 +123,9 @@ export function ThemeSelector({ className = '' }: { className?: string }) {
                   backgroundColor:
                     themeName === 'jaothui'
                       ? '#D4AF37'
-                      : themeName === 'light'
-                        ? '#570df8'
-                        : themeName === 'dark'
-                          ? '#661ae6'
-                          : themeName === 'cupcake'
-                            ? '#65c3c8'
-                            : themeName === 'bumblebee'
-                              ? '#e9c46a'
-                              : themeName === 'emerald'
-                                ? '#66cc8a'
-                                : themeName === 'corporate'
-                                  ? '#4b6bfb'
-                                  : '#f28c18',
+                      : themeName === 'dark'
+                        ? '#661ae6'
+                        : '#f28c18',
                 }}
               ></div>
               <span>{themeLabels[themeName]}</span>

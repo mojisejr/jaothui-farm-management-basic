@@ -1,50 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import prisma from '@/lib/prisma'
+import { withFarmAuth } from '@/lib/with-farm-auth'
 
 // GET /api/farm/[id]/animals - ดึงรายการสัตว์ของฟาร์ม
-export async function GET(
+const _GET = async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context: { params: Promise<Record<string, string>> },
+) => {
   try {
-    const { id: farmId } = await params
+    const { id: farmId } = await context.params
     const { searchParams } = new URL(request.url)
-
-    // ตรวจสอบ authentication
-    const accessToken = await getAccessTokenFromCookies()
-    if (!accessToken) {
-      return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 })
-    }
-
-    const tokenPayload = verifyAccessToken(accessToken)
-    if (!tokenPayload) {
-      return NextResponse.json({ error: 'โทเค็นไม่ถูกต้อง' }, { status: 401 })
-    }
-
-    // ตรวจสอบสิทธิ์เข้าถึงฟาร์ม
-    const farm = await prisma.farm.findFirst({
-      where: {
-        id: farmId,
-        OR: [
-          { ownerId: tokenPayload.userId },
-          {
-            members: {
-              some: {
-                profileId: tokenPayload.userId,
-              },
-            },
-          },
-        ],
-      },
-    })
-
-    if (!farm) {
-      return NextResponse.json(
-        { error: 'ไม่พบฟาร์มหรือไม่มีสิทธิ์เข้าถึง' },
-        { status: 404 },
-      )
-    }
 
     // ดึงพารามิเตอร์สำหรับ search และ filter
     const search = searchParams.get('search') || ''
@@ -140,3 +105,5 @@ export async function GET(
     await prisma.$disconnect()
   }
 }
+
+export const GET = withFarmAuth(_GET)

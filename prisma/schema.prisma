@@ -24,9 +24,12 @@ model Profile {
   passwordHash     String       @map("password_hash")
   resetToken       String?      @map("reset_token")
   resetTokenExpiry DateTime?    @map("reset_token_expiry")
-  memberOfFarms    FarmMember[]
-  ownedFarms       Farm[]       @relation("FarmOwner")
-  sentInvitations  Invitation[] @relation("InviterInvitations")
+  memberOfFarms          FarmMember[]
+  ownedFarms             Farm[]                     @relation("FarmOwner")
+  sentInvitations        Invitation[]               @relation("InviterInvitations")
+  notifications          Notification[]
+  notificationPreferences NotificationPreferences?
+  pushSubscriptions      PushSubscription[]
 
   @@map("profiles")
 }
@@ -40,10 +43,11 @@ model Farm {
   ownerId     String
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
-  animals     Animal[]
-  members     FarmMember[]
-  owner       Profile      @relation("FarmOwner", fields: [ownerId], references: [id])
-  invitations Invitation[]
+  animals       Animal[]
+  members       FarmMember[]
+  owner         Profile        @relation("FarmOwner", fields: [ownerId], references: [id])
+  invitations   Invitation[]
+  notifications Notification[]
 
   @@map("farms")
 }
@@ -85,6 +89,8 @@ model Animal {
   color             String?
   fatherName        String?            @map("father_name")
   motherName        String?            @map("mother_name")
+  notes             String?
+  photoUrl          String?            @map("photo_url")
   image             String?
   farmId            String
   createdAt         DateTime           @default(now()) @map("created_at")
@@ -155,4 +161,82 @@ enum InviteStatus {
   ACCEPTED
   DECLINED
   EXPIRED
+}
+
+model Notification {
+  id                String               @id @default(uuid())
+  userId            String               @map("user_id")
+  type              NotificationType
+  title             String
+  message           String
+  data              Json?                // Additional data for the notification
+  isRead            Boolean              @default(false) @map("is_read")
+  priority          NotificationPriority @default(NORMAL)
+  createdAt         DateTime             @default(now()) @map("created_at")
+  scheduledAt       DateTime?            @map("scheduled_at") // For future notifications
+  farmId            String?              @map("farm_id")
+  relatedEntityType String?              @map("related_entity_type") // 'activity', 'schedule', 'animal', etc.
+  relatedEntityId   String?              @map("related_entity_id")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farm Farm?   @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model NotificationPreferences {
+  id                    String  @id @default(uuid())
+  userId                String  @unique @map("user_id")
+  activityReminders     Boolean @default(true) @map("activity_reminders")
+  overdueAlerts         Boolean @default(true) @map("overdue_alerts")
+  farmInvitations       Boolean @default(true) @map("farm_invitations")
+  memberJoined          Boolean @default(true) @map("member_joined")
+  newActivities         Boolean @default(true) @map("new_activities")
+  pushEnabled           Boolean @default(false) @map("push_enabled")
+  emailEnabled          Boolean @default(false) @map("email_enabled")
+  reminderFrequency     Int     @default(30) @map("reminder_frequency") // minutes before activity
+  quietHoursStart       String? @map("quiet_hours_start") // "22:00"
+  quietHoursEnd         String? @map("quiet_hours_end")   // "07:00"
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  endpoint  String
+  p256dhKey String   @map("p256dh_key")
+  authKey   String   @map("auth_key")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("push_subscriptions")
+}
+
+enum NotificationType {
+  ACTIVITY_REMINDER     // Activity due soon
+  ACTIVITY_OVERDUE      // Activity is overdue
+  SCHEDULE_REMINDER     // Scheduled activity coming up
+  FARM_INVITATION       // Invited to join farm
+  MEMBER_JOINED         // New member joined farm
+  ACTIVITY_COMPLETED    // Activity marked complete by other member
+  ACTIVITY_CREATED      // New activity created by other member
+  SYSTEM_ANNOUNCEMENT   // System-wide announcements
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }

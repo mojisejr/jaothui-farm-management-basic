@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { NotificationProvider } from '@/contexts/NotificationContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -43,19 +44,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'hsl(var(--b1))',
-                color: 'hsl(var(--bc))',
-                border: '1px solid hsl(var(--b3))',
-              },
-            }}
-          />
-          {children}
-          <ReactQueryDevtools initialIsOpen={false} />
+          <NotificationProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: 'hsl(var(--b1))',
+                  color: 'hsl(var(--bc))',
+                  border: '1px solid hsl(var(--b3))',
+                },
+              }}
+            />
+            {children}
+            <ReactQueryDevtools initialIsOpen={false} />
+          </NotificationProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

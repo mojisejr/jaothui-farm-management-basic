@@ -32,6 +32,9 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
   const [animalTypes, setAnimalTypes] = useState<AnimalType[]>([])
   const [isLoadingTypes, setIsLoadingTypes] = useState(true)
   const router = useRouter()
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
 
   const {
     register,
@@ -81,14 +84,36 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
   }
 
   const onSubmit = async (data: AnimalRegistrationFormData) => {
+    // simple client-side validation for image (optional route integration later)
+    if (!imageFile) {
+      setImageError('กรุณาเลือกรูปภาพสัตว์')
+      return
+    }
+
     startTransition(async () => {
       try {
+        // Create FormData to handle file upload
+        const formData = new FormData()
+        
+        // Add all form fields
+        formData.append('farmId', data.farmId)
+        formData.append('name', data.name)
+        formData.append('animalTypeId', data.animalTypeId)
+        if (data.microchip) formData.append('microchip', data.microchip)
+        if (data.birthDate) formData.append('birthDate', data.birthDate.toISOString())
+        if (data.weight) formData.append('weight', data.weight.toString())
+        if (data.height) formData.append('height', data.height.toString())
+        if (data.color) formData.append('color', data.color)
+        if (data.fatherName) formData.append('fatherName', data.fatherName)
+        if (data.motherName) formData.append('motherName', data.motherName)
+        if (data.notes) formData.append('notes', data.notes)
+        
+        // Add image file
+        formData.append('image', imageFile)
+
         const response = await fetch('/api/animal/create', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formData,
           credentials: 'include',
         })
 
@@ -97,10 +122,12 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
         if (response.ok) {
           toast.success('เพิ่มสัตว์เลี้ยงสำเร็จ!')
           reset()
+          setImageFile(null)
+          setImagePreviewUrl(null)
           if (onSuccess) {
             onSuccess(result.animalId)
           } else {
-            router.push(`/farm/${farmId}`)
+            router.replace(`/farm/${farmId}`)
           }
         } else {
           toast.error(result.error || 'ไม่สามารถเพิ่มสัตว์เลี้ยงได้')
@@ -421,6 +448,83 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
                   {errors.motherName.message}
                 </span>
               </label>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="form-control md:col-span-2">
+            <label className="label" htmlFor="notes">
+              <span className="label-text font-medium">บันทึกเพิ่มเติม</span>
+            </label>
+            <textarea
+              id="notes"
+              rows={3}
+              placeholder="รายละเอียด สุขภาพ หรือพฤติกรรมพิเศษ..."
+              className={`textarea textarea-bordered ${
+                errors.notes ? 'textarea-error' : ''
+              } ${isPending ? 'textarea-disabled' : ''}`}
+              disabled={isPending}
+              {...register('notes')}
+            />
+            {errors.notes && (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {errors.notes.message}
+                </span>
+              </label>
+            )}
+          </div>
+
+          {/* Photo Upload */}
+          <div className="form-control md:col-span-2">
+            <label className="label" htmlFor="photo">
+              <span className="label-text font-medium">รูปสัตว์ (1 รูป)</span>
+            </label>
+            <input
+              id="photo"
+              type="file"
+              accept="image/*"
+              className={`file-input file-input-bordered w-full ${isPending ? 'file-input-disabled' : ''}`}
+              disabled={isPending}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (!file) return
+
+                // Validation: max 5MB, image type
+                if (!file.type.startsWith('image/')) {
+                  setImageError('ไฟล์ต้องเป็นรูปภาพ')
+                  return
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                  setImageError('ขนาดไฟล์ต้องไม่เกิน 5MB')
+                  return
+                }
+
+                setImageError(null)
+                setImageFile(file)
+
+                const reader = new FileReader()
+                reader.onloadend = () => {
+                  setImagePreviewUrl(reader.result as string)
+                }
+                reader.readAsDataURL(file)
+              }}
+            />
+            {imageError && (
+              <label className="label">
+                <span className="label-text-alt text-error">{imageError}</span>
+              </label>
+            )}
+
+            {imagePreviewUrl && (
+              <div className="mt-4 flex justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreviewUrl}
+                  alt="ตัวอย่างรูปสัตว์"
+                  className="max-h-48 rounded-lg shadow-md object-cover"
+                />
+              </div>
             )}
           </div>
         </div>

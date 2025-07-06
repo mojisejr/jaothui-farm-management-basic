@@ -5,7 +5,9 @@ import {
   XCircle,
   PlayCircle,
   PauseCircle,
+  ChevronRight,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface Animal {
   id: string
@@ -32,6 +34,7 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({ activity }: ActivityCardProps) {
+  const router = useRouter()
   // แปลงสถานะเป็นภาษาไทย
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -102,8 +105,15 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
   const statusInfo = getStatusInfo(activity.status)
   const StatusIcon = statusInfo.icon
 
+  const handleClick = () => {
+    router.push(`/activity/${activity.id}`)
+  }
+
   return (
-    <div className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+    <div 
+      className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow border border-gray-100 cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="card-body p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
@@ -153,7 +163,10 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
             <Calendar className="w-3 h-3 mr-1" />
             {formatActivityDate(activity.activityDate)}
           </div>
-          <div>สร้างเมื่อ {getTimeAgo(activity.createdAt)}</div>
+          <div className="flex items-center">
+            <span>สร้างเมื่อ {getTimeAgo(activity.createdAt)}</span>
+            <ChevronRight className="w-3 h-3 ml-1 text-gray-400" />
+          </div>
         </div>
       </div>
     </div>

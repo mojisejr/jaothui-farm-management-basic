@@ -82,13 +82,12 @@ export async function createFarm(
     })
 
     // Insert owner as farm member with OWNER role
-    // @ts-ignore – Prisma types may not include role yet
     await prisma.farmMember.create({
       data: {
         farmId: newFarm.id,
         profileId: profile.id,
         role: 'OWNER',
-      } as any,
+      },
     })
 
     console.log('newFarm: ', newFarm)

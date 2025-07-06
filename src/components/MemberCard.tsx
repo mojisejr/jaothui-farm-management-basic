@@ -25,6 +25,7 @@ interface MemberCardProps {
   isCurrentUser: boolean
   canRemove: boolean
   onRemove: () => void
+  onLeave?: () => void
 }
 
 export default function MemberCard({
@@ -32,6 +33,7 @@ export default function MemberCard({
   isCurrentUser,
   canRemove,
   onRemove,
+  onLeave,
 }: MemberCardProps) {
   const displayName =
     member.firstName && member.lastName
@@ -99,7 +101,7 @@ export default function MemberCard({
           </div>
 
           {/* Actions menu */}
-          {canRemove && (
+          {(canRemove || (isCurrentUser && !member.isOwner)) && (
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
@@ -112,15 +114,24 @@ export default function MemberCard({
                 tabIndex={0}
                 className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-                <li>
-                  <button
-                    onClick={onRemove}
-                    className="text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    ลบสมาชิก
-                  </button>
-                </li>
+                {canRemove && (
+                  <li>
+                    <button
+                      onClick={onRemove}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      ลบสมาชิก
+                    </button>
+                  </li>
+                )}
+                {isCurrentUser && !member.isOwner && onLeave && (
+                  <li>
+                    <button onClick={onLeave} className="hover:bg-base-200">
+                      ออกจากฟาร์ม
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           )}

@@ -51,7 +51,7 @@ export default function FarmEditForm({ farm }: FarmEditFormProps) {
       })
 
       if (response.ok) {
-        router.push(`/farm/${farm.id}?success=อัปเดตฟาร์มสำเร็จแล้ว`)
+        router.replace(`/farm/${farm.id}?success=อัปเดตฟาร์มสำเร็จแล้ว`)
       } else {
         const errorData = await response.json()
         setError(errorData.message || 'เกิดข้อผิดพลาดในการอัปเดตฟาร์ม')

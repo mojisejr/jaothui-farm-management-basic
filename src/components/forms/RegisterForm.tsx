@@ -50,7 +50,7 @@ export function RegisterForm() {
         if (result.success) {
           toast.success(result.message || 'Registration successful!')
           if (result.redirectUrl) {
-            router.push(result.redirectUrl)
+            router.replace(result.redirectUrl)
             router.refresh()
           }
         } else {

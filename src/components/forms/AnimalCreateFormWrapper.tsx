@@ -14,7 +14,7 @@ export function AnimalCreateFormWrapper({ farmId }: Props) {
     <AnimalCreateForm
       farmId={farmId}
       onSuccess={(animalId) => {
-        router.push(
+        router.replace(
           `/farm/${farmId}?success=animal-created&animalId=${animalId}`,
         )
       }}

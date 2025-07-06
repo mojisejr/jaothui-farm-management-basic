@@ -46,7 +46,7 @@ export default function ProfileLinks() {
       const res = await fetch('/api/auth/logout', { method: 'POST' })
       if (res.ok) {
         toast.success('ออกจากระบบสำเร็จ')
-        router.push('/login')
+        router.replace('/login')
       } else {
         const data = await res.json()
         toast.error(data.error || 'เกิดข้อผิดพลาด')

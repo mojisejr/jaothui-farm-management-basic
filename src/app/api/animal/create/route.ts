@@ -4,6 +4,8 @@ import { verifyToken } from '@/lib/jwt'
 import { animalRegistrationSchema } from '@/types/database'
 import { generateMicrochip } from '@/lib/microchip'
 import { COOKIE } from '@/constants/cookies'
+import { ANIMAL_PHOTOS_BUCKET } from '@/constants/storage'
+import { uploadToStorage, generateUniqueFilename } from '@/lib/supabase/storage'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -29,8 +31,48 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse and validate request body
-    const body = await request.json()
+    // Parse FormData from request
+    const formData = await request.formData()
+    
+    // Extract image file
+    const imageFile = formData.get('image') as File | null
+    
+    if (!imageFile) {
+      return NextResponse.json(
+        { error: 'กรุณาเลือกรูปภาพสัตว์' },
+        { status: 400 },
+      )
+    }
+
+    // Validate image file
+    if (!imageFile.type.startsWith('image/')) {
+      return NextResponse.json(
+        { error: 'ไฟล์ต้องเป็นรูปภาพ' },
+        { status: 400 },
+      )
+    }
+
+    if (imageFile.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: 'ขนาดไฟล์ต้องไม่เกิน 5MB' },
+        { status: 400 },
+      )
+    }
+
+    // Convert FormData to object for validation
+    const body = {
+      farmId: formData.get('farmId') as string,
+      name: formData.get('name') as string,
+      animalTypeId: formData.get('animalTypeId') as string,
+      microchip: formData.get('microchip') as string | null,
+      birthDate: formData.get('birthDate') ? new Date(formData.get('birthDate') as string) : undefined,
+      weight: formData.get('weight') ? parseFloat(formData.get('weight') as string) : undefined,
+      height: formData.get('height') ? parseFloat(formData.get('height') as string) : undefined,
+      color: formData.get('color') as string | null,
+      fatherName: formData.get('fatherName') as string | null,
+      motherName: formData.get('motherName') as string | null,
+      notes: formData.get('notes') as string | null,
+    }
 
     // Validate the form data
     const validationResult = animalRegistrationSchema.safeParse(body)
@@ -104,7 +146,22 @@ export async function POST(request: NextRequest) {
       microchip = await generateMicrochip(validatedData.farmId)
     }
 
-    // Create animal record
+    // Upload image to Supabase Storage
+    const imagePath = generateUniqueFilename(payload.userId, imageFile.name)
+    const imageUploadResult = await uploadToStorage(
+      ANIMAL_PHOTOS_BUCKET,
+      imagePath,
+      imageFile,
+    )
+
+    if (!imageUploadResult.success) {
+      return NextResponse.json(
+        { error: imageUploadResult.error || 'ไม่สามารถอัปโหลดรูปภาพได้' },
+        { status: 500 },
+      )
+    }
+
+    // Create animal record with image URL
     const animal = await prisma.animal.create({
       data: {
         name: validatedData.name,
@@ -117,6 +174,8 @@ export async function POST(request: NextRequest) {
         color: validatedData.color,
         fatherName: validatedData.fatherName,
         motherName: validatedData.motherName,
+        notes: validatedData.notes,
+        photoUrl: imageUploadResult.url,
       },
       include: {
         animalType: true,
@@ -143,6 +202,8 @@ export async function POST(request: NextRequest) {
         color: animal.color,
         fatherName: animal.fatherName,
         motherName: animal.motherName,
+        notes: animal.notes,
+        photoUrl: animal.photoUrl,
         createdAt: animal.createdAt,
       },
     })

@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import { randomBytes } from 'crypto'
 import { sendSMS } from '@/lib/sms'
+import { withFarmAuth } from '@/lib/with-farm-auth'
+import { NotificationService } from '@/lib/notifications/service'
 
 const prisma = new PrismaClient()
 
@@ -11,12 +13,12 @@ interface InviteRequestBody {
 }
 
 // POST /api/farm/[id]/invite - เพิ่มสมาชิกโดยใช้เบอร์โทรศัพท์
-export async function POST(
+const _POST = async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context: { params: Promise<Record<string, string>> },
+) => {
   try {
-    const { id: farmId } = await params
+    const { id: farmId } = await context.params
 
     // Verify authentication
     const accessToken = await getAccessTokenFromCookies()
@@ -136,6 +138,22 @@ export async function POST(
       `คุณได้รับคำเชิญเข้าร่วมฟาร์ม ${farm.name}. เปิดลิงก์เพื่อเข้าร่วม: ${inviteLink}`,
     )
 
+    // Create notification for the invitee
+    try {
+      const inviterName = farm.owner.firstName || farm.owner.lastName
+        ? `${farm.owner.firstName || ''} ${farm.owner.lastName || ''}`.trim()
+        : farm.owner.phoneNumber
+
+      await NotificationService.createFarmInvitationNotification(
+        cleanedPhone,
+        farmId,
+        inviterName
+      )
+    } catch (notificationError) {
+      console.error('Failed to create farm invitation notification:', notificationError)
+      // Don't fail the request if notifications fail
+    }
+
     return NextResponse.json({
       message: 'สร้างคำเชิญเรียบร้อยแล้ว',
       token,
@@ -151,3 +169,5 @@ export async function POST(
     await prisma.$disconnect()
   }
 }
+
+export const POST = withFarmAuth(_POST, { ownerOnly: true })

@@ -172,6 +172,7 @@ export interface AnimalRegistrationForm {
   color?: string
   fatherName?: string
   motherName?: string
+  notes?: string
   farmId: string
 }
 
@@ -241,6 +242,8 @@ export const animalRegistrationSchema = z.object({
     .string()
     .max(100, 'ชื่อแม่พันธุ์ต้องไม่เกิน 100 ตัวอักษร')
     .optional(),
+
+  notes: z.string().max(1000, 'บันทึกต้องไม่เกิน 1,000 ตัวอักษร').optional(),
 
   farmId: z.string().min(1, 'ไม่พบข้อมูลฟาร์ม'),
 })

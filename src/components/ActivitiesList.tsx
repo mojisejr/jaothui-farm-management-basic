@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Filter, RefreshCw, Plus } from 'lucide-react'
 import { useFarmActivities } from '@/hooks'
 import ActivityCard from './ActivityCard'
 import SearchBar, { ActivitySearchField } from './SearchBar'
-import { ActivityFilters } from './FilterDrawer'
+import FilterDrawer, { ActivityFilters } from './FilterDrawer'
 import Pagination from './common/Pagination'
 import EmptyState from './common/EmptyState'
 
@@ -48,10 +49,13 @@ interface ActivitiesListProps {
 }
 
 export default function ActivitiesList({ farmId }: ActivitiesListProps) {
+  const router = useRouter()
+  
   // Search & Filter states
   const [searchTerm, setSearchTerm] = useState('')
   const [searchField, setSearchField] = useState<ActivitySearchField>('name')
-  const [_filters] = useState<ActivityFilters>({})
+  const [filters, setFilters] = useState<ActivityFilters>({})
+  const [showFilters, setShowFilters] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   // React Query data fetching
@@ -60,7 +64,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
       farmId,
       page: currentPage,
       search: searchTerm.trim() || undefined,
-      status: _filters.status || undefined,
+      status: filters.status || undefined,
       limit: 20,
     })
 
@@ -76,6 +80,11 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
   // Handle refresh
   const handleRefresh = () => {
     refetch()
+  }
+
+  // Handle create activity
+  const handleCreateActivity = () => {
+    router.push(`/activity/create?farmId=${farmId}`)
   }
 
   // Error state
@@ -179,10 +188,7 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
 
           <button
             className="btn btn-primary btn-sm"
-            onClick={() => {
-              // TODO: Add create activity functionality
-              alert('ฟีเจอร์สร้างกิจกรรมจะเพิ่มในเร็วๆ นี้')
-            }}
+            onClick={handleCreateActivity}
           >
             <Plus className="w-4 h-4 mr-2" />
             เพิ่มกิจกรรม
@@ -207,12 +213,15 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
         />
 
         {/* Filter Button */}
-        <button className="btn btn-outline">
+        <button 
+          className="btn btn-outline"
+          onClick={() => setShowFilters(true)}
+        >
           <Filter className="w-4 h-4 mr-2" />
           ตัวกรอง
-          {(_filters.status ||
-            _filters.dateRange?.from ||
-            _filters.dateRange?.to) && (
+          {(filters.status ||
+            filters.dateRange?.from ||
+            filters.dateRange?.to) && (
             <div className="badge badge-primary ml-2">•</div>
           )}
         </button>
@@ -224,8 +233,8 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           <span>
             พบ {pagination.totalCount} กิจกรรม
             {searchTerm && ` สำหรับ "${searchTerm}"`}
-            {_filters.status &&
-              ` สถานะ ${statuses.find((s) => s.value === _filters.status)?.label}`}
+            {filters.status &&
+              ` สถานะ ${statuses.find((s) => s.value === filters.status)?.label}`}
           </span>
           <span>
             หน้า {pagination.page} จาก {pagination.totalPages}
@@ -239,15 +248,12 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           context="activities"
           isFiltered={Boolean(
             searchTerm ||
-              _filters.status ||
-              _filters.dateRange?.from ||
-              _filters.dateRange?.to,
+              filters.status ||
+              filters.dateRange?.from ||
+              filters.dateRange?.to,
           )}
           farmId={farmId}
-          onCreateClick={() => {
-            // TODO: Add create activity functionality
-            alert('ฟีเจอร์สร้างกิจกรรมจะเพิ่มในเร็วๆ นี้')
-          }}
+          onCreateClick={handleCreateActivity}
         />
       ) : (
         <>
@@ -282,6 +288,20 @@ export default function ActivitiesList({ farmId }: ActivitiesListProps) {
           </div>
         </div>
       )}
+
+      {/* Filter Drawer */}
+      <FilterDrawer
+        context="activities"
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        filters={filters}
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters as ActivityFilters)
+          setCurrentPage(1) // Reset to first page when filtering
+        }}
+        activityStatuses={statuses}
+        isLoading={isLoading}
+      />
     </div>
   )
 }

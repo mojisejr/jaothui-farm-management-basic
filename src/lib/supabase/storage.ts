@@ -1,7 +1,7 @@
-import { supabase } from './client'
+import { supabaseAdmin } from './admin'
 
 /**
- * Upload file to Supabase Storage
+ * Upload file to Supabase Storage (Server-side with admin privileges)
  */
 export async function uploadToStorage(
   bucket: string,
@@ -9,8 +9,8 @@ export async function uploadToStorage(
   file: File,
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
-    // Upload file
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    // Upload file using admin client to bypass RLS
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from(bucket)
       .upload(path, file, {
         cacheControl: '3600',
@@ -24,7 +24,7 @@ export async function uploadToStorage(
       if (uploadError.message.includes('Bucket not found')) {
         // Try to create bucket if it doesn't exist
         const { error: createBucketError } =
-          await supabase.storage.createBucket(bucket, {
+          await supabaseAdmin.storage.createBucket(bucket, {
             public: true,
             fileSizeLimit: 10 * 1024 * 1024, // 10MB
           })
@@ -39,7 +39,7 @@ export async function uploadToStorage(
 
         // Retry upload after creating bucket
         const { data: retryUploadData, error: retryUploadError } =
-          await supabase.storage.from(bucket).upload(path, file, {
+          await supabaseAdmin.storage.from(bucket).upload(path, file, {
             cacheControl: '3600',
             upsert: false,
           })
@@ -53,7 +53,7 @@ export async function uploadToStorage(
         }
 
         // Get public URL from retry data
-        const { data: urlData } = supabase.storage
+        const { data: urlData } = supabaseAdmin.storage
           .from(bucket)
           .getPublicUrl(retryUploadData.path)
 
@@ -77,7 +77,7 @@ export async function uploadToStorage(
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = supabaseAdmin.storage
       .from(bucket)
       .getPublicUrl(uploadData.path)
 
@@ -102,7 +102,7 @@ export async function deleteFromStorage(
   path: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase.storage.from(bucket).remove([path])
+    const { error } = await supabaseAdmin.storage.from(bucket).remove([path])
 
     if (error) {
       console.error('Delete error:', error)

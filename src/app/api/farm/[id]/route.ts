@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import { farmCreateSchema } from '@/types/farm'
+import { withFarmAuth } from '@/lib/with-farm-auth'
 
 const prisma = new PrismaClient()
 
 // GET /api/farm/[id] - ดูรายละเอียดฟาร์ม
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  context: { params: Promise<Record<string, string>> },
 ) {
   try {
-    const { id } = await params
+    const { id } = await context.params
 
     // ตรวจสอบ authentication
     const accessToken = await getAccessTokenFromCookies()
@@ -68,13 +69,12 @@ export async function GET(
     // If requester is owner but not yet recorded in farm_members, insert with OWNER role (sync legacy data)
     if (isOwner && !isMember) {
       try {
-        // @ts-ignore – ensure compatibility if types not updated yet
         await prisma.farmMember.create({
           data: {
             farmId: farm.id,
             profileId: tokenPayload.userId,
             role: 'OWNER',
-          } as any,
+          },
         })
       } catch (err) {
         console.error('Error syncing owner FarmMember:', err)
@@ -107,39 +107,21 @@ export async function GET(
 }
 
 // PUT /api/farm/[id] - แก้ไขฟาร์ม
-export async function PUT(
+const _PUT = async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context: { params: Promise<Record<string, string>> },
+) => {
   try {
-    const { id } = await params
-
-    // ตรวจสอบ authentication
-    const accessToken = await getAccessTokenFromCookies()
-    if (!accessToken) {
-      return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 })
-    }
-
-    const tokenPayload = verifyAccessToken(accessToken)
-    if (!tokenPayload) {
-      return NextResponse.json({ error: 'โทเค็นไม่ถูกต้อง' }, { status: 401 })
-    }
+    const { id } = await context.params
 
     // ค้นหาฟาร์มและตรวจสอบความเป็นเจ้าของ
-    const farm = await prisma.farm.findUnique({
+    const farmExists = await prisma.farm.findUnique({
       where: { id },
-      select: { id: true, ownerId: true },
+      select: { id: true },
     })
 
-    if (!farm) {
+    if (!farmExists) {
       return NextResponse.json({ error: 'ไม่พบฟาร์มที่ระบุ' }, { status: 404 })
-    }
-
-    if (farm.ownerId !== tokenPayload.userId) {
-      return NextResponse.json(
-        { error: 'คุณไม่มีสิทธิ์แก้ไขฟาร์มนี้' },
-        { status: 403 },
-      )
     }
 
     // รับข้อมูลจาก request body
@@ -197,50 +179,30 @@ export async function PUT(
   }
 }
 
+export const PUT = withFarmAuth(_PUT, { ownerOnly: true })
+
 // DELETE /api/farm/[id] - ลบฟาร์ม
-export async function DELETE(
+const _DELETE = async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+  context: { params: Promise<Record<string, string>> },
+) => {
   try {
-    const { id } = await params
-
-    // ตรวจสอบ authentication
-    const accessToken = await getAccessTokenFromCookies()
-    if (!accessToken) {
-      return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบ' }, { status: 401 })
-    }
-
-    const tokenPayload = verifyAccessToken(accessToken)
-    if (!tokenPayload) {
-      return NextResponse.json({ error: 'โทเค็นไม่ถูกต้อง' }, { status: 401 })
-    }
+    const { id } = await context.params
 
     // ค้นหาฟาร์มและตรวจสอบความเป็นเจ้าของ
     const farm = await prisma.farm.findUnique({
       where: { id },
       select: {
         id: true,
-        ownerId: true,
         name: true,
         _count: {
-          select: {
-            animals: true,
-            members: true,
-          },
+          select: { animals: true, members: true },
         },
       },
     })
 
     if (!farm) {
       return NextResponse.json({ error: 'ไม่พบฟาร์มที่ระบุ' }, { status: 404 })
-    }
-
-    if (farm.ownerId !== tokenPayload.userId) {
-      return NextResponse.json(
-        { error: 'คุณไม่มีสิทธิ์ลบฟาร์มนี้' },
-        { status: 403 },
-      )
     }
 
     // ตรวจสอบข้อมูลที่เกี่ยวข้อง
@@ -280,3 +242,5 @@ export async function DELETE(
     await prisma.$disconnect()
   }
 }
+
+export const DELETE = withFarmAuth(_DELETE, { ownerOnly: true })

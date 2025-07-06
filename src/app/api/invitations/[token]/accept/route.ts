@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
+import { NotificationService } from '@/lib/notifications/service'
 
 const prisma = new PrismaClient()
 
@@ -68,6 +69,27 @@ export async function POST(
       where: { token },
       data: { status: 'ACCEPTED' },
     })
+
+    // Create member joined notification
+    try {
+      const newMember = await prisma.profile.findUnique({
+        where: { id: tokenPayload.userId },
+        select: { firstName: true, lastName: true, phoneNumber: true },
+      })
+
+      const memberName = newMember 
+        ? `${newMember.firstName || ''} ${newMember.lastName || ''}`.trim() || newMember.phoneNumber
+        : 'สมาชิกใหม่'
+
+      await NotificationService.createMemberJoinedNotification(
+        invitation.farmId,
+        memberName,
+        tokenPayload.userId
+      )
+    } catch (notificationError) {
+      console.error('Failed to create member joined notification:', notificationError)
+      // Don't fail the request if notifications fail
+    }
 
     return NextResponse.json({ message: 'เข้าร่วมฟาร์มเรียบร้อยแล้ว' })
   } catch (error) {

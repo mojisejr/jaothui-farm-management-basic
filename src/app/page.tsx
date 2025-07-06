@@ -3,10 +3,7 @@ import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center bg-base-100 px-4 pt-16 pb-10"
-      data-theme="jaothui"
-    >
+    <div className="min-h-screen flex flex-col items-center bg-base-100 px-4 pt-16 pb-10">
       {/* Hero Section */}
       <div className="flex flex-col items-center flex-grow">
         <Image

@@ -103,6 +103,24 @@ export default function MemberList({
     }
   }
 
+  const handleLeaveFarm = async () => {
+    if (!confirm('คุณต้องการออกจากฟาร์มนี้หรือไม่?')) return
+
+    try {
+      const response = await fetch(`/api/farm/${farm.id}/leave`, {
+        method: 'DELETE',
+      })
+      const data = await response.json()
+      if (response.ok) {
+        window.location.href = '/farms?success=ออกจากฟาร์มแล้ว'
+      } else {
+        alert(data.error || 'เกิดข้อผิดพลาด')
+      }
+    } catch (_e) {
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Search */}
@@ -141,6 +159,9 @@ export default function MemberList({
               isCurrentUser={member.id === currentUserId}
               canRemove={isOwner && member.id !== farm.ownerId}
               onRemove={() => handleRemoveMember(member.id)}
+              onLeave={
+                member.id === currentUserId ? handleLeaveFarm : undefined
+              }
             />
           ))}
         </div>

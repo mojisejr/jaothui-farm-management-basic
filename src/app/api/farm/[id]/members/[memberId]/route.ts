@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
+import { withFarmAuth } from '@/lib/with-farm-auth'
 
 const prisma = new PrismaClient()
 
-export async function DELETE(
+const _DELETE = async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; memberId: string }> },
-) {
+  context: { params: Promise<Record<string, string>> },
+) => {
   try {
-    const { id: farmId, memberId } = await params
+    const { id: farmId, memberId } = await context.params
 
     // Verify authentication
     const accessToken = await getAccessTokenFromCookies()
@@ -104,3 +105,5 @@ export async function DELETE(
     await prisma.$disconnect()
   }
 }
+
+export const DELETE = withFarmAuth(_DELETE, { ownerOnly: true })

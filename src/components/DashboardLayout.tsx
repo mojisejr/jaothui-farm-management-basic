@@ -15,6 +15,7 @@ import ActivitiesList from './ActivitiesList'
 import FarmHeaderCard from './FarmHeaderCard'
 import FloatingActionButton from './common/FloatingActionButton'
 import PendingInvitationsBell from './invitations/PendingInvitationsBell'
+import { NotificationWrapper } from './notifications'
 
 interface FarmData {
   id: string
@@ -176,6 +177,8 @@ export default function DashboardLayout({
             height={32}
             className="h-8 w-auto"
           />
+          {/* Notifications */}
+          <NotificationWrapper />
           {/* Pending Invitations badge */}
           <PendingInvitationsBell />
         </div>

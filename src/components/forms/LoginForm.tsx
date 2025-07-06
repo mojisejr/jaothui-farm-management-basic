@@ -47,7 +47,7 @@ export function LoginForm() {
 
         if (response.ok) {
           toast.success(result.message || 'เข้าสู่ระบบสำเร็จ')
-          router.push('/profile')
+          router.replace('/profile')
           router.refresh()
         } else {
           toast.error(result.error || 'เข้าสู่ระบบไม่สำเร็จ')

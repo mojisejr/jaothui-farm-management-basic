@@ -9,7 +9,7 @@ import { farmCreateSchema } from '@/types/farm'
 const prisma = new PrismaClient()
 
 export async function createFarm(
-  prevState: { message: string },
+  prevState: { message: string; success: boolean; farmId?: string | null },
   formData: FormData,
 ) {
   try {
@@ -36,13 +36,14 @@ export async function createFarm(
     })
 
     if (!profile) {
-      return { message: 'ไม่พบข้อมูลโปรไฟล์ของผู้ใช้' }
+      return { message: 'ไม่พบข้อมูลโปรไฟล์ของผู้ใช้', success: false }
     }
 
     // Check if user already owns a farm
     if (profile.ownedFarms.length > 0) {
       return {
         message: 'คุณเป็นเจ้าของฟาร์มอยู่แล้ว ไม่สามารถสร้างฟาร์มใหม่ได้',
+        success: false,
       }
     }
 
@@ -65,7 +66,7 @@ export async function createFarm(
 
     if (!parsed.success) {
       const firstError = parsed.error.errors[0]?.message || 'ข้อมูลไม่ถูกต้อง'
-      return { message: firstError }
+      return { message: firstError, success: false }
     }
 
     const validatedData = parsed.data
@@ -92,11 +93,18 @@ export async function createFarm(
 
 
     revalidatePath('/farm') // Revalidate potential farm list page
-    redirect(`/farm/${newFarm.id}`) // Redirect to the new farm's page
+    
+    // Return success state first, then redirect will be handled by client
+    return { 
+      message: 'สร้างฟาร์มสำเร็จ!', 
+      success: true,
+      farmId: newFarm.id 
+    }
   } catch (error) {
     console.error('Error creating farm:', error)
     return {
       message: 'เกิดข้อผิดพลาดในการสร้างฟาร์ม โปรดลองใหม่อีกครั้ง',
+      success: false,
     }
   } finally {
     await prisma.$disconnect()

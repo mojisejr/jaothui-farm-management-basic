@@ -1,15 +1,33 @@
 'use client'
 import { createFarm } from './actions'
 import { THAI_PROVINCES } from '@/types/farm'
-import { useActionState } from 'react'
+import { useActionState, useTransition } from 'react'
 import FarmLayout from '@/components/layouts/FarmLayout'
+import { toast } from 'sonner'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const initialState = {
   message: '',
+  success: false,
 }
 
 export default function CreateFarmPage() {
   const [state, formAction] = useActionState(createFarm, initialState)
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (state.success && 'farmId' in state && state.farmId) {
+      toast.success('สร้างฟาร์มสำเร็จ!')
+      // Redirect after showing success message
+      setTimeout(() => {
+        router.push(`/farm/${state.farmId}`)
+      }, 1500)
+    } else if (state.message && !state.success) {
+      toast.error(state.message)
+    }
+  }, [state, router])
 
   return (
     <FarmLayout
@@ -19,7 +37,11 @@ export default function CreateFarmPage() {
       maxWidth="lg"
       backUrl="/farms"
     >
-      <form action={formAction}>
+      <form action={(formData) => {
+        startTransition(() => {
+          formAction(formData)
+        })
+      }}>
         {/* ชื่อฟาร์ม */}
         <div className="form-control">
           <label className="label" htmlFor="name">
@@ -94,8 +116,19 @@ export default function CreateFarmPage() {
 
         {/* Submit Button */}
         <div className="form-control mt-6">
-          <button type="submit" className="btn btn-primary">
-            สร้างฟาร์ม
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                กำลังสร้างฟาร์ม...
+              </>
+            ) : (
+              'สร้างฟาร์ม'
+            )}
           </button>
         </div>
 

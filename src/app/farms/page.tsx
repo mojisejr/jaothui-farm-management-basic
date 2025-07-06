@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { COOKIE } from '@/constants/cookies'
 import FarmLayout from '@/components/layouts/FarmLayout'
+import { PrismaClient } from '@prisma/client'
+import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
+
+const prisma = new PrismaClient()
 
 interface FarmData {
   id: string
@@ -31,35 +33,62 @@ interface FarmResponse {
 }
 
 async function getFarms(): Promise<FarmResponse> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(COOKIE.ACCESS)?.value
-
-  if (!token) {
-    redirect('/login')
-  }
-
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/farm`, {
-      headers: {
-        Cookie: `${COOKIE.ACCESS}=${token}`,
-        'Cache-Control': 'no-cache',
-      },
-      cache: 'no-store',
-    })
+    // Get and verify token
+    const accessToken = await getAccessTokenFromCookies()
+    if (!accessToken) {
+      redirect('/login')
+    }
 
-    if (response.status === 401) {
+    const tokenPayload = verifyAccessToken(accessToken)
+    if (!tokenPayload) {
       redirect('/profile')
     }
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch farms')
+    const userId = tokenPayload.userId
+
+    // Fetch farms directly from database
+    const ownedFarms = await prisma.farm.findMany({
+      where: { ownerId: userId },
+      include: {
+        owner: {
+          select: {
+            firstName: true,
+            lastName: true,
+            phoneNumber: true,
+          },
+        },
+        _count: {
+          select: {
+            animals: true,
+            members: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    const stats = {
+      totalFarms: ownedFarms.length,
+      totalAnimals: ownedFarms.reduce(
+        (sum, farm) => sum + farm._count.animals,
+        0,
+      ),
     }
 
-    return await response.json()
+    return {
+      farms: ownedFarms.map((farm) => ({
+        ...farm,
+        isOwner: true,
+        isMember: false,
+      })),
+      stats,
+    }
   } catch (error) {
     console.error('Error fetching farms:', error)
     throw error
+  } finally {
+    await prisma.$disconnect()
   }
 }
 

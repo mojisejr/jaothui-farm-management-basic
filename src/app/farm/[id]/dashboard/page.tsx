@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
-import { COOKIE } from '@/constants/cookies'
 import DashboardLayout from '@/components/DashboardLayout'
+import prisma from '@/lib/prisma'
+import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 
 interface FarmDetail {
   id: string
@@ -25,41 +25,83 @@ interface FarmDetail {
 }
 
 async function getFarmDetail(farmId: string): Promise<FarmDetail> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(COOKIE.ACCESS)?.value
+  // ตรวจสอบ authentication
+  const accessToken = await getAccessTokenFromCookies()
+  if (!accessToken) {
+    redirect('/login')
+  }
 
-  if (!token) {
+  const tokenPayload = verifyAccessToken(accessToken)
+  if (!tokenPayload) {
     redirect('/login')
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/farm/${farmId}`, {
-      headers: {
-        Cookie: `${COOKIE.ACCESS}=${token}`,
-        'Cache-Control': 'no-cache',
+    // ค้นหาฟาร์ม
+    const farm = await prisma.farm.findUnique({
+      where: { id: farmId },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            phoneNumber: true,
+          },
+        },
+        animals: {
+          select: {
+            id: true,
+            name: true,
+            microchip: true,
+          },
+        },
+        _count: {
+          select: {
+            animals: true,
+            members: true,
+          },
+        },
       },
-      cache: 'no-store',
     })
 
-    if (response.status === 401) {
-      redirect('/login')
-    }
-
-    if (response.status === 404) {
+    if (!farm) {
       notFound()
     }
 
-    if (response.status === 403) {
+    // ตรวจสอบสิทธิ์การเข้าถึง (เจ้าของหรือสมาชิก)
+    const isOwner = farm.ownerId === tokenPayload.userId
+    const isMember = await prisma.farmMember.findFirst({
+      where: {
+        farmId: farm.id,
+        profileId: tokenPayload.userId,
+      },
+    })
+
+    // If requester is owner but not yet recorded in farm_members, insert with OWNER role (sync legacy data)
+    if (isOwner && !isMember) {
+      try {
+        await prisma.farmMember.create({
+          data: {
+            farmId: farm.id,
+            profileId: tokenPayload.userId,
+            role: 'OWNER',
+          },
+        })
+      } catch (err) {
+        console.error('Error syncing owner FarmMember:', err)
+      }
+    }
+
+    if (!isOwner && !isMember) {
       redirect('/farms?error=ไม่มีสิทธิ์เข้าถึงฟาร์มนี้')
     }
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch farm details')
-    }
-
-    const data = await response.json()
-    return data.farm as FarmDetail
+    return {
+      ...farm,
+      isOwner,
+      isMember: !!isMember,
+    } as FarmDetail
   } catch (error) {
     console.error('Error fetching farm details:', error)
     throw error

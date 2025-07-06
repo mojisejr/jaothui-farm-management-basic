@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { authenticateUser } from '@/lib/farm-auth'
-
-const prisma = new PrismaClient()
 
 // GET /api/farm - รายการฟาร์มของผู้ใช้
 export async function GET(_request: NextRequest) {
@@ -55,7 +53,5 @@ export async function GET(_request: NextRequest) {
       { error: 'เกิดข้อผิดพลาดในการดึงข้อมูลฟาร์ม' },
       { status: 500 },
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

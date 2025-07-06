@@ -90,7 +90,6 @@ export async function createFarm(
       },
     })
 
-    console.log('newFarm: ', newFarm)
 
     revalidatePath('/farm') // Revalidate potential farm list page
     redirect(`/farm/${newFarm.id}`) // Redirect to the new farm's page

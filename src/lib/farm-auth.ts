@@ -1,8 +1,7 @@
 // Farm authorization utilities
-import { PrismaClient, Farm, Profile } from '@prisma/client'
+import { Farm, Profile } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
-
-const prisma = new PrismaClient()
 
 export interface AuthResult {
   success: boolean
@@ -120,8 +119,6 @@ export async function checkFarmAccess(
       error: 'เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์เข้าถึงฟาร์ม',
       status: 500,
     }
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -166,8 +163,6 @@ export async function checkFarmOwnership(
       error: 'เกิดข้อผิดพลาดในการตรวจสอบความเป็นเจ้าของฟาร์ม',
       status: 500,
     }
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -217,7 +212,5 @@ export async function checkFarmDeletionConstraints(
       canDelete: false,
       error: 'เกิดข้อผิดพลาดในการตรวจสอบข้อมูลที่เกี่ยวข้อง',
     }
-  } finally {
-    await prisma.$disconnect()
   }
 }

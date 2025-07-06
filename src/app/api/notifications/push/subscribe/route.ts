@@ -73,8 +73,6 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log(`✅ Push subscription registered for user: ${payload.userId}`)
-
     return NextResponse.json({
       success: true,
       message: 'เปิดใช้งานการแจ้งเตือนแบบ Push เรียบร้อยแล้ว',

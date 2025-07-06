@@ -20,7 +20,6 @@ export async function signup(
 
     if (!validatedFields.success) {
       const errors = validatedFields.error.flatten().fieldErrors
-      console.log(errors)
       const errorMessage = Object.values(errors).flat().join(', ')
       return {
         success: false,

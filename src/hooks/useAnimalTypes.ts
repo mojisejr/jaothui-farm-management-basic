@@ -15,7 +15,7 @@ const fetchAnimalTypes = async (): Promise<AnimalType[]> => {
   }
 
   const data = await response.json()
-  return data.animalTypes || []
+  return data
 }
 
 export const useAnimalTypes = () => {

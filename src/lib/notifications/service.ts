@@ -33,7 +33,6 @@ export class NotificationService {
         },
       })
 
-      console.log(`✅ Created notification: ${params.type} for user ${params.userId}`)
       return notification
     } catch (error) {
       console.error('Failed to create notification:', error)
@@ -62,7 +61,6 @@ export class NotificationService {
         })),
       })
 
-      console.log(`✅ Created ${notifications.count} bulk notifications: ${params.type}`)
       return notifications
     } catch (error) {
       console.error('Failed to create bulk notifications:', error)
@@ -280,7 +278,6 @@ export class NotificationService {
       })
 
       if (!invitee) {
-        console.log(`User with phone ${inviteePhoneNumber} not found - skipping notification`)
         return null
       }
 

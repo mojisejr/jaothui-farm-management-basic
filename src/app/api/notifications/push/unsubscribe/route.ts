@@ -36,8 +36,6 @@ export async function POST(_request: NextRequest) {
       },
     })
 
-    console.log(`❌ Push subscription removed for user: ${payload.userId}`)
-
     return NextResponse.json({
       success: true,
       message: 'ปิดการแจ้งเตือนแบบ Push เรียบร้อยแล้ว',

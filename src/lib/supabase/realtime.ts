@@ -52,10 +52,8 @@ class RealtimeNotificationManager {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          console.log(`✅ Subscribed to user notifications: ${userId}`)
           this.isConnected = true
         } else if (status === 'CLOSED') {
-          console.log(`❌ Notification subscription closed: ${userId}`)
           this.isConnected = false
         } else if (status === 'CHANNEL_ERROR') {
           console.error(`🔥 Notification subscription error: ${userId}`)
@@ -103,9 +101,9 @@ class RealtimeNotificationManager {
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          console.log(`✅ Subscribed to farm notifications: ${farmId}`)
+          // Farm notifications subscribed
         } else if (status === 'CLOSED') {
-          console.log(`❌ Farm notification subscription closed: ${farmId}`)
+          // Farm notification subscription closed
         } else if (status === 'CHANNEL_ERROR') {
           console.error(`🔥 Farm notification subscription error: ${farmId}`)
         }
@@ -184,7 +182,6 @@ class RealtimeNotificationManager {
     if (channel) {
       supabase.removeChannel(channel)
       this.subscriptions.delete(channelName)
-      console.log(`🔇 Unsubscribed from: ${channelName}`)
     }
   }
 
@@ -194,7 +191,6 @@ class RealtimeNotificationManager {
       this.unsubscribe(channelName)
     })
     this.isConnected = false
-    console.log('🔇 Unsubscribed from all notification channels')
   }
 
   // Get connection status
@@ -208,8 +204,7 @@ class RealtimeNotificationManager {
 
   // Reconnect all subscriptions (useful for recovery)
   async reconnectAll() {
-    const activeChannels = Array.from(this.subscriptions.keys())
-    console.log(`🔄 Reconnecting ${activeChannels.length} notification channels...`)
+    const _activeChannels = Array.from(this.subscriptions.keys())
     
     // Note: In a real implementation, you'd want to store the subscription parameters
     // and resubscribe with the same parameters. For now, we'll just clear and let

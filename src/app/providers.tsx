@@ -18,15 +18,22 @@ export function Providers({ children }: { children: React.ReactNode }) {
             gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
             retry: (failureCount, error) => {
               // Don't retry on 4xx errors except 408, 429
-              if (error instanceof Error && 'status' in error) {
-                const status = (error as { status: number }).status
-                if (
-                  status >= 400 &&
-                  status < 500 &&
-                  status !== 408 &&
-                  status !== 429
-                ) {
-                  return false
+              if (error instanceof Error) {
+                // Check if error has a status property from fetch responses
+                if ('status' in error) {
+                  const status = (error as { status: number }).status
+                  if (
+                    status >= 400 &&
+                    status < 500 &&
+                    status !== 408 &&
+                    status !== 429
+                  ) {
+                    return false
+                  }
+                }
+                // Don't retry on network errors immediately - wait for backoff
+                if (error.message.includes('fetch') || error.name === 'TypeError') {
+                  return failureCount < 2 // Reduce retries for network errors
                 }
               }
               return failureCount < 3

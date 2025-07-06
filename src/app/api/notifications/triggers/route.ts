@@ -15,8 +15,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('🔔 Running notification triggers...')
-    
     // Run all notification checks
     const results = await NotificationTriggers.runAllChecks()
     
@@ -35,8 +33,6 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     }
 
-    console.log('✅ Notification triggers completed:', summary)
-    
     return NextResponse.json(summary)
   } catch (error) {
     console.error('Failed to run notification triggers:', error)

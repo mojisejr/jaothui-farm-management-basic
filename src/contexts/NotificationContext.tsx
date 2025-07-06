@@ -282,7 +282,7 @@ function playNotificationSound(priority: string) {
 
     oscillator.start(audioContext.currentTime)
     oscillator.stop(audioContext.currentTime + 0.3)
-  } catch (error) {
-    console.log('Notification sound failed:', error)
+  } catch (_error) {
+    // Notification sound failed silently
   }
 }

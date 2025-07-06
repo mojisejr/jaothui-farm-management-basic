@@ -26,7 +26,6 @@ export class NotificationTriggers {
         }
       })
 
-      console.log(`🔍 Found ${overdueActivities.length} overdue activities`)
 
       // Check if we've already sent overdue notifications for these activities
       const results = []
@@ -48,7 +47,6 @@ export class NotificationTriggers {
         }
       }
 
-      console.log(`✅ Created ${results.length} overdue notifications`)
       return results
     } catch (error) {
       console.error('Failed to check overdue activities:', error)
@@ -80,7 +78,6 @@ export class NotificationTriggers {
         }
       })
 
-      console.log(`🔍 Found ${upcomingActivities.length} upcoming activities`)
 
       // Check if we've already sent reminders for these activities
       const results = []
@@ -102,7 +99,6 @@ export class NotificationTriggers {
         }
       }
 
-      console.log(`✅ Created ${results.length} activity reminder notifications`)
       return results
     } catch (error) {
       console.error('Failed to check upcoming activities:', error)
@@ -134,7 +130,6 @@ export class NotificationTriggers {
         }
       })
 
-      console.log(`🔍 Found ${upcomingSchedules.length} upcoming schedules`)
 
       // Check if we've already sent reminders for these schedules
       const results = []
@@ -156,7 +151,6 @@ export class NotificationTriggers {
         }
       }
 
-      console.log(`✅ Created ${results.length} schedule reminder notifications`)
       return results
     } catch (error) {
       console.error('Failed to check upcoming schedules:', error)
@@ -181,7 +175,6 @@ export class NotificationTriggers {
         }
       })
 
-      console.log(`🔍 Found ${pendingInvitations.length} pending invitations`)
 
       const results = []
       for (const invitation of pendingInvitations) {
@@ -220,7 +213,6 @@ export class NotificationTriggers {
         }
       }
 
-      console.log(`✅ Created ${results.length} invitation notifications`)
       return results
     } catch (error) {
       console.error('Failed to process invitation notifications:', error)
@@ -243,7 +235,6 @@ export class NotificationTriggers {
         }
       })
 
-      console.log(`🧹 Cleaned up ${deletedCount.count} old notifications`)
       return deletedCount
     } catch (error) {
       console.error('Failed to cleanup old notifications:', error)
@@ -253,8 +244,6 @@ export class NotificationTriggers {
 
   // Run all notification checks
   static async runAllChecks() {
-    console.log('🚀 Starting notification trigger checks...')
-    
     try {
       const results = await Promise.allSettled([
         this.checkOverdueActivities(),
@@ -264,10 +253,8 @@ export class NotificationTriggers {
         this.cleanupOldNotifications(30), // Keep 30 days
       ])
 
-      const successful = results.filter(r => r.status === 'fulfilled').length
-      const failed = results.filter(r => r.status === 'rejected').length
-
-      console.log(`✅ Notification checks completed: ${successful} successful, ${failed} failed`)
+      const _successful = results.filter(r => r.status === 'fulfilled').length
+      const _failed = results.filter(r => r.status === 'rejected').length
       
       // Log any errors
       results.forEach((result, index) => {

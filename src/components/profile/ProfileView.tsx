@@ -34,8 +34,7 @@ export default function ProfileView({
           <div className="flex flex-col items-center space-y-4">
             <ImageUpload
               currentImage={profile?.profileImage || ''}
-              onImageSelect={(file, preview) => {
-                console.log('Profile image changed:', { file, preview })
+              onImageSelect={(_file, _preview) => {
                 // Handle image change if needed
               }}
               disabled={true}

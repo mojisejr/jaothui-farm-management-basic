@@ -31,7 +31,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error refreshing auth:', error)
-      setUser(null)
+      // Only set user to null if it's a network error or server error
+      // Don't logout user for temporary network issues
+      if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
+        // Network error - keep user logged in
+        console.warn('Network error during auth refresh, keeping user logged in')
+      } else {
+        setUser(null)
+      }
     }
   }, [])
 

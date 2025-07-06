@@ -48,7 +48,6 @@ export class PushNotificationManager {
 
     try {
       const registration = await navigator.serviceWorker.register('/sw.js')
-      console.log('Service Worker registered successfully:', registration)
       this.swRegistration = registration
       return registration
     } catch (error) {
@@ -73,7 +72,6 @@ export class PushNotificationManager {
         applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey),
       })
 
-      console.log('Push subscription created:', subscription)
       return subscription
     } catch (error) {
       console.error('Failed to subscribe to push notifications:', error)
@@ -91,7 +89,6 @@ export class PushNotificationManager {
       const subscription = await this.swRegistration.pushManager.getSubscription()
       if (subscription) {
         const result = await subscription.unsubscribe()
-        console.log('Push subscription removed:', result)
         return result
       }
       return false
@@ -130,7 +127,6 @@ export class PushNotificationManager {
         throw new Error('Failed to send subscription to server')
       }
 
-      console.log('Subscription sent to server successfully')
       return true
     } catch (error) {
       console.error('Failed to send subscription to server:', error)
@@ -152,7 +148,6 @@ export class PushNotificationManager {
         throw new Error('Failed to remove subscription from server')
       }
 
-      console.log('Subscription removed from server successfully')
       return true
     } catch (error) {
       console.error('Failed to remove subscription from server:', error)

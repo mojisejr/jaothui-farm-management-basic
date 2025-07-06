@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 import { farmCreateSchema } from '@/types/farm'
 import { withFarmAuth } from '@/lib/with-farm-auth'
-
-const prisma = new PrismaClient()
 
 // GET /api/farm/[id] - ดูรายละเอียดฟาร์ม
 export async function GET(
@@ -101,8 +99,6 @@ export async function GET(
       { error: 'เกิดข้อผิดพลาดในการดึงข้อมูลฟาร์ม' },
       { status: 500 },
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -174,8 +170,6 @@ const _PUT = async (
       { error: 'เกิดข้อผิดพลาดในการอัปเดทฟาร์ม' },
       { status: 500 },
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -238,8 +232,6 @@ const _DELETE = async (
       { error: 'เกิดข้อผิดพลาดในการลบฟาร์ม' },
       { status: 500 },
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }
 

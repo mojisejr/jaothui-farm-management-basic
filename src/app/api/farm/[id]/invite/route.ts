@@ -129,7 +129,7 @@ const _POST = async (
     })
 
     // Build invitation link
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'https://localhost:3000'
     const inviteLink = `${siteUrl}/invite/${token}`
 
     // Send SMS notification (best effort)

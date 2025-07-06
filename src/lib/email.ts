@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Default values
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@farmmanagement.com'
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'https://localhost:3000'
 
 /**
  * Email template interfaces

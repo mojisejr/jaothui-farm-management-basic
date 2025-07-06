@@ -2,6 +2,14 @@
 
 import { AuthResponse, resetPasswordSchema } from '@/types/auth'
 import { redirect } from 'next/navigation'
+import { PrismaClient } from '@prisma/client'
+import {
+  hashPassword,
+  validatePasswordComplexity,
+  isResetTokenExpired,
+} from '@/lib/password'
+
+const prisma = new PrismaClient()
 
 export async function resetPassword(
   prevState: AuthResponse | null,
@@ -26,34 +34,72 @@ export async function resetPassword(
 
     const { token, password } = validatedFields.data
 
-    // Call reset password API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/verify-reset`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          newPassword: password,
-        }),
-      },
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
+    // Validate password complexity
+    const passwordValidation = validatePasswordComplexity(password)
+    if (!passwordValidation.isValid) {
       return {
         success: false,
-        message: data.error || 'ไม่สามารถรีเซ็ตรหัสผ่านได้',
+        message: 'รหัสผ่านไม่ตรงตามเงื่อนไข',
       }
     }
+
+    // Find user by reset token
+    const user = await prisma.profile.findFirst({
+      where: {
+        resetToken: token,
+      },
+      select: {
+        id: true,
+        resetToken: true,
+        resetTokenExpiry: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        email: true,
+      },
+    })
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'Token ไม่ถูกต้องหรือหมดอายุ',
+      }
+    }
+
+    // Check if token is expired
+    if (!user.resetTokenExpiry || isResetTokenExpired(user.resetTokenExpiry)) {
+      // Clear expired token
+      await prisma.profile.update({
+        where: { id: user.id },
+        data: {
+          resetToken: null,
+          resetTokenExpiry: null,
+        },
+      })
+
+      return {
+        success: false,
+        message: 'Token หมดอายุแล้ว กรุณาขอรีเซ็ตรหัสผ่านใหม่',
+      }
+    }
+
+    // Hash new password
+    const passwordHash = await hashPassword(password)
+
+    // Update user password and clear reset token
+    await prisma.profile.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    })
 
     // Success response
     return {
       success: true,
-      message: data.message || 'รีเซ็ตรหัสผ่านสำเร็จ',
+      message: 'รีเซ็ตรหัสผ่านสำเร็จ กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่',
       redirectUrl: '/login',
     }
   } catch (error) {
@@ -62,6 +108,8 @@ export async function resetPassword(
       success: false,
       message: 'เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดลองใหม่อีกครั้ง',
     }
+  } finally {
+    await prisma.$disconnect()
   }
 }
 

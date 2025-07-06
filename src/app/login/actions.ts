@@ -1,7 +1,14 @@
 'use server'
 
-import { AuthResponse, loginSchema } from '@/types/auth'
+import { AuthResponse, loginSchema, User } from '@/types/auth'
 import { redirect } from 'next/navigation'
+import {
+  verifyPassword,
+  validateThaiPhoneNumber,
+  formatPhoneNumber,
+} from '@/lib/password'
+import { generateTokenPair, setAuthCookies } from '@/lib/jwt'
+import prisma from '@/lib/prisma'
 
 export async function login(
   prevState: AuthResponse | null,
@@ -25,37 +32,79 @@ export async function login(
 
     const { phone, password } = validatedFields.data
 
-    // Call login API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/auth/login`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: phone,
-          password,
-        }),
-        credentials: 'include',
-      },
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
+    // Validate phone number format
+    const phoneValidation = validateThaiPhoneNumber(phone)
+    if (!phoneValidation.isValid) {
       return {
         success: false,
-        message: data.error || 'เข้าสู่ระบบไม่สำเร็จ',
+        message: phoneValidation.error || 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง',
       }
     }
 
-    // Success response
+    // Format phone number
+    const formattedPhoneNumber = formatPhoneNumber(phone)
+
+    // Find user by phone number
+    const user = await prisma.profile.findUnique({
+      where: { phoneNumber: formattedPhoneNumber },
+      select: {
+        id: true,
+        phoneNumber: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        passwordHash: true,
+        phoneVerified: true,
+        emailVerified: true,
+        verified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'ไม่พบบัญชีผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง',
+      }
+    }
+
+    // Verify password
+    const isPasswordValid = await verifyPassword(password, user.passwordHash)
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        message: 'ไม่พบบัญชีผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง',
+      }
+    }
+
+    // Generate JWT tokens
+    const tokenPair = generateTokenPair({
+      id: user.id,
+      phoneNumber: user.phoneNumber,
+      email: user.email || undefined,
+      firstName: user.firstName || undefined,
+      lastName: user.lastName || undefined,
+    })
+
+    // Set auth cookies
+    await setAuthCookies(tokenPair.accessToken, tokenPair.refreshToken)
+
+    // Return success response (without password hash)
+    const { passwordHash: _passwordHash, ...rawUser } = user
+    
+    const userResponse: User = {
+      ...rawUser,
+      firstName: rawUser.firstName || '',
+      lastName: rawUser.lastName || '',
+      email: rawUser.email || null,
+    }
+
     return {
       success: true,
-      message: data.message || 'เข้าสู่ระบบสำเร็จ',
+      message: 'เข้าสู่ระบบสำเร็จ',
       redirectUrl: '/profile',
-      user: data.user,
+      user: userResponse,
     }
   } catch (error) {
     console.error('Login action error:', error)
@@ -63,6 +112,8 @@ export async function login(
       success: false,
       message: 'เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดลองใหม่อีกครั้ง',
     }
+  } finally {
+    await prisma.$disconnect()
   }
 }
 

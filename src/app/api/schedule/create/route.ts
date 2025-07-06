@@ -9,10 +9,12 @@ const createScheduleSchema = z.object({
   description: z.string().max(500).optional(),
   notes: z.string().max(1000).optional(),
   scheduledDate: z.string().datetime(),
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).default('PENDING'),
   isRecurring: z.boolean().default(false),
   recurrenceType: z.string().optional(),
   animalId: z.string().uuid(),
+  categoryId: z.string().optional(), // เพิ่ม categoryId
+  templateId: z.string().optional(), // เพิ่ม templateId
   customFields: z.record(z.string()).optional()
 }).refine((data) => {
   // If recurring, recurrence type is required
@@ -74,7 +76,23 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const validatedData = createScheduleSchema.parse(body)
+    console.log('Schedule creation request body:', JSON.stringify(body, null, 2))
+    
+    // Validate the data with detailed error logging
+    const validationResult = createScheduleSchema.safeParse(body)
+    if (!validationResult.success) {
+      console.error('Validation errors:', validationResult.error.errors)
+      return NextResponse.json(
+        { 
+          error: 'Invalid input data', 
+          details: validationResult.error.errors,
+          receivedData: body
+        },
+        { status: 400 }
+      )
+    }
+    
+    const validatedData = validationResult.data
 
     // Verify animal exists and user has access
     const animal = await prisma.animal.findFirst({

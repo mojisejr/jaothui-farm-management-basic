@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { Plus, Users, Calendar } from 'lucide-react'
+import { Plus, Users, Calendar, ClockIcon } from 'lucide-react'
 
 interface FloatingActionButtonProps {
-  activeTab: 'animals' | 'activities'
+  activeTab: 'animals' | 'activities' | 'schedules'
   farmId: string
 }
 
@@ -24,6 +24,13 @@ export default function FloatingActionButton({
       href: `/activity/create?farmId=${farmId}`,
       bgColor: 'bg-secondary',
       hoverColor: 'hover:bg-secondary-focus',
+    },
+    schedules: {
+      icon: ClockIcon,
+      label: 'เพิ่มกำหนดการ',
+      href: `/schedule/create?farmId=${farmId}`,
+      bgColor: 'bg-accent',
+      hoverColor: 'hover:bg-accent-focus',
     },
   }
 

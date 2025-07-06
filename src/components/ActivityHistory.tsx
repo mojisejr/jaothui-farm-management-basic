@@ -49,7 +49,7 @@ interface ActivityHistoryProps {
 }
 
 export function ActivityHistory({
-  animalId: _animalId,
+  animalId,
   animalName,
   activities = [],
   schedules = [],
@@ -150,10 +150,22 @@ export function ActivityHistory({
         </h3>
         
         {showAddButton && (
-          <button className="btn btn-sm btn-primary">
-            <Plus className="w-4 h-4 mr-1" />
-            เพิ่มกิจกรรม
-          </button>
+          <div className="flex gap-2">
+            <button 
+              className="btn btn-sm btn-primary"
+              onClick={() => window.location.href = `/activity/create?animalId=${animalId}`}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              เพิ่มกิจกรรม
+            </button>
+            <button 
+              className="btn btn-sm btn-secondary"
+              onClick={() => window.location.href = `/schedule/create?animalId=${animalId}`}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              เพิ่มกำหนดการ
+            </button>
+          </div>
         )}
       </div>
 
@@ -201,10 +213,22 @@ export function ActivityHistory({
             }
           </p>
           {showAddButton && filter === 'all' && (
-            <button className="btn btn-sm btn-primary mt-3">
-              <Plus className="w-4 h-4 mr-1" />
-              เพิ่มกิจกรรมแรก
-            </button>
+            <div className="flex gap-2 justify-center mt-3">
+              <button 
+                className="btn btn-sm btn-primary"
+                onClick={() => window.location.href = `/activity/create?animalId=${animalId}`}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                เพิ่มกิจกรรมแรก
+              </button>
+              <button 
+                className="btn btn-sm btn-secondary"
+                onClick={() => window.location.href = `/schedule/create?animalId=${animalId}`}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                สร้างกำหนดการ
+              </button>
+            </div>
           )}
         </div>
       ) : (
@@ -217,9 +241,16 @@ export function ActivityHistory({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: index * 0.05 }}
-                className={`card bg-base-100 border border-base-300 ${
+                className={`card bg-base-100 border border-base-300 cursor-pointer hover:shadow-md transition-shadow ${
                   isUpcoming(item.activityDate) ? 'border-primary/20 bg-primary/5' : ''
                 }`}
+                onClick={() => {
+                  if (item.type === 'schedule') {
+                    window.location.href = `/schedule/${item.id}`
+                  } else {
+                    window.location.href = `/activity/${item.id}`
+                  }
+                }}
               >
                 <div className="card-body p-4">
                   <div className="flex items-start justify-between">

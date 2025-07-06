@@ -58,7 +58,7 @@ const scheduleSchema = z.object({
 type ScheduleFormData = z.infer<typeof scheduleSchema>
 
 interface ScheduleFormProps {
-  animalId: string
+  animalId: string | null
   farmId: string
   onSuccess: () => void
   onCancel: () => void
@@ -141,17 +141,26 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
     setIsSubmitting(true)
     
     try {
+      if (!animalId) {
+        toast.error('ไม่พบข้อมูลสัตว์')
+        return
+      }
+
       const scheduleData = {
         title: data.title,
-        description: data.description,
-        notes: data.notes,
+        description: data.description || undefined,
+        notes: data.notes || undefined,
         scheduledDate: data.scheduledDate.toISOString(),
-        status: data.status,
+        status: data.status || 'PENDING',
         isRecurring: data.isRecurring,
-        recurrenceType: data.isRecurring ? data.recurrenceType : null,
-        animalId,
-        customFields: data.customFields
+        recurrenceType: data.isRecurring ? data.recurrenceType : undefined,
+        animalId: animalId,
+        categoryId: data.categoryId,
+        templateId: data.templateId || undefined,
+        customFields: data.customFields || undefined
       }
+
+      console.log('Schedule form data being sent:', JSON.stringify(scheduleData, null, 2))
 
       const response = await fetch('/api/schedule/create', {
         method: 'POST',
@@ -163,6 +172,14 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
 
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('API Error Response:', errorData)
+        
+        // Display detailed error information
+        if (errorData.details) {
+          const errorMessages = errorData.details.map((detail: { message: string }) => detail.message).join(', ')
+          throw new Error(`ข้อมูลไม่ถูกต้อง: ${errorMessages}`)
+        }
+        
         throw new Error(errorData.error || 'เกิดข้อผิดพลาดในการสร้างกำหนดการ')
       }
 
@@ -174,6 +191,15 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Don't render the form if animalId is missing
+  if (!animalId) {
+    return (
+      <div className="alert alert-warning">
+        <span>ไม่พบข้อมูลสัตว์ กรุณาเลือกสัตว์ก่อนสร้างกำหนดการ</span>
+      </div>
+    )
   }
 
   const templatesForCategory = selectedCategory ? getTemplatesByCategory(selectedCategory.id).filter(t => t.isSchedulable) : []

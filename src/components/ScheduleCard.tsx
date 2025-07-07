@@ -242,20 +242,20 @@ export function ScheduleCard({ schedule, farmId, onUpdate }: ScheduleCardProps) 
                         <button
                           onClick={() => updateStatus('IN_PROGRESS')}
                           disabled={isUpdating}
-                          className="text-info"
+                          className={`text-info ${isUpdating ? 'loading loading-xs' : ''}`}
                         >
-                          <Clock size={14} />
-                          เริ่มดำเนินการ
+                          {!isUpdating && <Clock size={14} />}
+                          {isUpdating ? 'กำลังอัปเดต...' : 'เริ่มดำเนินการ'}
                         </button>
                       </li>
                       <li>
                         <button
                           onClick={() => updateStatus('COMPLETED')}
                           disabled={isUpdating}
-                          className="text-success"
+                          className={`text-success ${isUpdating ? 'loading loading-xs' : ''}`}
                         >
-                          <Check size={14} />
-                          ทำเสร็จ
+                          {!isUpdating && <Check size={14} />}
+                          {isUpdating ? 'กำลังอัปเดต...' : 'ทำเสร็จ'}
                         </button>
                       </li>
                     </>
@@ -266,10 +266,10 @@ export function ScheduleCard({ schedule, farmId, onUpdate }: ScheduleCardProps) 
                       <button
                         onClick={() => updateStatus('COMPLETED')}
                         disabled={isUpdating}
-                        className="text-success"
+                        className={`text-success ${isUpdating ? 'loading loading-xs' : ''}`}
                       >
-                        <Check size={14} />
-                        ทำเสร็จ
+                        {!isUpdating && <Check size={14} />}
+                        {isUpdating ? 'กำลังอัปเดต...' : 'ทำเสร็จ'}
                       </button>
                     </li>
                   )}
@@ -279,10 +279,10 @@ export function ScheduleCard({ schedule, farmId, onUpdate }: ScheduleCardProps) 
                       <button
                         onClick={() => updateStatus('CANCELLED')}
                         disabled={isUpdating}
-                        className="text-error"
+                        className={`text-error ${isUpdating ? 'loading loading-xs' : ''}`}
                       >
-                        <X size={14} />
-                        ยกเลิก
+                        {!isUpdating && <X size={14} />}
+                        {isUpdating ? 'กำลังอัปเดต...' : 'ยกเลิก'}
                       </button>
                     </li>
                   )}
@@ -303,10 +303,10 @@ export function ScheduleCard({ schedule, farmId, onUpdate }: ScheduleCardProps) 
                     <button
                       onClick={deleteSchedule}
                       disabled={isUpdating}
-                      className="text-error"
+                      className={`text-error ${isUpdating ? 'loading loading-xs' : ''}`}
                     >
-                      <Trash2 size={14} />
-                      ลบ
+                      {!isUpdating && <Trash2 size={14} />}
+                      {isUpdating ? 'กำลังลบ...' : 'ลบ'}
                     </button>
                   </li>
                 </ul>

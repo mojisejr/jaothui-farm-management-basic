@@ -9,11 +9,32 @@ import {
 } from '@/lib/password'
 import { generateTokenPair, setAuthCookies } from '@/lib/jwt'
 import { sendWelcomeEmail } from '@/lib/email'
+import { authRateLimiter, applyRateLimit } from '@/lib/rate-limit'
 
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const rateLimitResult = await applyRateLimit(request, authRateLimiter)
+    
+    if (!rateLimitResult.success) {
+      const resetTime = rateLimitResult.reset instanceof Date 
+        ? rateLimitResult.reset.getTime() 
+        : rateLimitResult.reset
+      
+      return NextResponse.json(
+        { 
+          error: 'พยายามสมัครสมาชิกมากเกินไป กรุณาลองใหม่ในภายหลัง',
+          retryAfter: Math.ceil((resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: rateLimitResult.headers
+        }
+      )
+    }
+
     const body = await request.json()
     const { phoneNumber, password, email, firstName, lastName } = body
 

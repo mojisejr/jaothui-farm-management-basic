@@ -26,6 +26,8 @@ interface MemberCardProps {
   canRemove: boolean
   onRemove: () => void
   onLeave?: () => void
+  isRemoving?: boolean
+  isLeaving?: boolean
 }
 
 export default function MemberCard({
@@ -34,6 +36,8 @@ export default function MemberCard({
   canRemove,
   onRemove,
   onLeave,
+  isRemoving = false,
+  isLeaving = false,
 }: MemberCardProps) {
   const displayName =
     member.firstName && member.lastName
@@ -118,17 +122,22 @@ export default function MemberCard({
                   <li>
                     <button
                       onClick={onRemove}
-                      className="text-red-600 hover:bg-red-50"
+                      disabled={isRemoving}
+                      className={`text-red-600 hover:bg-red-50 ${isRemoving ? 'loading loading-xs' : ''}`}
                     >
-                      <Trash2 className="w-4 h-4" />
-                      ลบสมาชิก
+                      {!isRemoving && <Trash2 className="w-4 h-4" />}
+                      {isRemoving ? 'กำลังลบ...' : 'ลบสมาชิก'}
                     </button>
                   </li>
                 )}
                 {isCurrentUser && !member.isOwner && onLeave && (
                   <li>
-                    <button onClick={onLeave} className="hover:bg-base-200">
-                      ออกจากฟาร์ม
+                    <button 
+                      onClick={onLeave} 
+                      disabled={isLeaving}
+                      className={`hover:bg-base-200 ${isLeaving ? 'loading loading-xs' : ''}`}
+                    >
+                      {isLeaving ? 'กำลังออก...' : 'ออกจากฟาร์ม'}
                     </button>
                   </li>
                 )}

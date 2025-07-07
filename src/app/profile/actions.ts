@@ -8,6 +8,7 @@ import {
   extractStoragePath,
   generateUniqueFilename,
 } from '@/lib/supabase/storage'
+import { processFileUpload } from '@/lib/file-security'
 import { revalidatePath } from 'next/cache'
 // Removed unused import: redirect
 
@@ -57,6 +58,16 @@ export async function updateProfile(
 
     // Handle profile image upload
     if (profileImageFile && profileImageFile.size > 0) {
+      // Validate and process file upload for security
+      const fileValidation = await processFileUpload(profileImageFile, tokenPayload.userId)
+      
+      if (!fileValidation.isValid) {
+        return { error: fileValidation.error }
+      }
+
+      const validatedFile = fileValidation.processedFile!
+      const secureFilename = fileValidation.filename!
+
       // Delete old profile image if exists
       if (currentProfile.profileImage) {
         const oldPath = extractStoragePath(
@@ -68,15 +79,15 @@ export async function updateProfile(
         }
       }
 
-      // Upload new profile image
+      // Upload new validated profile image
       const fileName = generateUniqueFilename(
         tokenPayload.userId,
-        profileImageFile.name,
+        secureFilename,
       )
       const uploadResult = await uploadToStorage(
         'profile-images',
         fileName,
-        profileImageFile,
+        validatedFile,
       )
 
       if (!uploadResult.success) {

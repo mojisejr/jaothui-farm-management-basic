@@ -41,6 +41,8 @@ export default function MemberList({
   isOwner,
 }: MemberListProps) {
   const [searchTerm, setSearchTerm] = useState('')
+  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null)
+  const [isLeavingFarm, setIsLeavingFarm] = useState(false)
 
   // Combine owner and members for display
   const allMembers = [
@@ -85,6 +87,7 @@ export default function MemberList({
       return
     }
 
+    setRemovingMemberId(memberId)
     try {
       const response = await fetch(`/api/farm/${farm.id}/members/${memberId}`, {
         method: 'DELETE',
@@ -100,12 +103,15 @@ export default function MemberList({
     } catch (error) {
       console.error('Error removing member:', error)
       alert('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+    } finally {
+      setRemovingMemberId(null)
     }
   }
 
   const handleLeaveFarm = async () => {
     if (!confirm('คุณต้องการออกจากฟาร์มนี้หรือไม่?')) return
 
+    setIsLeavingFarm(true)
     try {
       const response = await fetch(`/api/farm/${farm.id}/leave`, {
         method: 'DELETE',
@@ -118,6 +124,8 @@ export default function MemberList({
       }
     } catch (_e) {
       alert('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+    } finally {
+      setIsLeavingFarm(false)
     }
   }
 
@@ -162,6 +170,8 @@ export default function MemberList({
               onLeave={
                 member.id === currentUserId ? handleLeaveFarm : undefined
               }
+              isRemoving={removingMemberId === member.id}
+              isLeaving={isLeavingFarm && member.id === currentUserId}
             />
           ))}
         </div>

@@ -4,6 +4,9 @@ import FarmLayout from '@/components/layouts/FarmLayout'
 import { PrismaClient } from '@prisma/client'
 import { getAccessTokenFromCookies, verifyAccessToken } from '@/lib/jwt'
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic'
+
 const prisma = new PrismaClient()
 
 interface FarmData {

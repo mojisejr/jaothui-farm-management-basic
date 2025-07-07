@@ -6,11 +6,32 @@ import {
   generateResetTokenExpiry,
 } from '@/lib/password'
 import { sendPasswordResetEmail } from '@/lib/email'
+import { strictRateLimiter, applyRateLimit } from '@/lib/rate-limit'
 
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply strict rate limiting for password reset
+    const rateLimitResult = await applyRateLimit(request, strictRateLimiter)
+    
+    if (!rateLimitResult.success) {
+      const resetTime = rateLimitResult.reset instanceof Date 
+        ? rateLimitResult.reset.getTime() 
+        : rateLimitResult.reset
+      
+      return NextResponse.json(
+        { 
+          error: 'พยายามรีเซ็ตรหัสผ่านมากเกินไป กรุณาลองใหม่ในภายหลัง',
+          retryAfter: Math.ceil((resetTime - Date.now()) / 1000)
+        },
+        { 
+          status: 429,
+          headers: rateLimitResult.headers
+        }
+      )
+    }
+
     const body = await request.json()
     const { email } = body
 

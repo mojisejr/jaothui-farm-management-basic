@@ -109,15 +109,24 @@ class ErrorBoundary extends Component<Props, State> {
                 </div>
               )}
 
-              <div className="card-actions justify-center gap-2">
-                <button className="btn btn-primary" onClick={this.handleRetry}>
+              <div className="card-actions justify-center gap-2 flex-col">
+                <button className="btn btn-primary w-full" onClick={this.handleRetry}>
                   <RefreshCw className="w-4 h-4 mr-2" />
                   ลองใหม่
                 </button>
 
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline w-full"
+                  onClick={() => window.location.reload()}
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  รีเฟรชหน้า
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-ghost w-full"
                   onClick={this.handleGoBack}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />

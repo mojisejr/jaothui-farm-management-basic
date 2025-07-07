@@ -6,6 +6,9 @@ import ProfileCard from '@/components/profile/ProfileCard'
 import ProfileLinks from '@/components/profile/ProfileLinks'
 import { updateProfile } from './actions'
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic'
+
 const prisma = new PrismaClient()
 
 export default async function ProfilePage() {

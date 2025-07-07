@@ -6,6 +6,7 @@ import { generateMicrochip } from '@/lib/microchip'
 import { COOKIE } from '@/constants/cookies'
 import { ANIMAL_PHOTOS_BUCKET } from '@/constants/storage'
 import { uploadToStorage, generateUniqueFilename } from '@/lib/supabase/storage'
+import { processFileUpload } from '@/lib/file-security'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -44,20 +45,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate image file
-    if (!imageFile.type.startsWith('image/')) {
+    // Comprehensive file security validation
+    const fileValidation = await processFileUpload(imageFile, payload.userId)
+    
+    if (!fileValidation.isValid) {
       return NextResponse.json(
-        { error: 'ไฟล์ต้องเป็นรูปภาพ' },
+        { error: fileValidation.error },
         { status: 400 },
       )
     }
 
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'ขนาดไฟล์ต้องไม่เกิน 5MB' },
-        { status: 400 },
-      )
-    }
+    const validatedFile = fileValidation.processedFile!
+    const secureFilename = fileValidation.filename!
 
     // Convert FormData to object for validation
     const body = {
@@ -146,12 +145,12 @@ export async function POST(request: NextRequest) {
       microchip = await generateMicrochip(validatedData.farmId)
     }
 
-    // Upload image to Supabase Storage
-    const imagePath = generateUniqueFilename(payload.userId, imageFile.name)
+    // Upload validated and secure image to Supabase Storage
+    const imagePath = generateUniqueFilename(payload.userId, secureFilename)
     const imageUploadResult = await uploadToStorage(
       ANIMAL_PHOTOS_BUCKET,
       imagePath,
-      imageFile,
+      validatedFile,
     )
 
     if (!imageUploadResult.success) {

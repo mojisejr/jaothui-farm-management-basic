@@ -237,10 +237,10 @@ export function NotificationCard({
                             setShowActions(false)
                           }}
                           disabled={isLoading}
-                          className="text-sm"
+                          className={`text-sm ${isLoading ? 'loading loading-xs' : ''}`}
                         >
-                          <Check size={14} />
-                          อ่านแล้ว
+                          {!isLoading && <Check size={14} />}
+                          {isLoading ? 'กำลังอัปเดต...' : 'อ่านแล้ว'}
                         </button>
                       </li>
                     )}
@@ -269,10 +269,10 @@ export function NotificationCard({
                           setShowActions(false)
                         }}
                         disabled={isLoading}
-                        className="text-sm text-error"
+                        className={`text-sm text-error ${isLoading ? 'loading loading-xs' : ''}`}
                       >
-                        <Trash2 size={14} />
-                        ลบ
+                        {!isLoading && <Trash2 size={14} />}
+                        {isLoading ? 'กำลังลบ...' : 'ลบ'}
                       </button>
                     </li>
                   </ul>

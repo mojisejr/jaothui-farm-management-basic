@@ -33,9 +33,17 @@ export async function POST(request: NextRequest) {
   try {
     // Verify this is a legitimate cron job call
     const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET || 'dev-secret-key'
+    const cronSecret = process.env.CRON_SECRET
     
-    if (authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret) {
+      console.error('CRON_SECRET environment variable is not set')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      )
+    }
+    
+    if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

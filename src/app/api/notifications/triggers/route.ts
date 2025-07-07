@@ -6,9 +6,17 @@ export async function POST(request: NextRequest) {
   try {
     // Check authorization header for cron jobs or admin access
     const authHeader = request.headers.get('Authorization')
-    const expectedToken = process.env.CRON_SECRET || 'dev-secret-key'
+    const cronSecret = process.env.CRON_SECRET
     
-    if (!authHeader || authHeader !== `Bearer ${expectedToken}`) {
+    if (!cronSecret) {
+      console.error('CRON_SECRET environment variable is not set')
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      )
+    }
+    
+    if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

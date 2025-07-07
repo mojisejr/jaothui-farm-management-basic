@@ -204,8 +204,8 @@ export const animalRegistrationSchema = z.object({
 
   microchip: z
     .string()
-    .min(1, 'กรุณาระบุเลขไมโครชิป')
     .max(50, 'ไมโครชิปต้องไม่เกิน 50 ตัวอักษร')
+    .transform((val) => val === '' ? undefined : val)
     .optional(),
 
   birthDate: z
@@ -231,19 +231,29 @@ export const animalRegistrationSchema = z.object({
     .max(1000, 'ส่วนสูงต้องไม่เกิน 1,000 เซนติเมตร')
     .optional(),
 
-  color: z.string().max(50, 'สีต้องไม่เกิน 50 ตัวอักษร').optional(),
+  color: z
+    .string()
+    .max(50, 'สีต้องไม่เกิน 50 ตัวอักษร')
+    .transform((val) => val === '' ? undefined : val)
+    .optional(),
 
   fatherName: z
     .string()
     .max(100, 'ชื่อพ่อพันธุ์ต้องไม่เกิน 100 ตัวอักษร')
+    .transform((val) => val === '' ? undefined : val)
     .optional(),
 
   motherName: z
     .string()
     .max(100, 'ชื่อแม่พันธุ์ต้องไม่เกิน 100 ตัวอักษร')
+    .transform((val) => val === '' ? undefined : val)
     .optional(),
 
-  notes: z.string().max(1000, 'บันทึกต้องไม่เกิน 1,000 ตัวอักษร').optional(),
+  notes: z
+    .string()
+    .max(1000, 'บันทึกต้องไม่เกิน 1,000 ตัวอักษร')
+    .transform((val) => val === '' ? undefined : val)
+    .optional(),
 
   farmId: z.string().min(1, 'ไม่พบข้อมูลฟาร์ม'),
 })

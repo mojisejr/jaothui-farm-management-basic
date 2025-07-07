@@ -13,7 +13,8 @@ import {
   X,
   Repeat,
   CalendarDays,
-  Tag
+  Tag,
+  Sparkles
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { 
@@ -23,6 +24,7 @@ import {
   type ActivityTemplate,
   type ActivityCategory
 } from '@/constants/activity-templates'
+import { ActivityTemplatePicker } from '@/components/ActivityTemplatePicker'
 
 // Form validation schema
 const scheduleSchema = z.object({
@@ -69,6 +71,7 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
   const [selectedTemplate, setSelectedTemplate] = useState<ActivityTemplate | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
   const [customFields, setCustomFields] = useState<Record<string, string>>({})
 
   const {
@@ -202,7 +205,7 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
     )
   }
 
-  const templatesForCategory = selectedCategory ? getTemplatesByCategory(selectedCategory.id).filter(t => t.isSchedulable) : []
+  // const templatesForCategory = selectedCategory ? getTemplatesByCategory(selectedCategory.id).filter(t => t.isSchedulable) : []
 
   return (
     <motion.form
@@ -239,7 +242,7 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
 
       {/* Template Selection */}
       <AnimatePresence>
-        {showTemplates && templatesForCategory.length > 0 && (
+        {showTemplates && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -252,17 +255,40 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
                 เทมเพลตกิจกรรม
               </span>
             </label>
-            <select
-              {...register('templateId')}
-              className="select select-bordered w-full"
-            >
-              <option value="">เลือกเทมเพลต (หรือสร้างใหม่)</option>
-              {templatesForCategory.map((template) => (
-                <option key={template.id} value={template.id}>
-                  {template.icon} {template.title}
-                </option>
-              ))}
-            </select>
+            <div className="space-y-2">
+              {selectedTemplate ? (
+                <div className="alert alert-success">
+                  <Check className="w-5 h-5" />
+                  <div>
+                    <div className="font-bold">เลือกแล้ว: {selectedTemplate.title}</div>
+                    <div className="text-sm">{selectedTemplate.description}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedTemplate(null)
+                      setValue('templateId', '')
+                      setValue('title', '')
+                      setValue('description', '')
+                      setCustomFields({})
+                    }}
+                    className="btn btn-ghost btn-sm"
+                  >
+                    <X className="w-4 h-4" />
+                    เปลี่ยน
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowTemplatePicker(true)}
+                  className="btn btn-outline w-full justify-start"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  เลือกจากเทมเพลต (เฉพาะกำหนดการได้)
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -491,6 +517,32 @@ export function ScheduleForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
           )}
         </button>
       </div>
+
+      {/* Activity Template Picker Modal */}
+      <ActivityTemplatePicker
+        isOpen={showTemplatePicker}
+        onClose={() => setShowTemplatePicker(false)}
+        onSelectTemplate={(template) => {
+          setSelectedTemplate(template)
+          setValue('templateId', template.id)
+          setValue('title', template.title)
+          setValue('description', template.description || '')
+          
+          // Initialize custom fields for required fields
+          if (template.requiredFields) {
+            const newCustomFields: Record<string, string> = {}
+            template.requiredFields.forEach(field => {
+              newCustomFields[field] = ''
+            })
+            setCustomFields(newCustomFields)
+            setValue('customFields', newCustomFields)
+          }
+        }}
+        selectedCategoryId={selectedCategory?.id}
+        schedulableOnly={true}
+        title="เลือกเทมเพลตกำหนดการ"
+        subtitle="เลือกเทมเพลตที่เหมาะสมสำหรับการสร้างกำหนดการ (เฉพาะที่กำหนดการได้)"
+      />
     </motion.form>
   )
 }

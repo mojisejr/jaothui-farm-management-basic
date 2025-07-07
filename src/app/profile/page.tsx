@@ -26,6 +26,11 @@ export default async function ProfilePage() {
       where: { id: tokenPayload.userId },
     })
 
+    // Check if user owns a farm
+    const ownedFarm = await prisma.farm.findFirst({
+      where: { ownerId: tokenPayload.userId },
+    })
+
     // Create a user object compatible with JWTUser interface
     const user = {
       id: tokenPayload.userId,
@@ -58,7 +63,7 @@ export default async function ProfilePage() {
           />
 
           {/* Profile Links - Keep as navigation shortcuts */}
-          <ProfileLinks />
+          <ProfileLinks hasOwnedFarm={!!ownedFarm} />
         </div>
       </ProfileLayout>
     )

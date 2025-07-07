@@ -340,7 +340,7 @@ export function PageLayout({
 
       {/* Floating Action Button */}
       {floatingAction && (
-        <div className="fixed bottom-6 right-6 z-50 md:hidden">
+        <div className="fixed bottom-6 right-6 z-40 md:hidden safe-area-bottom">
           {floatingAction}
         </div>
       )}

@@ -1,6 +1,6 @@
 import { Profile } from '@/types/database'
 import { JWTUser } from '@/types/auth'
-import ImageUpload from './ImageUpload'
+import Image from 'next/image'
 
 interface ProfileViewProps {
   user: JWTUser
@@ -29,117 +29,59 @@ export default function ProfileView({
           </button>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Profile Image Section */}
-          <div className="flex flex-col items-center space-y-4">
-            <ImageUpload
-              currentImage={profile?.profileImage || ''}
-              onImageSelect={(_file, _preview) => {
-                // Handle image change if needed
-              }}
-              disabled={true}
-            />
-
-            {/* Quick Stats */}
-            <div className="stats stats-vertical shadow bg-base-200">
-              <div className="stat">
-                <div className="stat-title">สถานะบัญชี</div>
-                <div className="stat-value text-lg text-success">ใช้งานได้</div>
-                <div className="stat-desc">บัญชีถูกต้อง</div>
+        {/* Mobile-first layout */}
+        <div className="space-y-6">
+          {/* Profile Image Section - Compact for mobile */}
+          <div className="flex items-center gap-4 p-4 bg-base-200 rounded-lg">
+            <div className="avatar">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                {profile?.profileImage ? (
+                  <Image 
+                    src={profile.profileImage} 
+                    alt="Profile" 
+                    width={64}
+                    height={64}
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-2xl">👤</span>
+                )}
               </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg">
+                {profile?.firstName && profile?.lastName 
+                  ? `${profile.firstName} ${profile.lastName}`
+                  : 'ยังไม่ได้กรอกชื่อ'}
+              </h3>
+              <p className="text-sm text-base-content/70">{user.phone}</p>
+              <div className="badge badge-success badge-sm mt-1">ใช้งานได้</div>
             </div>
           </div>
 
-          {/* Profile Information */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Personal Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <span className="mr-2">👤</span>
+          {/* Essential Information Only */}
+          <div className="space-y-4">
+            {/* Personal Information - Simplified */}
+            <div className="bg-base-200 rounded-lg p-4">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <span>👤</span>
                 ข้อมูลส่วนตัว
               </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">ชื่อ</span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    {profile?.firstName || 'ยังไม่ได้กรอก'}
-                  </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-base-content/70">ชื่อ</span>
+                  <span className="font-medium">{profile?.firstName || 'ยังไม่ได้กรอก'}</span>
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">นามสกุล</span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    {profile?.lastName || 'ยังไม่ได้กรอก'}
-                  </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-base-content/70">นามสกุล</span>
+                  <span className="font-medium">{profile?.lastName || 'ยังไม่ได้กรอก'}</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <span className="mr-2">📞</span>
-                ข้อมูลการติดต่อ
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">
-                      หมายเลขโทรศัพท์
-                    </span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    <span className="badge badge-success badge-sm mr-2">
-                      ยืนยันแล้ว
-                    </span>
-                    {user.phone}
+                {profile?.email && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-base-content/70">อีเมล</span>
+                    <span className="font-medium">{profile.email}</span>
                   </div>
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">อีเมล</span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    {profile?.email || user.email || 'ยังไม่ได้เชื่อมต่อ'}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Account Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <span className="mr-2">⚙️</span>
-                ข้อมูลบัญชี
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">
-                      วันที่สร้างบัญชี
-                    </span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    {user.created_at
-                      ? new Date(user.created_at).toLocaleDateString('th-TH')
-                      : 'ไม่ทราบ'}
-                  </div>
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium">อัพเดทล่าสุด</span>
-                  </label>
-                  <div className="input input-bordered bg-base-200 flex items-center">
-                    {profile?.updatedAt
-                      ? new Date(profile.updatedAt).toLocaleDateString('th-TH')
-                      : user.updated_at
-                        ? new Date(user.updated_at).toLocaleDateString('th-TH')
-                        : 'ไม่ทราบ'}
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

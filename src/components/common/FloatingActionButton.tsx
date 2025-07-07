@@ -41,7 +41,6 @@ export default function FloatingActionButton({
     <Link
       href={currentConfig.href}
       className={`
-        fixed bottom-6 right-6 z-50 md:hidden
         btn btn-circle btn-lg shadow-lg
         ${currentConfig.bgColor} ${currentConfig.hoverColor}
         text-white border-none
@@ -50,9 +49,9 @@ export default function FloatingActionButton({
       `}
       aria-label={currentConfig.label}
     >
-      <div className="relative">
-        <Plus className="w-6 h-6 absolute inset-0 transition-transform duration-200" />
-        <Icon className="w-4 h-4 absolute inset-0 m-1 transition-transform duration-200 translate-x-0.5 translate-y-0.5" />
+      <div className="relative flex items-center justify-center w-full h-full">
+        <Plus className="w-5 h-5 absolute opacity-30" />
+        <Icon className="w-5 h-5 relative z-10" />
       </div>
     </Link>
   )

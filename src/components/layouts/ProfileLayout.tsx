@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { User, Settings, Shield, Bell, Home } from 'lucide-react'
-import { PageLayout, type TabConfig, type BreadcrumbItem } from './PageLayout'
+import { Home } from 'lucide-react'
+import { PageLayout, type BreadcrumbItem } from './PageLayout'
 import JaothuiLogo from '../JaothuiLogo'
 
 export interface ProfileLayoutProps {
@@ -17,10 +16,10 @@ export interface ProfileLayoutProps {
   variant?: 'default' | 'settings' | 'secure'
   background?: 'default' | 'gradient' | 'dark'
 
-  // Dynamic Tabs Support
-  tabs?: TabConfig[]
-  activeTab?: string
-  onTabChange?: (tabId: string) => void
+  // Dynamic Tabs Support (removed for mobile-first design)
+  // tabs?: TabConfig[]
+  // activeTab?: string
+  // onTabChange?: (tabId: string) => void
 
   // Navigation
   backUrl?: string
@@ -38,38 +37,13 @@ export interface ProfileLayoutProps {
   onRetry?: () => void
 }
 
-// Default profile tabs - can be customized per page
-const DEFAULT_PROFILE_TABS: TabConfig[] = [
-  {
-    id: 'profile',
-    label: 'ข้อมูลส่วนตัว',
-    icon: User,
-  },
-  {
-    id: 'settings',
-    label: 'ตั้งค่า',
-    icon: Settings,
-  },
-  {
-    id: 'security',
-    label: 'ความปลอดภัย',
-    icon: Shield,
-  },
-  {
-    id: 'notifications',
-    label: 'การแจ้งเตือน',
-    icon: Bell,
-  },
-]
+// Removed tabs for cleaner mobile interface
 
 export function ProfileLayout({
   children,
   title,
   subtitle,
   variant: _variant = 'default',
-  tabs,
-  activeTab,
-  onTabChange,
   backUrl = '/farms',
   showHomeButton = true,
   showThemeSelector = false,
@@ -78,17 +52,7 @@ export function ProfileLayout({
   error,
   onRetry,
 }: ProfileLayoutProps) {
-  // Use provided tabs or default ones
-  const profileTabs = tabs || DEFAULT_PROFILE_TABS
-  const [currentTab, setCurrentTab] = useState(
-    activeTab || profileTabs[0]?.id || 'profile',
-  )
-
-  // Handle tab changes
-  const handleTabChange = (tabId: string) => {
-    setCurrentTab(tabId)
-    onTabChange?.(tabId)
-  }
+  // Simplified - no tabs needed for mobile-first profile
 
   // Build breadcrumbs
   const buildBreadcrumbs = (): BreadcrumbItem[] => {
@@ -144,10 +108,7 @@ export function ProfileLayout({
       // Header subtitle inside card
       title={title}
       subtitle={subtitle}
-      // Tabs
-      tabs={profileTabs}
-      activeTab={activeTab || currentTab}
-      onTabChange={handleTabChange}
+      // No tabs for cleaner mobile interface
       // Theme
       showThemeSelector={showThemeSelector}
       // Mobile Actions

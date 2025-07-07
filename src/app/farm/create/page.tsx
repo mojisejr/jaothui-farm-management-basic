@@ -4,7 +4,7 @@ import { THAI_PROVINCES } from '@/types/farm'
 import { useActionState, useTransition } from 'react'
 import FarmLayout from '@/components/layouts/FarmLayout'
 import { toast } from 'sonner'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 const initialState = {
@@ -15,7 +15,34 @@ const initialState = {
 export default function CreateFarmPage() {
   const [state, formAction] = useActionState(createFarm, initialState)
   const [isPending, startTransition] = useTransition()
+  const [hasOwnedFarm, setHasOwnedFarm] = useState<boolean | null>(null)
   const router = useRouter()
+
+  // Check if user already owns a farm
+  useEffect(() => {
+    const checkOwnedFarm = async () => {
+      try {
+        const response = await fetch('/api/farm')
+        if (response.ok) {
+          const data = await response.json()
+          const ownedFarms = data.farms?.filter((farm: { isOwner: boolean }) => farm.isOwner) || []
+          
+          if (ownedFarms.length > 0) {
+            setHasOwnedFarm(true)
+            toast.error('คุณสามารถสร้างฟาร์มได้เพียงฟาร์มเดียวเท่านั้น')
+            router.push('/farms')
+            return
+          }
+          setHasOwnedFarm(false)
+        }
+      } catch (error) {
+        console.error('Error checking farm ownership:', error)
+        setHasOwnedFarm(false)
+      }
+    }
+
+    checkOwnedFarm()
+  }, [router])
 
   useEffect(() => {
     if (state.success && 'farmId' in state && state.farmId) {
@@ -28,6 +55,44 @@ export default function CreateFarmPage() {
       toast.error(state.message)
     }
   }, [state, router])
+
+  // Show loading while checking farm ownership
+  if (hasOwnedFarm === null) {
+    return (
+      <FarmLayout
+        title="กำลังตรวจสอบ..."
+        subtitle="กรุณารอสักครู่"
+        variant="form"
+        backUrl="/farms"
+      >
+        <div className="flex justify-center items-center py-8">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      </FarmLayout>
+    )
+  }
+
+  // If user already owns a farm, they shouldn't reach here, but just in case
+  if (hasOwnedFarm) {
+    return (
+      <FarmLayout
+        title="ไม่สามารถสร้างฟาร์มได้"
+        subtitle="คุณสร้างฟาร์มแล้ว"
+        variant="form"
+        backUrl="/farms"
+      >
+        <div className="text-center py-8">
+          <p className="text-lg mb-4">คุณสามารถสร้างฟาร์มได้เพียงฟาร์มเดียวเท่านั้น</p>
+          <button 
+            onClick={() => router.push('/farms')}
+            className="btn btn-primary"
+          >
+            กลับไปรายการฟาร์ม
+          </button>
+        </div>
+      </FarmLayout>
+    )
+  }
 
   return (
     <FarmLayout

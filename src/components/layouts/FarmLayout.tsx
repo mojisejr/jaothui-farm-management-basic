@@ -117,23 +117,23 @@ export function FarmLayout({
 
   // Build floating actions
   const floatingActions = (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 items-center">
       {showCreateButton && (
         <Link
           href="/farm/create"
-          className="btn btn-primary btn-circle shadow-lg"
+          className="btn btn-primary btn-circle btn-lg shadow-lg hover:scale-110 transition-transform"
           title="สร้างฟาร์มใหม่"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-6 h-6" />
         </Link>
       )}
       {showMembersButton && farmId && (
         <Link
           href={`/farm/${farmId}/members`}
-          className="btn btn-secondary btn-circle shadow-lg"
+          className="btn btn-secondary btn-circle btn-lg shadow-lg hover:scale-110 transition-transform"
           title="จัดการสมาชิก"
         >
-          <Users className="w-5 h-5" />
+          <Users className="w-6 h-6" />
         </Link>
       )}
     </div>

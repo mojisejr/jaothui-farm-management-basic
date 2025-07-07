@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Home, PlusCircle, Settings, Users, LogOut } from 'lucide-react'
+import { Home, PlusCircle, Bell, LogOut } from 'lucide-react'
 import { ElementType } from 'react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -10,6 +10,10 @@ interface LinkItem {
   href: string
   label: string
   icon: ElementType
+}
+
+interface ProfileLinksProps {
+  hasOwnedFarm?: boolean
 }
 
 const linkItems: LinkItem[] = [
@@ -24,18 +28,13 @@ const linkItems: LinkItem[] = [
     icon: PlusCircle,
   },
   {
-    href: '/members',
-    label: 'สมาชิก',
-    icon: Users,
-  },
-  {
-    href: '/settings',
-    label: 'ตั้งค่า',
-    icon: Settings,
+    href: '/invitations',
+    label: 'คำเชิญ',
+    icon: Bell,
   },
 ]
 
-export default function ProfileLinks() {
+export default function ProfileLinks({ hasOwnedFarm = false }: ProfileLinksProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -59,28 +58,54 @@ export default function ProfileLinks() {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto mt-10">
-      {linkItems.map(({ href, label, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow border hover:bg-blue-50 transition"
-        >
-          <Icon size={28} className="text-blue-600 mb-2" />
-          <span className="text-sm font-medium text-gray-700 text-center">
-            {label}
-          </span>
-        </Link>
-      ))}
+    <div className="space-y-3 max-w-sm mx-auto mt-6">
+      {linkItems.map(({ href, label, icon: Icon }) => {
+        // Check if this is the create farm link
+        const isCreateFarm = href === '/farm/create'
+        const isDisabled = isCreateFarm && hasOwnedFarm
+        
+        if (isDisabled) {
+          // Render disabled create farm button
+          return (
+            <div
+              key={href}
+              className="flex items-center gap-4 p-4 bg-base-200 rounded-lg shadow-md border opacity-60 cursor-not-allowed"
+            >
+              <Icon size={24} className="text-base-content/50" />
+              <div className="flex-1">
+                <span className="font-medium text-base-content/70 block">
+                  สร้างฟาร์ม
+                </span>
+                <span className="text-xs text-base-content/50">
+                  คุณสร้างฟาร์มแล้ว
+                </span>
+              </div>
+            </div>
+          )
+        }
+        
+        return (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-center gap-4 p-4 bg-base-100 rounded-lg shadow-md border hover:bg-base-200 transition-colors"
+          >
+            <Icon size={24} className="text-primary" />
+            <span className="font-medium text-base-content">
+              {label}
+            </span>
+          </Link>
+        )
+      })}
       {/* Logout Button */}
       <button
         onClick={handleLogout}
         disabled={loading}
-        className="flex flex-col items-center justify-center p-4 bg-white rounded-lg shadow border hover:bg-red-50 transition col-span-2 sm:col-span-1"
+        className="w-full flex items-center justify-center gap-4 p-4 bg-base-100 rounded-lg shadow-md border hover:bg-error/10 transition-colors mt-4"
         type="button"
       >
-        <LogOut size={28} className="text-red-600 mb-2" />
-        <span className="text-sm font-medium text-gray-700 text-center">
+        <LogOut size={24} className="text-error" />
+        <span className="font-medium text-base-content">
           {loading ? 'กำลังออก...' : 'ออกจากระบบ'}
         </span>
       </button>

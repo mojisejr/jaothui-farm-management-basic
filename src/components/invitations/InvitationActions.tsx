@@ -23,8 +23,16 @@ export default function InvitationActions({ token }: Props) {
       const data = await res.json()
       if (res.ok) {
         setMessage(data.message || 'สำเร็จ')
-        // Refresh to update state (e.g., show success message only)
-        router.refresh()
+        
+        // If accepted, redirect to farm dashboard
+        if (action === 'accept' && data.farm?.id) {
+          setTimeout(() => {
+            router.push(`/farm/${data.farm.id}/dashboard`)
+          }, 1500)
+        } else {
+          // Refresh to update state (e.g., show success message only)
+          router.refresh()
+        }
       } else {
         setMessage(data.error || 'เกิดข้อผิดพลาด')
       }

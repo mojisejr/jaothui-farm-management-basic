@@ -91,7 +91,15 @@ export async function POST(
       // Don't fail the request if notifications fail
     }
 
-    return NextResponse.json({ message: 'เข้าร่วมฟาร์มเรียบร้อยแล้ว' })
+    const farm = await prisma.farm.findUnique({
+      where: { id: invitation.farmId },
+      select: { id: true, name: true },
+    })
+
+    return NextResponse.json({ 
+      message: 'เข้าร่วมฟาร์มเรียบร้อยแล้ว',
+      farm: farm
+    })
   } catch (error) {
     console.error('Error accepting invitation:', error)
     return NextResponse.json(

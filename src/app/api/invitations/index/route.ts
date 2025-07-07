@@ -15,10 +15,19 @@ export async function GET() {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
     }
 
+    const profile = await prisma.profile.findUnique({
+      where: { id: payload.userId },
+      select: { phoneNumber: true },
+    })
+
+    if (!profile?.phoneNumber) {
+      return NextResponse.json({ error: 'Phone number not found' }, { status: 400 })
+    }
+
     const invitations = await prisma.invitation.findMany({
       where: {
         phoneNumber: {
-          equals: payload.phoneNumber,
+          equals: profile.phoneNumber,
         },
         status: 'PENDING',
         expiresAt: {

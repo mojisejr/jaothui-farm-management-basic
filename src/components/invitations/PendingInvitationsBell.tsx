@@ -28,7 +28,7 @@ export default function PendingInvitationsBell() {
   return (
     <div
       className="relative cursor-pointer"
-      onClick={() => router.push('/profile') /* route to list */}
+      onClick={() => router.push('/invitations')}
     >
       <Bell className="w-6 h-6 text-white" />
       <span className="badge badge-error badge-xs absolute -top-1 -right-1">

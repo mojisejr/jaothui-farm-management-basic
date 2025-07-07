@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Plus, Users } from 'lucide-react'
+import { Home, Plus, Users, User } from 'lucide-react'
 import { PageLayout, type BreadcrumbItem } from './PageLayout'
 import JaothuiLogo from '../JaothuiLogo'
 import Link from 'next/link'
@@ -150,6 +150,15 @@ export function FarmLayout({
       background="dark"
       dashboardTitle={title}
       dashboardLogo={<JaothuiLogo />}
+      dashboardRightActions={
+        <Link
+          href="/profile"
+          className="btn btn-ghost btn-circle btn-sm"
+          title="ไปยังโปรไฟล์"
+        >
+          <User className="w-4 h-4 text-white" />
+        </Link>
+      }
       // Header Subtitle (inside card header section)
       title={title}
       subtitle={subtitle}

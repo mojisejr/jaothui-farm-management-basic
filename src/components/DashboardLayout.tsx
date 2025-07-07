@@ -213,17 +213,19 @@ export default function DashboardLayout({
       // Dashboard Header
       dashboardTitle={farmName}
       dashboardLogo={
-        <div className="flex items-center gap-4">
-          <Image
-            src="/images/jaothui-logo.png"
-            alt="JAOTHUI Logo"
-            width={32}
-            height={32}
-            className="h-8 w-auto"
-          />
+        <Image
+          src="/images/jaothui-logo.png"
+          alt="JAOTHUI Logo"
+          width={32}
+          height={32}
+          className="h-8 w-auto"
+        />
+      }
+      dashboardRightActions={
+        <div className="flex items-center gap-3">
           {/* Notifications */}
           <NotificationWrapper />
-          {/* Pending Invitations badge */}
+          {/* Pending Invitations hidden component (feeds into main notification system) */}
           <PendingInvitationsBell />
         </div>
       }

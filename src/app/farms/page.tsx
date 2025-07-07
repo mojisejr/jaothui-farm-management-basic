@@ -13,6 +13,7 @@ interface FarmData {
   size: number | null
   description: string | null
   isOwner: boolean
+  isMember: boolean
   owner: {
     firstName: string | null
     lastName: string | null
@@ -47,7 +48,7 @@ async function getFarms(): Promise<FarmResponse> {
 
     const userId = tokenPayload.userId
 
-    // Fetch farms directly from database
+    // Fetch owned farms
     const ownedFarms = await prisma.farm.findMany({
       where: { ownerId: userId },
       include: {
@@ -68,20 +69,56 @@ async function getFarms(): Promise<FarmResponse> {
       orderBy: { createdAt: 'desc' },
     })
 
+    // Fetch member farms
+    const memberFarms = await prisma.farm.findMany({
+      where: {
+        members: {
+          some: { profileId: userId },
+        },
+        ownerId: { not: userId }, // Exclude owned farms to avoid duplicates
+      },
+      include: {
+        owner: {
+          select: {
+            firstName: true,
+            lastName: true,
+            phoneNumber: true,
+          },
+        },
+        _count: {
+          select: {
+            animals: true,
+            members: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    // Combine farms with proper flags
+    const allFarms = [
+      ...ownedFarms.map((farm) => ({
+        ...farm,
+        isOwner: true,
+        isMember: false,
+      })),
+      ...memberFarms.map((farm) => ({
+        ...farm,
+        isOwner: false,
+        isMember: true,
+      })),
+    ]
+
     const stats = {
-      totalFarms: ownedFarms.length,
-      totalAnimals: ownedFarms.reduce(
+      totalFarms: allFarms.length,
+      totalAnimals: allFarms.reduce(
         (sum, farm) => sum + farm._count.animals,
         0,
       ),
     }
 
     return {
-      farms: ownedFarms.map((farm) => ({
-        ...farm,
-        isOwner: true,
-        isMember: false,
-      })),
+      farms: allFarms,
       stats,
     }
   } catch (error) {
@@ -105,6 +142,9 @@ function FarmCard({ farm }: { farm: FarmData }) {
           <h3 className="card-title text-lg">{farm.name}</h3>
           {farm.isOwner && (
             <div className="badge badge-primary badge-sm">เจ้าของ</div>
+          )}
+          {farm.isMember && (
+            <div className="badge badge-secondary badge-sm">สมาชิก</div>
           )}
         </div>
 

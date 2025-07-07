@@ -34,7 +34,7 @@ export default function InvitationsPage() {
 
   const fetchInvitations = async () => {
     try {
-      const response = await fetch('/api/invitations/')
+      const response = await fetch('/api/invitations')
       if (!response.ok) {
         throw new Error('Failed to fetch invitations')
       }
@@ -149,9 +149,9 @@ export default function InvitationsPage() {
                         disabled={actionLoading === invitation.token}
                       >
                         {actionLoading === invitation.token ? (
-                          <span className="loading loading-spinner loading-xs" />
+                          <span key="loading-decline" className="loading loading-spinner loading-xs" />
                         ) : (
-                          <XCircle className="w-4 h-4" />
+                          <XCircle key="icon-decline" className="w-4 h-4" />
                         )}
                         ปฏิเสธ
                       </button>
@@ -161,9 +161,9 @@ export default function InvitationsPage() {
                         disabled={actionLoading === invitation.token}
                       >
                         {actionLoading === invitation.token ? (
-                          <span className="loading loading-spinner loading-xs" />
+                          <span key="loading-accept" className="loading loading-spinner loading-xs" />
                         ) : (
-                          <CheckCircle2 className="w-4 h-4" />
+                          <CheckCircle2 key="icon-accept" className="w-4 h-4" />
                         )}
                         ยอมรับ
                       </button>

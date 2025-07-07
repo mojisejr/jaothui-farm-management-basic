@@ -51,6 +51,7 @@ export interface PageLayoutProps {
   // Dashboard Specific
   dashboardTitle?: string
   dashboardLogo?: React.ReactNode
+  dashboardRightActions?: React.ReactNode
 
   // Customization
   className?: string
@@ -93,6 +94,7 @@ export function PageLayout({
   // Dashboard Specific
   dashboardTitle,
   dashboardLogo,
+  dashboardRightActions,
 
   // Customization
   className = '',
@@ -165,8 +167,13 @@ export function PageLayout({
       {/* Dashboard Header (only for dashboard variant) */}
       {variant === 'dashboard' && (dashboardTitle || dashboardLogo) && (
         <div className="flex justify-between items-center p-4 text-white">
-          <h1 className="text-xl font-semibold text-white">{dashboardTitle}</h1>
-          {dashboardLogo}
+          <div className="flex items-center gap-3">
+            {dashboardLogo}
+            <h1 className="text-xl font-semibold text-white">{dashboardTitle}</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {dashboardRightActions}
+          </div>
         </div>
       )}
 

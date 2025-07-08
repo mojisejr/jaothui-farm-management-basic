@@ -88,7 +88,7 @@ export function SchedulesList({ farmId }: SchedulesListProps) {
       <div className="p-6">
         <div className="alert alert-error">
           <span>เกิดข้อผิดพลาดในการโหลดข้อมูลกำหนดการ</span>
-          <button onClick={handleRefresh} className="btn btn-sm btn-ghost">
+          <button onClick={handleRefresh} className="btn btn-sm btn-ghost text-black">
             ลองใหม่
           </button>
         </div>
@@ -120,6 +120,14 @@ export function SchedulesList({ farmId }: SchedulesListProps) {
 
           <div className="flex gap-2 w-full sm:w-auto">
             <button
+              onClick={() => router.push(`/schedule/create?farmId=${farmId}`)}
+              className="btn btn-primary btn-sm flex-1 sm:flex-none"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">เพิ่มกำหนดการ</span>
+            </button>
+
+            <button
               onClick={() => setShowFilters(true)}
               className="btn btn-outline btn-sm flex-1 sm:flex-none"
             >
@@ -132,7 +140,7 @@ export function SchedulesList({ farmId }: SchedulesListProps) {
 
             <button
               onClick={handleRefresh}
-              className={`btn btn-ghost btn-sm ${isRefetching ? 'loading' : ''}`}
+              className={`btn btn-ghost btn-sm text-black ${isRefetching ? 'loading' : ''}`}
               disabled={isRefetching}
             >
               {!isRefetching && <RefreshCw size={16} />}
@@ -199,7 +207,7 @@ export function SchedulesList({ farmId }: SchedulesListProps) {
                 <h3 className="text-lg font-semibold">ตัวกรองกำหนดการ</h3>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-ghost btn-sm text-black"
                 >
                   ✕
                 </button>
@@ -236,7 +244,7 @@ export function SchedulesList({ farmId }: SchedulesListProps) {
                     setCurrentPage(1)
                     setShowFilters(false)
                   }}
-                  className="btn btn-ghost flex-1"
+                  className="btn btn-ghost flex-1 text-black"
                 >
                   ล้างตัวกรอง
                 </button>

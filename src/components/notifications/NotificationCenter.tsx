@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  X, 
-  CheckCheck, 
-  Trash2, 
-  Bell, 
+import {
+  X,
+  CheckCheck,
+  Trash2,
+  Bell,
   Settings,
   RefreshCw,
-  Search
+  Search,
 } from 'lucide-react'
 import { useNotifications } from '@/contexts/NotificationContext'
 import NotificationCard from './NotificationCard'
@@ -23,7 +23,10 @@ interface NotificationCenterProps {
 
 type FilterType = 'all' | 'unread' | 'activity' | 'farm' | 'system'
 
-export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
+export function NotificationCenter({
+  isOpen,
+  onClose,
+}: NotificationCenterProps) {
   const {
     notifications,
     unreadCount,
@@ -65,11 +68,13 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
     // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase()
-      const matchesSearch = 
+      const matchesSearch =
         notification.title.toLowerCase().includes(searchLower) ||
         notification.message.toLowerCase().includes(searchLower) ||
-(notification as { farm?: { name?: string } }).farm?.name?.toLowerCase().includes(searchLower)
-      
+        (notification as { farm?: { name?: string } }).farm?.name
+          ?.toLowerCase()
+          .includes(searchLower)
+
       if (!matchesSearch) return false
     }
 
@@ -78,7 +83,13 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
       case 'unread':
         return !notification.isRead
       case 'activity':
-        return ['ACTIVITY_REMINDER', 'ACTIVITY_OVERDUE', 'ACTIVITY_COMPLETED', 'ACTIVITY_CREATED', 'SCHEDULE_REMINDER'].includes(notification.type)
+        return [
+          'ACTIVITY_REMINDER',
+          'ACTIVITY_OVERDUE',
+          'ACTIVITY_COMPLETED',
+          'ACTIVITY_CREATED',
+          'SCHEDULE_REMINDER',
+        ].includes(notification.type)
       case 'farm':
         return ['FARM_INVITATION', 'MEMBER_JOINED'].includes(notification.type)
       case 'system':
@@ -124,68 +135,74 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Bell className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold">การแจ้งเตือน</h2>
+                <h2 className="text-lg font-semibold text-base-content">
+                  การแจ้งเตือน
+                </h2>
                 {unreadCount > 0 && (
-                  <span className="badge badge-primary badge-sm">{unreadCount}</span>
+                  <span className="badge badge-primary badge-sm">
+                    {unreadCount}
+                  </span>
                 )}
               </div>
-              
+
               <div className="flex items-center gap-2">
                 {/* Connection Status */}
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-warning'}`} />
-                
+                <div
+                  className={`w-2 h-2 rounded-full ${isConnected ? 'bg-success' : 'bg-warning'}`}
+                />
+
                 {/* Actions Dropdown */}
                 <div className="dropdown dropdown-end">
                   <label
                     tabIndex={0}
-                    className="btn btn-ghost btn-sm"
+                    className="btn btn-primary btn-sm"
                     onClick={() => setIsActionsOpen(!isActionsOpen)}
                   >
                     <Settings size={16} />
                   </label>
-                  
+
                   {isActionsOpen && (
-                    <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48 z-10">
+                    <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-48 z-10 text-base-content">
                       <li>
                         <button
                           onClick={refreshNotifications}
-                          className="text-sm"
+                          className="text-sm text-base-content hover:text-base-content"
                         >
                           <RefreshCw size={14} />
                           รีเฟรช
                         </button>
                       </li>
-                      
+
                       <li>
                         <button
                           onClick={() => {
                             setIsSettingsOpen(true)
                             setIsActionsOpen(false)
                           }}
-                          className="text-sm"
+                          className="text-sm text-base-content hover:text-base-content"
                         >
                           <Settings size={14} />
                           ตั้งค่า
                         </button>
                       </li>
-                      
+
                       {unreadCount > 0 && (
                         <li>
                           <button
                             onClick={handleMarkAllAsRead}
-                            className="text-sm"
+                            className="text-sm text-base-content hover:text-base-content"
                           >
                             <CheckCheck size={14} />
                             อ่านทั้งหมด
                           </button>
                         </li>
                       )}
-                      
+
                       {notifications.length > 0 && (
                         <li>
                           <button
                             onClick={handleClearAll}
-                            className="text-sm text-error"
+                            className="text-sm text-error hover:text-error"
                           >
                             <Trash2 size={14} />
                             ลบทั้งหมด
@@ -197,10 +214,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                 </div>
 
                 {/* Close Button */}
-                <button
-                  onClick={onClose}
-                  className="btn btn-ghost btn-sm"
-                >
+                <button onClick={onClose} className="btn btn-primary btn-sm">
                   <X size={16} />
                 </button>
               </div>
@@ -231,7 +245,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                   key={key}
                   onClick={() => setFilter(key as FilterType)}
                   className={`btn btn-xs ${
-                    filter === key ? 'btn-primary' : 'btn-ghost'
+                    filter === key ? 'btn-primary' : 'btn-ghost text-black'
                   }`}
                 >
                   {label}
@@ -249,13 +263,17 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
             ) : filteredNotifications.length === 0 ? (
               <GenericEmptyState
                 icon={<Bell className="w-12 h-12" />}
-                title={searchTerm || filter !== 'all' ? 'ไม่พบการแจ้งเตือน' : 'ไม่มีการแจ้งเตือน'}
+                title={
+                  searchTerm || filter !== 'all'
+                    ? 'ไม่พบการแจ้งเตือน'
+                    : 'ไม่มีการแจ้งเตือน'
+                }
                 description={
-                  searchTerm 
+                  searchTerm
                     ? 'ลองค้นหาด้วยคำอื่น'
-                    : filter !== 'all' 
-                    ? 'ลองเปลี่ยนตัวกรอง'
-                    : 'คุณจะได้รับการแจ้งเตือนเมื่อมีกิจกรรมใหม่'
+                    : filter !== 'all'
+                      ? 'ลองเปลี่ยนตัวกรอง'
+                      : 'คุณจะได้รับการแจ้งเตือนเมื่อมีกิจกรรมใหม่'
                 }
               />
             ) : (
@@ -280,7 +298,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
           {notifications.length > 0 && (
             <div className="p-4 border-t border-base-200 text-center">
               <p className="text-xs text-base-content/50">
-                {filteredNotifications.length} จาก {notifications.length} การแจ้งเตือน
+                {filteredNotifications.length} จาก {notifications.length}{' '}
+                การแจ้งเตือน
               </p>
             </div>
           )}

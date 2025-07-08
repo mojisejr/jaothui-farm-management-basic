@@ -45,6 +45,13 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(totalCount / limit)
     const offset = (page - 1) * limit
 
+    console.log('🔔 [API] Fetching notifications for user:', payload.userId, {
+      page,
+      limit,
+      unreadOnly,
+      totalCount
+    })
+
     // Get notifications
     const notifications = await prisma.notification.findMany({
       where: whereCondition,

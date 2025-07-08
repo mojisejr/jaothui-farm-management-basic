@@ -73,7 +73,7 @@ export default async function AnimalCreatePage({ searchParams }: Props) {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Link href={`/farm/${farmId}`} className="btn btn-ghost btn-sm">
+            <Link href={`/farm/${farmId}`} className="btn btn-ghost text-black btn-sm">
               <ArrowLeft className="w-4 h-4 mr-1" />
               กลับไปฟาร์ม
             </Link>

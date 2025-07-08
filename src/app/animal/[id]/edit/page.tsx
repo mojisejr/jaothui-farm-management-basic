@@ -190,7 +190,7 @@ export default function AnimalEditPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => router.push(`/animal/${animalId}`)}
-            className="btn btn-ghost"
+            className="btn btn-ghost text-black"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             กลับไปดูข้อมูล

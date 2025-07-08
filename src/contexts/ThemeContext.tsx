@@ -92,7 +92,7 @@ export function ThemeSelector({ className = '' }: { className?: string }) {
 
   return (
     <div className={`dropdown dropdown-end ${className}`}>
-      <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-2">
+      <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-2 text-black">
         <div className="w-4 h-4 rounded-full bg-primary"></div>
         <span className="hidden sm:inline">{themeLabels[theme]}</span>
         <svg

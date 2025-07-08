@@ -267,7 +267,7 @@ export default function ScheduleDetailPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm text-black"
           >
             <ArrowLeft size={16} />
             กลับ

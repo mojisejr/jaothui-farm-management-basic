@@ -214,7 +214,7 @@ export function NotificationCard({
               <div className="dropdown dropdown-end">
                 <label
                   tabIndex={0}
-                  className="btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity text-black"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowActions(!showActions)
@@ -237,7 +237,7 @@ export function NotificationCard({
                             setShowActions(false)
                           }}
                           disabled={isLoading}
-                          className={`text-sm ${isLoading ? 'loading loading-xs' : ''}`}
+                          className={`text-sm text-base-content hover:text-base-content ${isLoading ? 'loading loading-xs' : ''}`}
                         >
                           {!isLoading && <Check size={14} />}
                           {isLoading ? 'กำลังอัปเดต...' : 'อ่านแล้ว'}
@@ -253,7 +253,7 @@ export function NotificationCard({
                             handleNavigate()
                             setShowActions(false)
                           }}
-                          className="text-sm"
+                          className="text-sm text-base-content hover:text-base-content"
                         >
                           <ExternalLink size={14} />
                           ดูรายละเอียด
@@ -269,7 +269,7 @@ export function NotificationCard({
                           setShowActions(false)
                         }}
                         disabled={isLoading}
-                        className={`text-sm text-error ${isLoading ? 'loading loading-xs' : ''}`}
+                        className={`text-sm text-error hover:text-error ${isLoading ? 'loading loading-xs' : ''}`}
                       >
                         {!isLoading && <Trash2 size={14} />}
                         {isLoading ? 'กำลังลบ...' : 'ลบ'}

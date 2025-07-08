@@ -225,7 +225,7 @@ export function ScheduleCard({ schedule, farmId, onUpdate }: ScheduleCardProps) 
             <div className="dropdown dropdown-end">
               <label
                 tabIndex={0}
-                className="btn btn-ghost btn-xs"
+                className="btn btn-ghost btn-xs text-black"
                 onClick={() => setShowActions(!showActions)}
               >
                 <MoreHorizontal size={14} />

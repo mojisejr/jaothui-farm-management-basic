@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/notifications/triggers", 
-      "schedule": "*/30 7-19 * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/invitations/cleanup",

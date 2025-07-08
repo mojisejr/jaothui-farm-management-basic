@@ -70,7 +70,7 @@ export default function GlobalError({
                   
                   <button 
                     onClick={() => window.location.reload()}
-                    className="btn btn-ghost w-full"
+                    className="btn btn-ghost w-full text-black"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     รีเฟรชหน้า

@@ -69,7 +69,7 @@ export function ActivityTemplatePicker({
           </div>
           <button
             onClick={onClose}
-            className="btn btn-ghost btn-sm btn-circle"
+            className="btn btn-ghost btn-sm btn-circle text-black"
           >
             <X className="w-4 h-4" />
           </button>
@@ -119,7 +119,7 @@ export function ActivityTemplatePicker({
             <div className="flex justify-end">
               <button
                 onClick={handleClearFilters}
-                className="btn btn-ghost btn-sm"
+                className="btn btn-ghost btn-sm text-black"
               >
                 <Filter className="w-4 h-4 mr-1" />
                 ล้างตัวกรอง
@@ -213,7 +213,7 @@ export function ActivityTemplatePicker({
                           e.stopPropagation()
                           setShowDetails(showDetails === template.id ? null : template.id)
                         }}
-                        className="btn btn-ghost btn-xs"
+                        className="btn btn-ghost btn-xs text-black"
                       >
                         รายละเอียด
                       </button>
@@ -257,7 +257,7 @@ export function ActivityTemplatePicker({
             {templates.length} เทมเพลต
             {schedulableOnly && ' (กำหนดการได้เท่านั้น)'}
           </div>
-          <button onClick={onClose} className="btn btn-ghost">
+          <button onClick={onClose} className="btn btn-ghost text-black">
             ปิด
           </button>
         </div>

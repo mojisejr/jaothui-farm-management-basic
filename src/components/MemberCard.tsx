@@ -110,7 +110,7 @@ export default function MemberCard({
               <div
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-sm btn-circle"
+                className="btn btn-ghost btn-sm btn-circle text-black"
               >
                 <MoreVertical className="w-4 h-4" />
               </div>

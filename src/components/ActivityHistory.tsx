@@ -314,7 +314,7 @@ export function ActivityHistory({
           {/* Show More/Less Button */}
           {filteredItems.length > maxItems && (
             <button
-              className="btn btn-sm btn-ghost w-full"
+              className="btn btn-sm btn-ghost w-full text-black"
               onClick={() => setShowAll(!showAll)}
             >
               {showAll ? (

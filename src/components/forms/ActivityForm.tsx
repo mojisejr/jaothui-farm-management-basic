@@ -229,7 +229,7 @@ export function ActivityForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
                       setValue('description', '')
                       setCustomFields({})
                     }}
-                    className="btn btn-ghost btn-sm"
+                    className="btn btn-ghost btn-sm text-black"
                   >
                     <X className="w-4 h-4" />
                     เปลี่ยน
@@ -400,7 +400,7 @@ export function ActivityForm({ animalId, farmId: _farmId, onSuccess, onCancel }:
         <button
           type="button"
           onClick={onCancel}
-          className="btn btn-ghost flex-1"
+          className="btn btn-ghost flex-1 text-black"
           disabled={isSubmitting}
         >
           <X className="w-4 h-4 mr-2" />

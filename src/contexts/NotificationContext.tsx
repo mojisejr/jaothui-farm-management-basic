@@ -59,18 +59,31 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   // Fetch initial notifications
   const fetchNotifications = useCallback(async () => {
-    if (!user?.id) return
+    if (!user?.id) {
+      console.log('🔔 [Notifications] No user ID, skipping fetch')
+      return
+    }
 
     try {
+      console.log('🔔 [Notifications] Fetching notifications for user:', user.id)
       setIsLoading(true)
       const response = await fetch('/api/notifications')
       
       if (response.ok) {
         const data = await response.json()
+        console.log('🔔 [Notifications] Fetched data:', {
+          total: data.notifications?.length || 0,
+          unread: data.notifications?.filter((n: Notification) => !n.isRead).length || 0,
+          types: data.notifications?.map((n: Notification) => n.type) || []
+        })
         setNotifications(data.notifications || [])
+      } else {
+        console.error('🔔 [Notifications] Fetch failed:', response.status, response.statusText)
+        const errorData = await response.text()
+        console.error('🔔 [Notifications] Error response:', errorData)
       }
     } catch (error) {
-      console.error('Failed to fetch notifications:', error)
+      console.error('🔔 [Notifications] Fetch error:', error)
     } finally {
       setIsLoading(false)
     }
@@ -78,16 +91,22 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   // Setup real-time subscriptions
   useEffect(() => {
-    if (!user?.id) return
+    if (!user?.id) {
+      console.log('🔔 [Realtime] No user ID, skipping subscription')
+      return
+    }
 
+    console.log('🔔 [Realtime] Setting up subscription for user:', user.id)
     // Subscribe to user notifications
     const subscriptionId = realtimeNotificationManager.subscribeToUserNotifications(
       user.id,
       (event) => {
+        console.log('🔔 [Realtime] Received event:', event.type, event)
         const notification = formatRealtimeNotification(event) as Notification
         
         if (event.type === 'INSERT') {
           // New notification
+          console.log('🔔 [Realtime] Adding new notification:', notification.title)
           setNotifications(prev => [notification, ...prev])
           
           // Show toast if enabled

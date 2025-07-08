@@ -15,6 +15,7 @@ import {
   Plus,
   Loader2,
   Tag,
+  RefreshCw,
 } from 'lucide-react'
 import {
   animalRegistrationSchema,
@@ -35,6 +36,7 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [isGeneratingMicrochip, setIsGeneratingMicrochip] = useState(false)
 
   const {
     register,
@@ -42,9 +44,10 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
     control,
     formState: { errors, isValid },
     reset,
+    setValue,
   } = useForm<AnimalRegistrationFormData>({
     resolver: zodResolver(animalRegistrationSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: {
       farmId,
     },
@@ -83,6 +86,34 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
     return gregorianYear + 543
   }
 
+  const generateMicrochip = async () => {
+    setIsGeneratingMicrochip(true)
+    try {
+      const response = await fetch('/api/animal/generate-microchip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ farmId }),
+        credentials: 'include',
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setValue('microchip', result.microchip)
+        toast.success('สร้างไมโครชิปสำเร็จ')
+      } else {
+        toast.error(result.error || 'ไม่สามารถสร้างไมโครชิปได้')
+      }
+    } catch (error) {
+      console.error('Generate microchip error:', error)
+      toast.error('เกิดข้อผิดพลาดในการสร้างไมโครชิป')
+    } finally {
+      setIsGeneratingMicrochip(false)
+    }
+  }
+
   const onSubmit = async (data: AnimalRegistrationFormData) => {
     // simple client-side validation for image (optional route integration later)
     if (!imageFile) {
@@ -99,8 +130,8 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
         formData.append('farmId', data.farmId)
         formData.append('name', data.name)
         formData.append('animalTypeId', data.animalTypeId)
-        if (data.microchip) formData.append('microchip', data.microchip)
-        if (data.birthDate) formData.append('birthDate', data.birthDate.toISOString())
+        formData.append('microchip', data.microchip)
+        formData.append('birthDate', data.birthDate.toISOString())
         if (data.weight) formData.append('weight', data.weight.toString())
         if (data.height) formData.append('height', data.height.toString())
         if (data.color) formData.append('color', data.color)
@@ -232,21 +263,36 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
             <label className="label" htmlFor="microchip">
               <span className="label-text font-medium">
                 <Tag className="w-4 h-4 inline mr-1" />
-                ไมโครชิป
+                ไมโครชิป <span className="text-error">*</span>
               </span>
             </label>
-            <input
-              id="microchip"
-              type="text"
-              placeholder="ระบุเลขไมโครชิป (ไม่กรอกระบบจะสร้างให้)"
-              className={`input input-bordered ${
-                errors.microchip ? 'input-error' : ''
-              } ${isPending ? 'input-disabled' : ''}`}
-              disabled={isPending}
-              {...register('microchip', {
-                setValueAs: (v) => (v === '' ? undefined : v),
-              })}
-            />
+            <div className="join">
+              <input
+                id="microchip"
+                type="text"
+                placeholder="กรอกเลขไมโครชิป"
+                className={`input input-bordered join-item flex-1 ${
+                  errors.microchip ? 'input-error' : ''
+                } ${isPending ? 'input-disabled' : ''}`}
+                disabled={isPending}
+                {...register('microchip')}
+              />
+              <button
+                type="button"
+                className={`btn btn-outline join-item ${
+                  isGeneratingMicrochip ? 'loading' : ''
+                }`}
+                disabled={isPending || isGeneratingMicrochip}
+                onClick={generateMicrochip}
+              >
+                {isGeneratingMicrochip ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+                สร้าง
+              </button>
+            </div>
             {errors.microchip && (
               <label className="label">
                 <span className="label-text-alt text-error">
@@ -256,7 +302,7 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
             )}
             <label className="label">
               <span className="label-text-alt text-info">
-                💡 หากไม่กรอก ระบบจะสร้างไมโครชิปอัตโนมัติ
+                💡 กรอกเอง หรือกดปุ่ม &quot;สร้าง&quot; เพื่อสร้างอัตโนมัติ
               </span>
             </label>
           </div>
@@ -266,7 +312,7 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
             <label className="label" htmlFor="birthDate">
               <span className="label-text font-medium">
                 <Calendar className="w-4 h-4 inline mr-1" />
-                วันเกิด (พ.ศ.)
+                วันเกิด (พ.ศ.) <span className="text-error">*</span>
               </span>
             </label>
             <Controller
@@ -319,15 +365,15 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
             <input
               id="weight"
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              placeholder="เช่น 25.5"
+              placeholder="เช่น 25"
               className={`input input-bordered ${
                 errors.weight ? 'input-error' : ''
               } ${isPending ? 'input-disabled' : ''}`}
               disabled={isPending}
               {...register('weight', {
-                setValueAs: (v) => (v === '' ? undefined : parseFloat(v)),
+                setValueAs: (v) => (v === '' ? undefined : parseInt(v)),
               })}
             />
             {errors.weight && (
@@ -350,15 +396,15 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
             <input
               id="height"
               type="number"
-              step="0.1"
+              step="1"
               min="0"
-              placeholder="เช่น 65.0"
+              placeholder="เช่น 65"
               className={`input input-bordered ${
                 errors.height ? 'input-error' : ''
               } ${isPending ? 'input-disabled' : ''}`}
               disabled={isPending}
               {...register('height', {
-                setValueAs: (v) => (v === '' ? undefined : parseFloat(v)),
+                setValueAs: (v) => (v === '' ? undefined : parseInt(v)),
               })}
             />
             {errors.height && (
@@ -478,7 +524,7 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
           {/* Photo Upload */}
           <div className="form-control md:col-span-2">
             <label className="label" htmlFor="photo">
-              <span className="label-text font-medium">รูปสัตว์ (1 รูป)</span>
+              <span className="label-text font-medium">รูปสัตว์ (1 รูป) <span className="text-error">*</span></span>
             </label>
             <input
               id="photo"
@@ -534,7 +580,7 @@ export function AnimalCreateForm({ farmId, onSuccess }: AnimalCreateFormProps) {
           <button
             type="submit"
             className={`btn btn-primary ${isPending ? 'loading' : ''}`}
-            disabled={isPending || !isValid}
+            disabled={isPending || !isValid || !imageFile}
           >
             {isPending ? (
               <>

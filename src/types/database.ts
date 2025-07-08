@@ -204,20 +204,20 @@ export const animalRegistrationSchema = z.object({
 
   microchip: z
     .string()
-    .max(50, 'ไมโครชิปต้องไม่เกิน 50 ตัวอักษร')
-    .transform((val) => val === '' ? undefined : val)
-    .optional(),
+    .min(1, 'กรุณาระบุหรือสร้างไมโครชิป')
+    .max(50, 'ไมโครชิปต้องไม่เกิน 50 ตัวอักษร'),
 
   birthDate: z
-    .date()
-    .optional()
+    .date({
+      required_error: 'กรุณาระบุวันเกิดของสัตว์',
+      invalid_type_error: 'วันเกิดไม่ถูกต้อง'
+    })
     .refine((date) => {
-      if (!date) return true
       const today = new Date()
       const maxAge = new Date()
       maxAge.setFullYear(today.getFullYear() - 50) // สัตว์อายุไม่เกิน 50 ปี
       return date >= maxAge && date <= today
-    }, 'วันเกิดไม่ถูกต้อง'),
+    }, 'วันเกิดต้องอยู่ในช่วง 50 ปีที่ผ่านมาถึงวันนี้'),
 
   weight: z
     .number()

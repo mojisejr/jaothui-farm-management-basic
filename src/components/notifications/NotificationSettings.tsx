@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Bell, 
-  Clock, 
-  Volume2, 
-  VolumeX, 
+import {
+  Bell,
+  Clock,
+  Volume2,
+  VolumeX,
   Save,
   Settings,
   Moon,
-  Sun as _Sun
+  Sun as _Sun,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
@@ -34,9 +34,13 @@ interface NotificationSettingsProps {
   onClose: () => void
 }
 
-export function NotificationSettings({ isOpen, onClose }: NotificationSettingsProps) {
+export function NotificationSettings({
+  isOpen,
+  onClose,
+}: NotificationSettingsProps) {
   const { user } = useAuth()
-  const [preferences, setPreferences] = useState<NotificationPreferences | null>(null)
+  const [preferences, setPreferences] =
+    useState<NotificationPreferences | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [pushManager] = useState(() => PushNotificationManager.getInstance())
@@ -52,7 +56,7 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
     try {
       setIsLoading(true)
       const response = await fetch('/api/notifications/preferences')
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch preferences')
       }
@@ -95,11 +99,14 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
     }
   }
 
-  const updatePreference = (key: keyof NotificationPreferences, value: unknown) => {
+  const updatePreference = (
+    key: keyof NotificationPreferences,
+    value: unknown,
+  ) => {
     if (!preferences) return
     setPreferences({
       ...preferences,
-      [key]: value
+      [key]: value,
     })
   }
 
@@ -115,7 +122,7 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
         if (result.success) {
           updatePreference('pushEnabled', true)
           toast.success('เปิดใช้งานการแจ้งเตือนแบบ Push แล้ว')
-          
+
           // Show test notification
           setTimeout(() => {
             pushManager.showTestNotification().catch(console.error)
@@ -169,12 +176,11 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Settings className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">ตั้งค่าการแจ้งเตือน</h2>
+              <h2 className="text-lg font-semibold text-base-content">
+                ตั้งค่าการแจ้งเตือน
+              </h2>
             </div>
-            <button
-              onClick={onClose}
-              className="btn btn-ghost btn-sm"
-            >
+            <button onClick={onClose} className="btn btn-warn btn-sm">
               ×
             </button>
           </div>
@@ -202,7 +208,12 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         type="checkbox"
                         className="toggle toggle-primary"
                         checked={preferences.activityReminders}
-                        onChange={(e) => updatePreference('activityReminders', e.target.checked)}
+                        onChange={(e) =>
+                          updatePreference(
+                            'activityReminders',
+                            e.target.checked,
+                          )
+                        }
                       />
                     </label>
                   </div>
@@ -214,7 +225,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         type="checkbox"
                         className="toggle toggle-primary"
                         checked={preferences.overdueAlerts}
-                        onChange={(e) => updatePreference('overdueAlerts', e.target.checked)}
+                        onChange={(e) =>
+                          updatePreference('overdueAlerts', e.target.checked)
+                        }
                       />
                     </label>
                   </div>
@@ -226,7 +239,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         type="checkbox"
                         className="toggle toggle-primary"
                         checked={preferences.farmInvitations}
-                        onChange={(e) => updatePreference('farmInvitations', e.target.checked)}
+                        onChange={(e) =>
+                          updatePreference('farmInvitations', e.target.checked)
+                        }
                       />
                     </label>
                   </div>
@@ -238,7 +253,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         type="checkbox"
                         className="toggle toggle-primary"
                         checked={preferences.memberJoined}
-                        onChange={(e) => updatePreference('memberJoined', e.target.checked)}
+                        onChange={(e) =>
+                          updatePreference('memberJoined', e.target.checked)
+                        }
                       />
                     </label>
                   </div>
@@ -250,7 +267,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                         type="checkbox"
                         className="toggle toggle-primary"
                         checked={preferences.newActivities}
-                        onChange={(e) => updatePreference('newActivities', e.target.checked)}
+                        onChange={(e) =>
+                          updatePreference('newActivities', e.target.checked)
+                        }
                       />
                     </label>
                   </div>
@@ -266,7 +285,12 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                 <select
                   className="select select-bordered w-full"
                   value={preferences.reminderFrequency}
-                  onChange={(e) => updatePreference('reminderFrequency', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updatePreference(
+                      'reminderFrequency',
+                      parseInt(e.target.value),
+                    )
+                  }
                 >
                   {reminderOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -291,7 +315,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                       type="time"
                       className="input input-bordered w-full"
                       value={preferences.quietStart || ''}
-                      onChange={(e) => updatePreference('quietStart', e.target.value)}
+                      onChange={(e) =>
+                        updatePreference('quietStart', e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -302,7 +328,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                       type="time"
                       className="input input-bordered w-full"
                       value={preferences.quietEnd || ''}
-                      onChange={(e) => updatePreference('quietEnd', e.target.value)}
+                      onChange={(e) =>
+                        updatePreference('quietEnd', e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -311,7 +339,11 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
               {/* Delivery Methods */}
               <div>
                 <h3 className="text-sm font-semibold text-base-content/70 mb-3 flex items-center gap-2">
-                  {preferences.pushEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {preferences.pushEnabled ? (
+                    <Volume2 className="w-4 h-4" />
+                  ) : (
+                    <VolumeX className="w-4 h-4" />
+                  )}
                   วิธีการแจ้งเตือน
                 </h3>
                 <div className="space-y-3">
@@ -320,7 +352,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
                       <span className="label-text">
                         Push Notification
                         {!pushManager.isSupported() && (
-                          <span className="text-xs text-error ml-1">(ไม่รองรับ)</span>
+                          <span className="text-xs text-error ml-1">
+                            (ไม่รองรับ)
+                          </span>
                         )}
                       </span>
                       <input
@@ -335,7 +369,9 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
 
                   <div className="form-control">
                     <label className="label cursor-pointer">
-                      <span className="label-text">อีเมล (ยังไม่พร้อมใช้งาน)</span>
+                      <span className="label-text">
+                        อีเมล (ยังไม่พร้อมใช้งาน)
+                      </span>
                       <input
                         type="checkbox"
                         className="toggle toggle-primary"
@@ -360,7 +396,7 @@ export function NotificationSettings({ isOpen, onClose }: NotificationSettingsPr
             <div className="flex gap-2">
               <button
                 onClick={onClose}
-                className="btn btn-ghost flex-1"
+                className="btn btn-ghost flex-1 text-black"
                 disabled={isSaving}
               >
                 ยกเลิก

@@ -168,7 +168,7 @@ export default function FilterDrawer({
             <Filter className="w-5 h-5" />
             <h3 className="text-lg font-semibold">ตัวกรอง</h3>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
+          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle text-black">
             <X className="w-4 h-4" />
           </button>
         </div>

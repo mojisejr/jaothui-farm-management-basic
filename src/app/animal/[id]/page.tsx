@@ -131,7 +131,7 @@ export default function AnimalDetailPage() {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => router.back()}
-            className="btn btn-ghost"
+            className="btn btn-ghost text-black"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             กลับ
@@ -406,7 +406,7 @@ export default function AnimalDetailPage() {
               </p>
               <div className="modal-action">
                 <button
-                  className="btn btn-ghost"
+                  className="btn btn-ghost text-black"
                   onClick={() => setShowDeleteModal(false)}
                   disabled={deleteAnimal.isPending}
                 >

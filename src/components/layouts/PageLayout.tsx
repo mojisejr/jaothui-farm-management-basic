@@ -202,7 +202,7 @@ export function PageLayout({
                 <div className="md:hidden">
                   <button
                     onClick={handleBack}
-                    className="btn btn-ghost btn-sm gap-2 p-2 -ml-2"
+                    className="btn btn-ghost btn-sm gap-2 p-2 -ml-2 text-black"
                   >
                     <ArrowLeft className="w-4 h-4" />
                     <span className="text-sm">ย้อนกลับ</span>

@@ -242,6 +242,75 @@ export class NotificationTriggers {
     }
   }
 
+  // Check for overdue schedules that need to be converted to activities
+  static async checkOverdueSchedules() {
+    try {
+      const now = new Date()
+      
+      // Find schedules that are overdue and still pending
+      const overdueSchedules = await prisma.activitySchedule.findMany({
+        where: {
+          status: 'PENDING',
+          scheduledDate: {
+            lt: now
+          }
+        },
+        include: {
+          animal: {
+            include: {
+              farm: true
+            }
+          }
+        }
+      })
+
+      const results = []
+      for (const schedule of overdueSchedules) {
+        // Check if notification already exists
+        const existingNotification = await prisma.notification.findFirst({
+          where: {
+            type: 'SCHEDULE_REMINDER',
+            relatedEntityType: 'schedule',
+            relatedEntityId: schedule.id,
+            message: {
+              contains: 'เลยกำหนด'
+            }
+          }
+        })
+
+        if (!existingNotification) {
+          // Create overdue schedule notification
+          const result = await NotificationService.createNotification({
+            userId: schedule.animal.farm.ownerId,
+            type: 'SCHEDULE_REMINDER',
+            title: '⚠️ กำหนดการเลยกำหนดแล้ว',
+            message: `กำหนดการ "${schedule.title}" สำหรับ ${schedule.animal.name} เลยกำหนดแล้ว`,
+            priority: 'HIGH',
+            farmId: schedule.animal.farmId,
+            relatedEntityType: 'schedule',
+            relatedEntityId: schedule.id,
+            data: {
+              animalId: schedule.animalId,
+              animalName: schedule.animal.name,
+              farmName: schedule.animal.farm.name,
+              scheduledDate: schedule.scheduledDate.toISOString(),
+              overdueHours: Math.floor((now.getTime() - schedule.scheduledDate.getTime()) / (1000 * 60 * 60))
+            }
+          })
+
+          if (result) {
+            results.push(result)
+          }
+        }
+      }
+
+      return results
+    } catch (error) {
+      console.error('Failed to check overdue schedules:', error)
+      throw error
+    }
+  }
+
   // Run all notification checks
   static async runAllChecks() {
     try {
@@ -249,6 +318,7 @@ export class NotificationTriggers {
         this.checkOverdueActivities(),
         this.checkUpcomingActivities(30), // 30 minutes reminder
         this.checkUpcomingSchedules(30), // 30 minutes reminder
+        this.checkOverdueSchedules(), // Check overdue schedules
         this.processInvitationNotifications(),
         this.cleanupOldNotifications(30), // Keep 30 days
       ])

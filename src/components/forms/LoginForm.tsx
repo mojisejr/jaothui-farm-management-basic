@@ -25,7 +25,7 @@ export function LoginForm() {
     setError,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
   })
 
   const onSubmit = async (data: LoginFormData) => {

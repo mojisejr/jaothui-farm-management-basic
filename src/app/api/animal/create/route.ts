@@ -63,14 +63,14 @@ export async function POST(request: NextRequest) {
       farmId: formData.get('farmId') as string,
       name: formData.get('name') as string,
       animalTypeId: formData.get('animalTypeId') as string,
-      microchip: formData.get('microchip') as string | null,
-      birthDate: formData.get('birthDate') ? new Date(formData.get('birthDate') as string) : undefined,
-      weight: formData.get('weight') ? parseFloat(formData.get('weight') as string) : undefined,
-      height: formData.get('height') ? parseFloat(formData.get('height') as string) : undefined,
-      color: formData.get('color') as string | null,
-      fatherName: formData.get('fatherName') as string | null,
-      motherName: formData.get('motherName') as string | null,
-      notes: formData.get('notes') as string | null,
+      microchip: formData.get('microchip') as string,
+      birthDate: new Date(formData.get('birthDate') as string),
+      weight: formData.get('weight') ? parseInt(formData.get('weight') as string) : undefined,
+      height: formData.get('height') ? parseInt(formData.get('height') as string) : undefined,
+      color: formData.get('color') ? formData.get('color') as string : undefined,
+      fatherName: formData.get('fatherName') ? formData.get('fatherName') as string : undefined,
+      motherName: formData.get('motherName') ? formData.get('motherName') as string : undefined,
+      notes: formData.get('notes') ? formData.get('notes') as string : undefined,
     }
 
     // Validate the form data
@@ -78,6 +78,11 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       const errors = validationResult.error.flatten()
+      console.error('Validation errors:', {
+        body,
+        errors: errors.fieldErrors,
+        formErrors: errors.formErrors
+      })
       return NextResponse.json(
         {
           error: 'ข้อมูลไม่ถูกต้อง',

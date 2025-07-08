@@ -126,7 +126,7 @@ class ErrorBoundary extends Component<Props, State> {
 
                 <button
                   type="button"
-                  className="btn btn-ghost w-full"
+                  className="btn btn-ghost w-full text-black"
                   onClick={this.handleGoBack}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />

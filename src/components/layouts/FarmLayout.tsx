@@ -153,7 +153,7 @@ export function FarmLayout({
       dashboardRightActions={
         <Link
           href="/profile"
-          className="btn btn-ghost btn-circle btn-sm"
+          className="btn btn-ghost btn-circle btn-sm text-black"
           title="ไปยังโปรไฟล์"
         >
           <User className="w-4 h-4 text-white" />

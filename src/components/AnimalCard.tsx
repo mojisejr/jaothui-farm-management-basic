@@ -137,7 +137,7 @@ export default function AnimalCard({ animal }: AnimalCardProps) {
           <div className="flex gap-2">
             <Link
               href={`/animal/${animal.id}`}
-              className="btn btn-sm btn-ghost"
+              className="btn btn-sm btn-ghost text-black"
             >
               ดูรายละเอียด
             </Link>

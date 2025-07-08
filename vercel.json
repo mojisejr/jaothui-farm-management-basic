@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/notifications/triggers",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 8 * * *"
     },
     {
       "path": "/api/system/daily-tasks",

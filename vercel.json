@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/notifications/triggers",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/system/daily-tasks",
       "schedule": "0 6 * * *"
     }

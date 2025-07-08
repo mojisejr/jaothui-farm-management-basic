@@ -182,6 +182,14 @@ model Notification {
   user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
   farm Farm?   @relation(fields: [farmId], references: [id], onDelete: Cascade)
 
+  // Performance indexes
+  @@index([userId]) // Query notifications by user
+  @@index([farmId]) // Query notifications by farm  
+  @@index([scheduledAt]) // Query scheduled notifications
+  @@index([createdAt]) // Order notifications by creation time
+  @@index([isRead]) // Filter read/unread notifications
+  @@index([type]) // Filter by notification type
+  @@index([priority]) // Filter by priority
   @@map("notifications")
 }
 

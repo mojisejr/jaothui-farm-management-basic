@@ -1,16 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/schedule/process-recurring",
+      "path": "/api/system/daily-tasks",
       "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/notifications/triggers", 
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/invitations/cleanup",
-      "schedule": "0 1 * * *"
     }
   ]
 }
